@@ -348,12 +348,20 @@ watchDebounced(
 
 ### API Integration
 
+**Backend URL configuration:**
+The API base URL comes from the `VITE_API_BASE_URL` build-time env var, falling back to
+`http://localhost:8001/api` when unset (the local dev default). Set it for production
+builds so the deployed frontend points at the real backend. See `client/.env.example`;
+copy it to `.env` (or `.env.local`) to override locally. Only `VITE_`-prefixed vars are
+exposed to the bundle.
+
 **Centralize API calls:**
 ```javascript
 // api.js
 import axios from 'axios'
 
-const API_BASE = 'http://localhost:8001/api'
+// Falls back to the localhost backend when VITE_API_BASE_URL is unset.
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001/api'
 
 export const api = {
   async getItems(filters) {
