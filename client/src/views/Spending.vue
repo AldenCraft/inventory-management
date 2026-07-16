@@ -88,7 +88,15 @@
             </div>
             <div class="chart-area">
               <div v-for="month in monthlySpending" :key="month.month" class="bar-group">
-                <div class="stacked-bar" @click="showCostDetail(month)">
+                <div
+                  class="stacked-bar"
+                  tabindex="0"
+                  role="button"
+                  :aria-label="`${translateMonth(month.month)} ${t('finance.monthlyCostFlow.title')}`"
+                  @click="showCostDetail(month)"
+                  @keydown.enter="showCostDetail(month)"
+                  @keydown.space.prevent="showCostDetail(month)"
+                >
                   <div class="bar-segment procurement" :style="{ height: getBarHeight(month.procurement) + '%' }" :title="`Procurement: ${formatCurrency(month.procurement)}`"></div>
                   <div class="bar-segment operational" :style="{ height: getBarHeight(month.operational) + '%' }" :title="`Operational: ${formatCurrency(month.operational)}`"></div>
                   <div class="bar-segment labor" :style="{ height: getBarHeight(month.labor) + '%' }" :title="`Labor: ${formatCurrency(month.labor)}`"></div>
@@ -147,7 +155,12 @@
                   v-for="transaction in sortedTransactions"
                   :key="transaction.id"
                   class="clickable-row"
+                  tabindex="0"
+                  role="button"
+                  :aria-label="`${transaction.description}, ${formatCurrency(transaction.amount)}`"
                   @click="handleTransactionClick(transaction)"
+                  @keydown.enter="handleTransactionClick(transaction)"
+                  @keydown.space.prevent="handleTransactionClick(transaction)"
                 >
                   <td class="transaction-id">{{ transaction.id.toString().padStart(3, '0') }}</td>
                   <td class="transaction-description">{{ transaction.description }}</td>
@@ -167,6 +180,13 @@
       :cost-data="selectedCostData"
       @close="showCostModal = false"
     />
+
+    <TransactionDetailModal
+      :is-open="showTransactionModal"
+      :transaction="selectedTransaction"
+      :translate-category="translateCategory"
+      @close="showTransactionModal = false"
+    />
   </div>
 </template>
 
@@ -178,12 +198,14 @@ import { useI18n } from '../composables/useI18n'
 import { formatCurrency as formatCurrencyUtil, convertAmount } from '../utils/currency'
 import { useTableSort } from '../composables/useTableSort'
 import CostDetailModal from '../components/CostDetailModal.vue'
+import TransactionDetailModal from '../components/TransactionDetailModal.vue'
 import SortableTh from '../components/SortableTh.vue'
 
 export default {
   name: 'Spending',
   components: {
     CostDetailModal,
+    TransactionDetailModal,
     SortableTh
   },
   setup() {
@@ -199,6 +221,11 @@ export default {
     // Modal state
     const showCostModal = ref(false)
     const selectedCostData = ref(null)
+
+    // Transaction detail modal state (an honest per-transaction view, distinct from
+    // the cost-flow CostDetailModal opened from the stacked bars).
+    const showTransactionModal = ref(false)
+    const selectedTransaction = ref(null)
 
     // Use shared filters
     const { selectedPeriod, getCurrentFilters } = useFilters()
@@ -279,14 +306,22 @@ export default {
       }
     })
 
+    // Orders that count as revenue. Submitted orders come from the Restocking flow:
+    // their total_value is procurement cost we're spending, not customer revenue, so
+    // including them inflates Total Revenue / Avg Order Value / the revenue chart.
+    // Orders.vue segregates Submitted the same way (its own card, excluded elsewhere).
+    const revenueOrders = computed(() => {
+      return allOrders.value.filter(order => order.status !== 'Submitted')
+    })
+
     // Filtered orders based on selected period
     const filteredOrders = computed(() => {
       if (selectedPeriod.value === 'all') {
-        return allOrders.value
+        return revenueOrders.value
       }
 
       // Filter orders by selected month
-      return allOrders.value.filter(order => {
+      return revenueOrders.value.filter(order => {
         const orderMonth = toMonthKey(order.order_date)
         return orderMonth === selectedPeriod.value
       })
@@ -336,10 +371,12 @@ export default {
         costs: 0
       }))
 
-      // Calculate revenue from orders
-      allOrders.value.forEach(order => {
-        const orderDate = new Date(order.order_date)
-        const monthIndex = orderDate.getMonth()
+      // Calculate revenue from orders (Submitted restock orders excluded — see
+      // revenueOrders). Bucket via the timezone-safe toMonthKey instead of
+      // new Date(...).getMonth() so a date-only string near a month boundary can't
+      // shift into the wrong bucket in timezones off UTC.
+      revenueOrders.value.forEach(order => {
+        const monthIndex = parseInt(toMonthKey(order.order_date).slice(5, 7), 10) - 1
         if (monthIndex >= 0 && monthIndex < 12) {
           revenueByMonth[monthIndex].revenue += order.total_value || 0
         }
@@ -498,27 +535,14 @@ export default {
     }
 
     const handleTransactionClick = (transaction) => {
-      // Reuse the existing CostDetailModal instead of a native alert(). The modal
-      // renders a fixed four-bucket cost breakdown (procurement/operational/labor/
-      // overhead) and formats amounts with the active currency itself, so shape the
-      // transaction into that contract by dropping its amount into the bucket that
-      // matches its category and zeroing the rest. The description becomes the modal
-      // title. This keeps currency/i18n consistent (no hardcoded $/English here).
-      const categoryToBucket = {
-        Labor: 'labor',
-        Overhead: 'overhead',
-        Operational: 'operational'
-      }
-      const bucket = categoryToBucket[transaction.category] || 'procurement'
-      selectedCostData.value = {
-        month: transaction.description,
-        procurement: 0,
-        operational: 0,
-        labor: 0,
-        overhead: 0,
-        [bucket]: transaction.amount
-      }
-      showCostModal.value = true
+      // Show the real transaction record in TransactionDetailModal. The old code
+      // shoehorned a single transaction into CostDetailModal's four-bucket contract,
+      // which rendered a misleading "<description> Cost Breakdown" with one bucket at
+      // 100% and the other three at $0 — a fake breakdown. This shows the honest
+      // fields (description, vendor, date, category, type, amount) with the amount
+      // converted to the active currency.
+      selectedTransaction.value = transaction
+      showTransactionModal.value = true
     }
 
     const showCostDetail = (monthData) => {
@@ -559,6 +583,8 @@ export default {
       showCostModal,
       selectedCostData,
       showCostDetail,
+      showTransactionModal,
+      selectedTransaction,
       Math
     }
   }
@@ -735,6 +761,13 @@ export default {
   opacity: 0.85;
 }
 
+/* Visible keyboard focus for the now-focusable stacked bar (role=button). */
+.stacked-bar:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
 .bar-segment {
   width: 100%;
   transition: all 0.3s ease;
@@ -891,6 +924,15 @@ export default {
 }
 
 .transactions-table tbody tr.clickable-row:hover {
+  background: #eff6ff;
+}
+
+/* Visible keyboard focus for the now-focusable transaction rows (role=button).
+   outline-offset is negative so the ring stays inside the row rather than being
+   clipped by the scroll container. */
+.transactions-table tbody tr.clickable-row:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: -2px;
   background: #eff6ff;
 }
 
