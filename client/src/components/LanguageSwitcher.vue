@@ -1,9 +1,11 @@
 <template>
-  <div class="language-switcher">
+  <div ref="rootRef" class="language-switcher">
     <button
+      ref="buttonRef"
       class="language-button"
+      aria-haspopup="true"
+      :aria-expanded="isDropdownOpen"
       @click="toggleDropdown"
-      @blur="handleBlur"
     >
       <svg
         width="20"
@@ -30,13 +32,14 @@
       </svg>
     </button>
 
-    <div v-if="isDropdownOpen" class="dropdown-menu">
+    <div v-if="isDropdownOpen" class="dropdown-menu" role="menu">
       <button
         v-for="locale in availableLocales"
         :key="locale"
         class="dropdown-item"
+        role="menuitem"
         :class="{ active: currentLocale === locale }"
-        @mousedown.prevent="selectLanguage(locale)"
+        @click="selectLanguage(locale)"
       >
         <span class="language-name">{{ getLanguageName(locale) }}</span>
         <svg
@@ -55,12 +58,14 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch, onBeforeUnmount } from 'vue'
 import { useI18n } from '../composables/useI18n'
 
 const { currentLocale, setLocale, availableLocales, localeName } = useI18n()
 
 const isDropdownOpen = ref(false)
+const rootRef = ref(null)
+const buttonRef = ref(null)
 
 const languageNames = {
   en: 'English',
@@ -75,12 +80,51 @@ const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value
 }
 
-const handleBlur = () => {
-  // Delay to allow mousedown events on dropdown items to fire first
-  setTimeout(() => {
-    isDropdownOpen.value = false
-  }, 200)
+const closeDropdown = () => {
+  isDropdownOpen.value = false
 }
+
+// Close on any click outside the menu root. The toggle button lives inside rootRef, so
+// the opening click is naturally ignored here (contains() is true) and won't re-close it.
+const onClickOutside = (e) => {
+  if (rootRef.value && !rootRef.value.contains(e.target)) {
+    closeDropdown()
+  }
+}
+
+// Escape closes and returns focus to the trigger; Arrow keys move between menu items.
+const onKeydown = (e) => {
+  if (e.key === 'Escape') {
+    closeDropdown()
+    buttonRef.value?.focus()
+  } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault()
+    const items = Array.from(rootRef.value?.querySelectorAll('.dropdown-item') || [])
+    if (items.length === 0) return
+    const currentIndex = items.indexOf(document.activeElement)
+    const nextIndex = e.key === 'ArrowDown'
+      ? (currentIndex + 1) % items.length
+      : (currentIndex - 1 + items.length) % items.length
+    items[nextIndex].focus()
+  }
+}
+
+// Listeners are added only while open and removed on close, so nothing leaks. This
+// replaces the previous racy @blur + setTimeout(...,200) dismissal.
+watch(isDropdownOpen, (open) => {
+  if (open) {
+    document.addEventListener('click', onClickOutside)
+    document.addEventListener('keydown', onKeydown)
+  } else {
+    document.removeEventListener('click', onClickOutside)
+    document.removeEventListener('keydown', onKeydown)
+  }
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', onClickOutside)
+  document.removeEventListener('keydown', onKeydown)
+})
 
 const selectLanguage = (locale) => {
   setLocale(locale)

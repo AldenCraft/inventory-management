@@ -116,6 +116,7 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
+import { useCurrency } from '../composables/useCurrency'
 import { useTableSort } from '../composables/useTableSort'
 import SortableTh from '../components/SortableTh.vue'
 
@@ -125,11 +126,9 @@ export default {
     SortableTh
   },
   setup() {
-    const { t, currentCurrency, currentLocale, translateProductName, translateCustomerName } = useI18n()
+    const { t, currentLocale, translateProductName, translateCustomerName } = useI18n()
+    const { currencySymbol } = useCurrency()
 
-    const currencySymbol = computed(() => {
-      return currentCurrency.value === 'JPY' ? '¥' : '$'
-    })
     const loading = ref(true)
     const error = ref(null)
     const orders = ref([])

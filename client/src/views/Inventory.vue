@@ -88,6 +88,8 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
+import { useCurrency } from '../composables/useCurrency'
+import { useStockStatus } from '../composables/useStockStatus'
 import { useTableSort } from '../composables/useTableSort'
 import InventoryDetailModal from '../components/InventoryDetailModal.vue'
 import SortableTh from '../components/SortableTh.vue'
@@ -99,11 +101,16 @@ export default {
     SortableTh
   },
   setup() {
-    const { t, currentCurrency, translateProductName, translateWarehouse } = useI18n()
+    const { t, translateProductName, translateWarehouse } = useI18n()
+    const { currencySymbol } = useCurrency()
 
-    const currencySymbol = computed(() => {
-      return currentCurrency.value === 'JPY' ? '¥' : '$'
-    })
+    // Shared reorder-point classification (single source of truth). The per-item helper
+    // forms are used for the table rows and for sort accessors below.
+    const {
+      getKey: getStockStatusKey,
+      getLabel: getStockStatus,
+      getClass: getStockStatusClass
+    } = useStockStatus()
 
     const loading = ref(true)
     const error = ref(null)
@@ -117,19 +124,8 @@ export default {
     // Use shared filters
     const { selectedLocation, selectedCategory, getCurrentFilters } = useFilters()
 
-    // Stock status order for sorting (using status keys)
+    // Stock status order for sorting (using status keys from useStockStatus)
     const STATUS_ORDER = { 'lowStock': 0, 'adequate': 1, 'inStock': 2 }
-
-    // Get stock status key (for sorting and translation)
-    const getStockStatusKey = (item) => {
-      if (item.quantity_on_hand <= item.reorder_point) {
-        return 'lowStock'
-      } else if (item.quantity_on_hand <= item.reorder_point * 1.5) {
-        return 'adequate'
-      } else {
-        return 'inStock'
-      }
-    }
 
     // Computed property to filter items by search query and sort by stock status
     const filteredItems = computed(() => {
@@ -193,21 +189,6 @@ export default {
     watch([selectedLocation, selectedCategory], () => {
       loadInventory()
     })
-
-    const getStockStatus = (item) => {
-      const key = getStockStatusKey(item)
-      return t(`status.${key}`)
-    }
-
-    const getStockStatusClass = (item) => {
-      if (item.quantity_on_hand <= item.reorder_point) {
-        return 'danger'
-      } else if (item.quantity_on_hand <= item.reorder_point * 1.5) {
-        return 'warning'
-      } else {
-        return 'success'
-      }
-    }
 
     const translateCategory = (category) => {
       const categoryMap = {
