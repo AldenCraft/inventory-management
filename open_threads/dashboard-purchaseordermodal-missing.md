@@ -1,6 +1,6 @@
 # Dashboard references a `<PurchaseOrderModal>` component that doesn't exist
 
-**Status:** ⚪ open
+**Status:** ✅ Fixed by [#12](https://github.com/AldenCraft/inventory-management/pull/12) — merged 2026-07-16
 
 Created: 2026-07-16, from a Playwright smoke test of the running app (all six nav tabs). Surfaced as a Vue warning logged on every Dashboard render. File:line references are from local `main` at HEAD `032c157` and may drift — re-locate before acting.
 

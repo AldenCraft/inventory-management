@@ -1,6 +1,6 @@
 # Multi-item orders attribute all revenue to a single category
 
-**Status:** ⚪ open
+**Status:** ✅ Fixed by [#15](https://github.com/AldenCraft/inventory-management/pull/15) — merged 2026-07-16
 
 Created: 2026-07-16, from a whole-app multi-agent review of the inventory-management repo (four parallel review agents), run against local `main` at HEAD `032c157`. File:line references are from that checkout and may drift — re-locate before acting.
 

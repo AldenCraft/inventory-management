@@ -11,34 +11,37 @@ Threads dated 2026-07-16 come from a whole-app multi-agent review (four parallel
 - 📝 `#NNN issue` — filed as a GitHub issue, no PR yet.
 - 🟢 `PR #NNN` — a PR is open for this thread.
 - 🟡 `partial` — some PRs merged/addressing it, but the thread isn't fully resolved.
+- ✅ `#NNN` — fixed and merged to main. Per the 2026-07-16 note below, these are kept here annotated with their PR (not moved to `../history/`) so the mapping stays visible.
 
 Keep Status in sync in **two places**: this row and the `**Status:**` line at the top of the thread file.
+
+> **2026-07-16 fix batch:** all High and Medium bug threads were fixed by autonomous agents (each fix reviewed by a second agent before merge) and merged to main via PRs **#4–#16**. Each row and thread file below is annotated ✅ with its PR. They're left here (rather than moved to `../history/`) on purpose, to keep the thread→PR mapping visible. The Low bugs and Improvement clusters remain ⚪ open.
 
 ## High-impact bugs
 
 | Thread | Summary | Status | Created | Last examined |
 |---|---|---|---|---|
-| [tasks-api-endpoints-missing.md](tasks-api-endpoints-missing.md) | The Tasks feature is silently broken — `api.js` calls `/api/tasks*` routes that don't exist in `main.py`; add-task 404s and is swallowed, mock tasks mask it. | ⚪ open | 2026-07-16 | 2026-07-16 |
-| [generate-data-stale-schema.md](generate-data-stale-schema.md) | `generate_data.py` regenerates orders in an old schema (warehouses A/B/C, `WDG-*` SKUs) that matches nothing in the committed JSON; running it breaks every filter and SKU join. | ⚪ open | 2026-07-16 | 2026-07-16 |
-| [backlog-demand-referential-integrity.md](backlog-demand-referential-integrity.md) | All backlog `order_id`s/SKUs and 8 of 9 demand SKUs are phantom (absent from orders/inventory); a test even hardcodes the bad SKUs as expected. | ⚪ open | 2026-07-16 | 2026-07-16 |
-| [donut-chart-wrong-circumference.md](donut-chart-wrong-circumference.md) | Donut segments scaled against 440 while `r=65` → real circumference ≈408; arcs ~8% long, offsets accumulate, segments overlap/wrap. | ⚪ open | 2026-07-16 | 2026-07-16 |
-| [spending-currency-symbol-unconverted.md](spending-currency-symbol-unconverted.md) | Spending charts/tables prepend ¥ to raw USD (only the 4 stat cards convert); in JP the same screen reports figures 150× apart. | ⚪ open | 2026-07-16 | 2026-07-16 |
+| [tasks-api-endpoints-missing.md](tasks-api-endpoints-missing.md) | The Tasks feature is silently broken — `api.js` calls `/api/tasks*` routes that don't exist in `main.py`; add-task 404s and is swallowed, mock tasks mask it. | ✅ [#6](https://github.com/AldenCraft/inventory-management/pull/6) | 2026-07-16 | 2026-07-16 |
+| [generate-data-stale-schema.md](generate-data-stale-schema.md) | `generate_data.py` regenerates orders in an old schema (warehouses A/B/C, `WDG-*` SKUs) that matches nothing in the committed JSON; running it breaks every filter and SKU join. | ✅ [#7](https://github.com/AldenCraft/inventory-management/pull/7) | 2026-07-16 | 2026-07-16 |
+| [backlog-demand-referential-integrity.md](backlog-demand-referential-integrity.md) | All backlog `order_id`s/SKUs and 8 of 9 demand SKUs are phantom (absent from orders/inventory); a test even hardcodes the bad SKUs as expected. | ✅ [#5](https://github.com/AldenCraft/inventory-management/pull/5) | 2026-07-16 | 2026-07-16 |
+| [donut-chart-wrong-circumference.md](donut-chart-wrong-circumference.md) | Donut segments scaled against 440 while `r=65` → real circumference ≈408; arcs ~8% long, offsets accumulate, segments overlap/wrap. | ✅ [#4](https://github.com/AldenCraft/inventory-management/pull/4) | 2026-07-16 | 2026-07-16 |
+| [spending-currency-symbol-unconverted.md](spending-currency-symbol-unconverted.md) | Spending charts/tables prepend ¥ to raw USD (only the 4 stat cards convert); in JP the same screen reports figures 150× apart. | ✅ [#8](https://github.com/AldenCraft/inventory-management/pull/8) | 2026-07-16 | 2026-07-16 |
 
 ## Medium bugs
 
 | Thread | Summary | Status | Created | Last examined |
 |---|---|---|---|---|
-| [formatcurrency-null-crash.md](formatcurrency-null-crash.md) | `formatCurrency(null/undefined)` throws TypeError (USD) / emits `¥NaN` (JPY) — no null guard; easy to hit with empty/filtered data. | ⚪ open | 2026-07-16 | 2026-07-16 |
-| [app-mutates-computed-task-array.md](app-mutates-computed-task-array.md) | `App.vue` splices/mutates a `computed` task array from `useAuth`; deletions/toggles silently reset on language switch. Violates the repo's own rule. | ⚪ open | 2026-07-16 | 2026-07-16 |
-| [api-base-url-hardcoded.md](api-base-url-hardcoded.md) | `api.js` hardcodes `http://localhost:8001/api`; production `npm run build` points at localhost. Should use `import.meta.env`. | ⚪ open | 2026-07-16 | 2026-07-16 |
-| [inventory-modal-warehouse-shows-bin.md](inventory-modal-warehouse-shows-bin.md) | InventoryDetailModal "Warehouse" field passes `location` (bin) instead of `warehouse` (city); duplicates the Location row, city never shown. | ⚪ open | 2026-07-16 | 2026-07-16 |
-| [dashboard-purchaseordermodal-missing.md](dashboard-purchaseordermodal-missing.md) | `Dashboard.vue` renders `<PurchaseOrderModal>` but never imports/registers it and no such component exists → "Failed to resolve component" on every render; "Create PO" button dead-ends. | ⚪ open | 2026-07-16 | 2026-07-16 |
-| [cost-flow-chart-hardcoded-scale.md](cost-flow-chart-hardcoded-scale.md) | Spending cost-flow chart divides by a fixed 25K; months over $25K overflow the plot, axis meaningless in JPY. | ⚪ open | 2026-07-16 | 2026-07-16 |
-| [spending-revenue-divide-by-zero.md](spending-revenue-divide-by-zero.md) | Empty/filtered revenue → `maxRevenueValue = 0` → `height: NaN%` on revenue bars. | ⚪ open | 2026-07-16 | 2026-07-16 |
-| [spending-totals-dont-reconcile.md](spending-totals-dont-reconcile.md) | `spending.json` category percentages sum to 123.6% and don't track amounts; summary totals disagree with the monthly rollup (labor off ~$880K). | ⚪ open | 2026-07-16 | 2026-07-16 |
-| [category-revenue-misattributed-multi-item.md](category-revenue-misattributed-multi-item.md) | Orders tagged with only the first item's category; dashboard attributes the whole order value to it → category revenue under- and over-counted. | ⚪ open | 2026-07-16 | 2026-07-16 |
-| [spending-utc-month-bucketing.md](spending-utc-month-bucketing.md) | `toISOString().slice(0,7)` buckets by UTC; a local late-in-month date west of UTC lands in the next month. | ⚪ open | 2026-07-16 | 2026-07-16 |
-| [backlog-view-no-i18n.md](backlog-view-no-i18n.md) | `Backlog.vue` never imports `useI18n`; whole page stays English in Japanese mode despite existing keys. | ⚪ open | 2026-07-16 | 2026-07-16 |
+| [formatcurrency-null-crash.md](formatcurrency-null-crash.md) | `formatCurrency(null/undefined)` throws TypeError (USD) / emits `¥NaN` (JPY) — no null guard; easy to hit with empty/filtered data. | ✅ [#9](https://github.com/AldenCraft/inventory-management/pull/9) | 2026-07-16 | 2026-07-16 |
+| [app-mutates-computed-task-array.md](app-mutates-computed-task-array.md) | `App.vue` splices/mutates a `computed` task array from `useAuth`; deletions/toggles silently reset on language switch. Violates the repo's own rule. | ✅ [#14](https://github.com/AldenCraft/inventory-management/pull/14) | 2026-07-16 | 2026-07-16 |
+| [api-base-url-hardcoded.md](api-base-url-hardcoded.md) | `api.js` hardcodes `http://localhost:8001/api`; production `npm run build` points at localhost. Should use `import.meta.env`. | ✅ [#11](https://github.com/AldenCraft/inventory-management/pull/11) | 2026-07-16 | 2026-07-16 |
+| [inventory-modal-warehouse-shows-bin.md](inventory-modal-warehouse-shows-bin.md) | InventoryDetailModal "Warehouse" field passes `location` (bin) instead of `warehouse` (city); duplicates the Location row, city never shown. | ✅ [#10](https://github.com/AldenCraft/inventory-management/pull/10) | 2026-07-16 | 2026-07-16 |
+| [dashboard-purchaseordermodal-missing.md](dashboard-purchaseordermodal-missing.md) | `Dashboard.vue` renders `<PurchaseOrderModal>` but never imports/registers it and no such component exists → "Failed to resolve component" on every render; "Create PO" button dead-ends. | ✅ [#12](https://github.com/AldenCraft/inventory-management/pull/12) | 2026-07-16 | 2026-07-16 |
+| [cost-flow-chart-hardcoded-scale.md](cost-flow-chart-hardcoded-scale.md) | Spending cost-flow chart divides by a fixed 25K; months over $25K overflow the plot, axis meaningless in JPY. | ✅ [#16](https://github.com/AldenCraft/inventory-management/pull/16) | 2026-07-16 | 2026-07-16 |
+| [spending-revenue-divide-by-zero.md](spending-revenue-divide-by-zero.md) | Empty/filtered revenue → `maxRevenueValue = 0` → `height: NaN%` on revenue bars. | ✅ [#16](https://github.com/AldenCraft/inventory-management/pull/16) | 2026-07-16 | 2026-07-16 |
+| [spending-totals-dont-reconcile.md](spending-totals-dont-reconcile.md) | `spending.json` category percentages sum to 123.6% and don't track amounts; summary totals disagree with the monthly rollup (labor off ~$880K). | ✅ [#15](https://github.com/AldenCraft/inventory-management/pull/15) | 2026-07-16 | 2026-07-16 |
+| [category-revenue-misattributed-multi-item.md](category-revenue-misattributed-multi-item.md) | Orders tagged with only the first item's category; dashboard attributes the whole order value to it → category revenue under- and over-counted. | ✅ [#15](https://github.com/AldenCraft/inventory-management/pull/15) | 2026-07-16 | 2026-07-16 |
+| [spending-utc-month-bucketing.md](spending-utc-month-bucketing.md) | `toISOString().slice(0,7)` buckets by UTC; a local late-in-month date west of UTC lands in the next month. | ✅ [#16](https://github.com/AldenCraft/inventory-management/pull/16) | 2026-07-16 | 2026-07-16 |
+| [backlog-view-no-i18n.md](backlog-view-no-i18n.md) | `Backlog.vue` never imports `useI18n`; whole page stays English in Japanese mode despite existing keys. | ✅ [#13](https://github.com/AldenCraft/inventory-management/pull/13) | 2026-07-16 | 2026-07-16 |
 
 ## Low bugs
 

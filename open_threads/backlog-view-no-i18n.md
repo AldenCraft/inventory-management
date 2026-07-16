@@ -1,6 +1,6 @@
 # Backlog view is entirely hardcoded English (no i18n)
 
-**Status:** ⚪ open
+**Status:** ✅ Fixed by [#13](https://github.com/AldenCraft/inventory-management/pull/13) — merged 2026-07-16
 
 Created: 2026-07-16, from a whole-app multi-agent review of the inventory-management repo (four parallel review agents), run against local `main` at HEAD `032c157`. File:line references are from that checkout and may drift — re-locate before acting.
 
