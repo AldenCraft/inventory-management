@@ -44,7 +44,7 @@
             <div class="kpi-value">{{ fillRate.toFixed(1) }}%</div>
             <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: 95% ({{ fillRate - 95 > 0 ? '+' : '' }}{{ (fillRate - 95).toFixed(2) }}%)</div>
             <div class="kpi-progress-bar">
-              <div class="kpi-progress success" :style="{ width: (fillRate / 95 * 100) + '%' }"></div>
+              <div class="kpi-progress success" :style="{ width: Math.min((fillRate / 95 * 100), 100) + '%' }"></div>
             </div>
           </div>
 
@@ -64,9 +64,14 @@
               <span class="kpi-label">{{ t('dashboard.kpi.avgProcessingTime') }}</span>
             </div>
             <div class="kpi-value">{{ avgProcessingTime.toFixed(1) }}</div>
-            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: {{ processingTimeGoal.toFixed(1) }} ({{ avgProcessingTime - processingTimeGoal > 0 ? '+' : '' }}{{ (((avgProcessingTime - processingTimeGoal) / processingTimeGoal) * 100).toFixed(2) }}%)</div>
+            <!-- Lower-is-better metric: frame the delta as (goal - actual)/goal so beating
+                 the goal (faster) reads positive and missing it (slower) reads negative,
+                 the opposite of the growth-style KPIs above. -->
+            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: {{ processingTimeGoal.toFixed(1) }} ({{ processingTimeGoal - avgProcessingTime >= 0 ? '+' : '' }}{{ (((processingTimeGoal - avgProcessingTime) / processingTimeGoal) * 100).toFixed(2) }}%)</div>
             <div class="kpi-progress-bar">
-              <div class="kpi-progress success" :style="{ width: Math.min(avgProcessingTime / processingTimeGoal * 100, 100) + '%' }"></div>
+              <!-- Bar shows goal attainment for a lower-is-better metric: at or under goal
+                   fills green; slower than goal shrinks the bar and turns it amber. -->
+              <div class="kpi-progress" :class="avgProcessingTime <= processingTimeGoal ? 'success' : 'warning'" :style="{ width: Math.min(processingTimeGoal / avgProcessingTime * 100, 100) + '%' }"></div>
             </div>
           </div>
         </div>
@@ -88,7 +93,8 @@
             <div class="order-health-container">
               <!-- Left: Donut Chart -->
               <div class="order-health-chart">
-                <svg viewBox="0 0 200 200" class="donut-svg-compact">
+                <svg viewBox="0 0 200 200" class="donut-svg-compact" role="img" :aria-label="donutAriaLabel">
+                  <title>{{ donutAriaLabel }}</title>
                   <circle cx="100" cy="100" r="65" fill="none" stroke="#e2e8f0" stroke-width="25"/>
                   <circle cx="100" cy="100" r="65" fill="none" stroke="#10b981" stroke-width="25"
                     :stroke-dasharray="`${getCircleSegment(statusData.delivered)} ${donutCircumference}`"
@@ -106,7 +112,7 @@
                     :stroke-dashoffset="`-${getCircleSegment(statusData.delivered) + getCircleSegment(statusData.shipped) + getCircleSegment(statusData.processing)}`"
                     transform="rotate(-90 100 100)"/>
                   <text x="100" y="90" text-anchor="middle" class="donut-center-label">{{ t('dashboard.orderHealth.total') }}</text>
-                  <text x="100" y="120" text-anchor="middle" class="donut-center-value">{{ orderHealthMetrics.totalOrders }}</text>
+                  <text x="100" y="120" text-anchor="middle" class="donut-center-value">{{ totalOrders }}</text>
                 </svg>
                 <div class="donut-legend-compact">
                   <div class="legend-item-compact"><span class="legend-dot" style="background: #10b981"></span>{{ t('status.delivered') }}</div>
@@ -190,6 +196,11 @@
                 <tr
                   v-for="item in sortedBacklogItems"
                   :key="item.id"
+                  class="clickable-row"
+                  tabindex="0"
+                  role="button"
+                  @keydown.enter="showBacklogDetail(item)"
+                  @keydown.space.prevent="showBacklogDetail(item)"
                 >
                   <td @click="showBacklogDetail(item)" style="cursor: pointer;"><strong>{{ item.order_id }}</strong></td>
                   <td @click="showBacklogDetail(item)" style="cursor: pointer;"><strong>{{ item.item_sku }}</strong></td>
@@ -240,7 +251,11 @@
                   v-for="item in sortedTopProducts"
                   :key="item.sku"
                   class="clickable-row"
+                  tabindex="0"
+                  role="button"
                   @click="showProductDetail(item)"
+                  @keydown.enter="showProductDetail(item)"
+                  @keydown.space.prevent="showProductDetail(item)"
                 >
                   <td><strong>{{ translateProductName(item.name) }}</strong></td>
                   <td>{{ item.sku }}</td>
@@ -338,6 +353,18 @@ export default {
       return counts
     })
 
+    // Shared basis for the order-health donut (both the arc scaling and the center
+    // count) and the Order Fill Rate KPI: the sum of the four charted statuses.
+    // This deliberately EXCLUDES other statuses such as Submitted restock orders —
+    // those aren't drawn as arcs, so counting them would inflate the donut center
+    // past the arcs (leaving a visual gap) and would wrongly count Submitted orders
+    // as "filled" in the fill rate. Keeping one basis keeps center, arcs, and fill
+    // rate consistent.
+    const totalOrders = computed(() => {
+      return statusData.value.delivered + statusData.value.shipped +
+             statusData.value.processing + statusData.value.backordered
+    })
+
     const orderHealthMetrics = computed(() => {
       const totalOrders = allOrders.value.length
       const totalValue = allOrders.value.reduce((sum, order) => sum + (order.total_value || 0), 0)
@@ -385,9 +412,12 @@ export default {
     }))
 
     // Order Fill Rate KPI: share of orders that are not backordered (i.e. fillable from
-    // stock). Derived from live status counts (previously a hardcoded 96.8).
+    // stock). Derived from live status counts (previously a hardcoded 96.8). Uses the
+    // four-status basis (totalOrders) rather than allOrders.length so Submitted restock
+    // orders — which aren't yet fillable — are excluded from both numerator and
+    // denominator instead of being silently counted as "filled".
     const fillRate = computed(() => {
-      const total = orderHealthMetrics.value.totalOrders
+      const total = totalOrders.value
       if (total === 0) return 0
       return ((total - statusData.value.backordered) / total) * 100
     })
@@ -472,6 +502,11 @@ export default {
                 unitsOrdered: 0,
                 revenue: 0,
                 stockLevel: invItem ? (invItem.quantity_on_hand > invItem.reorder_point ? 'In Stock' : 'Low Stock') : 'Unknown',
+                // Carry the live stock figures through so ProductDetailModal can render
+                // "Current Stock"/"Reorder Point" instead of blanks. Null when the product
+                // has no matching inventory item (same "Unknown" edge as stockLevel above).
+                quantityOnHand: invItem ? invItem.quantity_on_hand : null,
+                reorderPoint: invItem ? invItem.reorder_point : null,
                 firstOrderDate: order.order_date
               }
             } else {
@@ -592,12 +627,6 @@ export default {
       return ((value / goal) * 100).toFixed(2)
     }
 
-    // Compute total orders once for efficiency
-    const totalOrders = computed(() => {
-      return statusData.value.delivered + statusData.value.shipped +
-             statusData.value.processing + statusData.value.backordered
-    })
-
     // The donut circles use r="65", so their true rendered circumference is
     // 2·π·65 (≈408.4). Both the filled arc length and the stroke-dasharray gap
     // must be scaled to this same value, otherwise arcs and their cumulative
@@ -608,6 +637,17 @@ export default {
     const getCircleSegment = (value) => {
       return totalOrders.value > 0 ? (value / totalOrders.value) * DONUT_CIRCUMFERENCE : 0
     }
+
+    // Text alternative for the order-health donut so screen readers announce the same
+    // information sighted users see in the arcs and center. Composed from existing i18n
+    // keys only (no new locale strings) so it stays translated.
+    const donutAriaLabel = computed(() => {
+      return `${t('dashboard.orderHealth.title')} — ${t('dashboard.orderHealth.total')}: ${totalOrders.value}. ` +
+        `${t('status.delivered')} ${statusData.value.delivered}, ` +
+        `${t('status.shipped')} ${statusData.value.shipped}, ` +
+        `${t('status.processing')} ${statusData.value.processing}, ` +
+        `${t('status.backordered')} ${statusData.value.backordered}`
+    })
 
     const getStockBadge = (level) => {
       if (level === 'In Stock') return 'success'
@@ -697,7 +737,9 @@ export default {
       backlogSortDir,
       toggleBacklogSort,
       calculatePercentage,
+      totalOrders,
       getCircleSegment,
+      donutAriaLabel,
       donutCircumference: DONUT_CIRCUMFERENCE,
       getStockBadge,
       translateCategory,
@@ -814,6 +856,10 @@ export default {
 
 .kpi-progress.success {
   background: #10b981;
+}
+
+.kpi-progress.warning {
+  background: #f59e0b;
 }
 
 .charts-grid {
@@ -1039,6 +1085,14 @@ export default {
 }
 
 .clickable-row:hover {
+  background: #eff6ff !important;
+}
+
+/* Visible focus ring for keyboard users now that the rows are tabbable (tabindex="0",
+   role="button"). Uses :focus-visible so mouse clicks don't leave a lingering outline. */
+.clickable-row:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: -2px;
   background: #eff6ff !important;
 }
 
