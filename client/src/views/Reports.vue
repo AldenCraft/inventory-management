@@ -1,35 +1,35 @@
 <template>
   <div class="reports">
     <div class="page-header">
-      <h2>Performance Reports</h2>
-      <p>View quarterly performance metrics and monthly trends</p>
+      <h2>{{ t('reports.title') }}</h2>
+      <p>{{ t('reports.description') }}</p>
     </div>
 
-    <div v-if="loading" class="loading">Loading reports...</div>
+    <div v-if="loading" class="loading">{{ t('reports.loading') }}</div>
     <div v-else-if="error" class="error">{{ error }}</div>
     <div v-else>
       <!-- Quarterly Performance -->
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Quarterly Performance</h3>
+          <h3 class="card-title">{{ t('reports.quarterlyPerformance') }}</h3>
         </div>
         <div class="table-container">
           <table class="reports-table">
             <thead>
               <tr>
-                <SortableTh column-key="quarter" label="Quarter" :sort-key="quarterlySortKey" :sort-dir="quarterlySortDir" @sort="toggleQuarterlySort" />
-                <SortableTh column-key="totalOrders" label="Total Orders" :sort-key="quarterlySortKey" :sort-dir="quarterlySortDir" @sort="toggleQuarterlySort" />
-                <SortableTh column-key="totalRevenue" label="Total Revenue" :sort-key="quarterlySortKey" :sort-dir="quarterlySortDir" @sort="toggleQuarterlySort" />
-                <SortableTh column-key="avgOrderValue" label="Avg Order Value" :sort-key="quarterlySortKey" :sort-dir="quarterlySortDir" @sort="toggleQuarterlySort" />
-                <SortableTh column-key="fulfillmentRate" label="Fulfillment Rate" :sort-key="quarterlySortKey" :sort-dir="quarterlySortDir" @sort="toggleQuarterlySort" />
+                <SortableTh column-key="quarter" :label="t('reports.table.quarter')" :sort-key="quarterlySortKey" :sort-dir="quarterlySortDir" @sort="toggleQuarterlySort" />
+                <SortableTh column-key="totalOrders" :label="t('reports.table.totalOrders')" :sort-key="quarterlySortKey" :sort-dir="quarterlySortDir" @sort="toggleQuarterlySort" />
+                <SortableTh column-key="totalRevenue" :label="t('reports.table.totalRevenue')" :sort-key="quarterlySortKey" :sort-dir="quarterlySortDir" @sort="toggleQuarterlySort" />
+                <SortableTh column-key="avgOrderValue" :label="t('reports.table.avgOrderValue')" :sort-key="quarterlySortKey" :sort-dir="quarterlySortDir" @sort="toggleQuarterlySort" />
+                <SortableTh column-key="fulfillmentRate" :label="t('reports.table.fulfillmentRate')" :sort-key="quarterlySortKey" :sort-dir="quarterlySortDir" @sort="toggleQuarterlySort" />
               </tr>
             </thead>
             <tbody>
               <tr v-for="q in sortedQuarterly" :key="q.quarter">
                 <td><strong>{{ q.quarter }}</strong></td>
                 <td>{{ q.total_orders }}</td>
-                <td>${{ formatNumber(q.total_revenue) }}</td>
-                <td>${{ formatNumber(q.avg_order_value) }}</td>
+                <td>{{ formatCurrency(q.total_revenue) }}</td>
+                <td>{{ formatCurrency(q.avg_order_value) }}</td>
                 <td>
                   <span :class="getFulfillmentClass(q.fulfillment_rate)">
                     {{ q.fulfillment_rate }}%
@@ -41,19 +41,19 @@
         </div>
       </div>
 
-      <!-- Monthly Trends Chart -->
+      <!-- Monthly Trends Chart: always shows every month, independent of the Time Period filter -->
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Monthly Revenue Trend</h3>
+          <h3 class="card-title">{{ t('reports.monthlyRevenueTrend') }}</h3>
         </div>
         <div class="chart-container">
           <div class="bar-chart">
-            <div v-for="(month, index) in monthlyData" :key="index" class="bar-wrapper">
+            <div v-for="month in chartMonthly" :key="month.month" class="bar-wrapper">
               <div class="bar-container">
                 <div
                   class="bar"
                   :style="{ height: getBarHeight(month.revenue) + 'px' }"
-                  :title="'$' + formatNumber(month.revenue)"
+                  :title="formatCurrency(month.revenue)"
                 ></div>
               </div>
               <div class="bar-label">{{ formatMonth(month.month) }}</div>
@@ -65,37 +65,38 @@
       <!-- Month-over-Month Comparison -->
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">Month-over-Month Analysis</h3>
+          <h3 class="card-title">{{ t('reports.monthOverMonthAnalysis') }}</h3>
         </div>
         <div class="table-container">
           <table class="reports-table">
             <thead>
               <tr>
-                <SortableTh column-key="month" label="Month" :sort-key="monthlySortKey" :sort-dir="monthlySortDir" @sort="toggleMonthlySort" />
-                <SortableTh column-key="orders" label="Orders" :sort-key="monthlySortKey" :sort-dir="monthlySortDir" @sort="toggleMonthlySort" />
-                <SortableTh column-key="revenue" label="Revenue" :sort-key="monthlySortKey" :sort-dir="monthlySortDir" @sort="toggleMonthlySort" />
-                <SortableTh column-key="change" label="Change" :sort-key="monthlySortKey" :sort-dir="monthlySortDir" @sort="toggleMonthlySort" />
-                <SortableTh column-key="growthRate" label="Growth Rate" :sort-key="monthlySortKey" :sort-dir="monthlySortDir" @sort="toggleMonthlySort" />
+                <SortableTh column-key="month" :label="t('reports.table.month')" :sort-key="monthlySortKey" :sort-dir="monthlySortDir" @sort="toggleMonthlySort" />
+                <SortableTh column-key="orders" :label="t('reports.table.orders')" :sort-key="monthlySortKey" :sort-dir="monthlySortDir" @sort="toggleMonthlySort" />
+                <SortableTh column-key="revenue" :label="t('reports.table.revenue')" :sort-key="monthlySortKey" :sort-dir="monthlySortDir" @sort="toggleMonthlySort" />
+                <SortableTh column-key="change" :label="t('reports.table.change')" :sort-key="monthlySortKey" :sort-dir="monthlySortDir" @sort="toggleMonthlySort" />
+                <SortableTh column-key="growthRate" :label="t('reports.table.growthRate')" :sort-key="monthlySortKey" :sort-dir="monthlySortDir" @sort="toggleMonthlySort" />
               </tr>
             </thead>
             <tbody>
               <tr v-for="month in sortedMonthly" :key="month.month">
                 <td><strong>{{ formatMonth(month.month) }}</strong></td>
                 <td>{{ month.order_count }}</td>
-                <td>${{ formatNumber(month.revenue) }}</td>
+                <td>{{ formatCurrency(month.revenue) }}</td>
                 <td>
                   <!-- Change/Growth compare to the chronologically previous month (prevRevenue),
-                       precomputed so sorting the table never distorts the comparison. -->
+                       precomputed from the full, unfiltered monthly series so a single filtered
+                       row (or any sort order) still shows the correct real-world comparison. -->
                   <span v-if="month.prevRevenue !== null" :class="getChangeClass(month.revenue, month.prevRevenue)">
                     {{ getChangeValue(month.revenue, month.prevRevenue) }}
                   </span>
-                  <span v-else>-</span>
+                  <span v-else>{{ t('reports.noChange') }}</span>
                 </td>
                 <td>
                   <span v-if="month.prevRevenue !== null" :class="getChangeClass(month.revenue, month.prevRevenue)">
                     {{ getGrowthRate(month.revenue, month.prevRevenue) }}
                   </span>
-                  <span v-else>-</span>
+                  <span v-else>{{ t('reports.noChange') }}</span>
                 </td>
               </tr>
             </tbody>
@@ -106,20 +107,20 @@
       <!-- Summary Stats -->
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-label">Total Revenue (YTD)</div>
-          <div class="stat-value">${{ formatNumber(totalRevenue) }}</div>
+          <div class="stat-label">{{ t('reports.summary.totalRevenueYtd') }}</div>
+          <div class="stat-value">{{ formatCurrency(summaryStats.totalRevenue) }}</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">Avg Monthly Revenue</div>
-          <div class="stat-value">${{ formatNumber(avgMonthlyRevenue) }}</div>
+          <div class="stat-label">{{ t('reports.summary.avgMonthlyRevenue') }}</div>
+          <div class="stat-value">{{ formatCurrency(summaryStats.avgMonthlyRevenue) }}</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">Total Orders (YTD)</div>
-          <div class="stat-value">{{ totalOrders }}</div>
+          <div class="stat-label">{{ t('reports.summary.totalOrdersYtd') }}</div>
+          <div class="stat-value">{{ summaryStats.totalOrders }}</div>
         </div>
         <div class="stat-card">
-          <div class="stat-label">Best Performing Quarter</div>
-          <div class="stat-value">{{ bestQuarter }}</div>
+          <div class="stat-label">{{ t('reports.summary.bestQuarter') }}</div>
+          <div class="stat-value">{{ summaryStats.bestQuarter || t('reports.noChange') }}</div>
         </div>
       </div>
     </div>
@@ -127,8 +128,12 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { ref, computed, onMounted } from 'vue'
+import { api } from '../api'
+import { useFilters } from '../composables/useFilters'
+import { useI18n } from '../composables/useI18n'
 import { useTableSort } from '../composables/useTableSort'
+import { formatCurrency as formatCurrencyUtil, formatCurrencyWithDecimals } from '../utils/currency'
 import SortableTh from '../components/SortableTh.vue'
 
 export default {
@@ -136,234 +141,203 @@ export default {
   components: {
     SortableTh
   },
-  // This view uses the Options API. setup() only wires the shared sort composable
-  // (one instance per table); the sorted rows are derived in computed() below.
   setup() {
+    const { t, currentLocale, currentCurrency } = useI18n()
+
+    const loading = ref(true)
+    const error = ref(null)
+
+    // Raw data from the API, unfiltered. The monthly trend chart reads straight
+    // from these so it always shows the full year regardless of Time Period.
+    const allQuarterly = ref([])
+    const allMonthly = ref([])
+
+    // Time Period is the only filter this page supports, and it's applied
+    // entirely client-side (data is fetched once, on mount).
+    const { selectedPeriod } = useFilters()
+
+    // Attach each month's chronologically previous revenue on the FULL series,
+    // before any Time Period filtering is applied, so a filtered single-month
+    // row still shows the correct change vs its real previous month.
+    const monthlyWithPrev = computed(() => {
+      return allMonthly.value.map((m, i) => ({
+        ...m,
+        prevRevenue: i > 0 ? allMonthly.value[i - 1].revenue : null
+      }))
+    })
+
+    // Chart always shows every month (matches Spending.vue's monthly chart behavior).
+    const chartMonthly = computed(() => allMonthly.value)
+
+    // Converts a "YYYY-MM" period into this API's quarter label (e.g. "Q3-2025")
+    // so the quarterly table can be narrowed to the quarter containing the
+    // selected month.
+    const periodToQuarter = (period) => {
+      const parts = period.split('-')
+      if (parts.length !== 2) return null
+      const year = parts[0]
+      const monthNum = parseInt(parts[1], 10)
+      if (isNaN(monthNum) || monthNum < 1 || monthNum > 12) return null
+      const quarterNum = Math.ceil(monthNum / 3)
+      return `Q${quarterNum}-${year}`
+    }
+
+    const filteredMonthly = computed(() => {
+      if (selectedPeriod.value === 'all') return monthlyWithPrev.value
+      return monthlyWithPrev.value.filter(m => m.month === selectedPeriod.value)
+    })
+
+    const filteredQuarterly = computed(() => {
+      if (selectedPeriod.value === 'all') return allQuarterly.value
+      const quarter = periodToQuarter(selectedPeriod.value)
+      return allQuarterly.value.filter(q => q.quarter === quarter)
+    })
+
+    // Click-to-sort, one instance per table. Sorting operates on the
+    // already-filtered rows; prevRevenue travels with each row so Change/Growth
+    // stay correct no matter how the table is sorted.
     const quarterly = useTableSort()
     const monthly = useTableSort()
+
+    const sortedQuarterly = computed(() => quarterly.applySort(filteredQuarterly.value, {
+      quarter: (q) => q.quarter,
+      totalOrders: (q) => q.total_orders,
+      totalRevenue: (q) => q.total_revenue,
+      avgOrderValue: (q) => q.avg_order_value,
+      fulfillmentRate: (q) => q.fulfillment_rate
+    }))
+
+    const sortedMonthly = computed(() => monthly.applySort(filteredMonthly.value, {
+      month: (m) => m.month,
+      orders: (m) => m.order_count,
+      revenue: (m) => m.revenue,
+      // Derived: null prevRevenue (first month in the series) always sorts last
+      change: (m) => (m.prevRevenue === null ? null : m.revenue - m.prevRevenue),
+      growthRate: (m) => (m.prevRevenue === null || m.prevRevenue === 0 ? null : (m.revenue - m.prevRevenue) / m.prevRevenue)
+    }))
+
+    // Summary recomputes from the filtered monthly/quarterly data, not the
+    // unfiltered chart data.
+    const summaryStats = computed(() => {
+      const rows = filteredMonthly.value
+      const totalRevenue = rows.reduce((sum, m) => sum + (m.revenue || 0), 0)
+      const totalOrders = rows.reduce((sum, m) => sum + (m.order_count || 0), 0)
+      const avgMonthlyRevenue = rows.length > 0 ? totalRevenue / rows.length : 0
+
+      let bestQuarter = ''
+      let bestRevenue = 0
+      for (const q of filteredQuarterly.value) {
+        if (q.total_revenue > bestRevenue) {
+          bestRevenue = q.total_revenue
+          bestQuarter = q.quarter
+        }
+      }
+
+      return { totalRevenue, avgMonthlyRevenue, totalOrders, bestQuarter }
+    })
+
+    // Bar heights are scaled against the unfiltered chart data's max, computed
+    // once rather than re-scanning all months for every bar rendered.
+    const maxRevenue = computed(() => {
+      if (chartMonthly.value.length === 0) return 0
+      return Math.max(...chartMonthly.value.map(m => m.revenue))
+    })
+
+    const loadData = async () => {
+      try {
+        loading.value = true
+        error.value = null
+        const [quarterlyRes, monthlyRes] = await Promise.all([
+          api.getQuarterlyReports(),
+          api.getMonthlyTrends()
+        ])
+        allQuarterly.value = quarterlyRes
+        allMonthly.value = monthlyRes
+      } catch (err) {
+        error.value = `${t('reports.error')}: ${err.message}`
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const formatCurrency = (value) => formatCurrencyUtil(value ?? 0, currentCurrency.value)
+
+    // "YYYY-MM" -> localized "Mon YYYY". Falls back to the raw string on
+    // malformed input instead of throwing (bad data shouldn't crash the page).
+    const formatMonth = (monthStr) => {
+      if (!monthStr || typeof monthStr !== 'string') return ''
+      const parts = monthStr.split('-')
+      if (parts.length !== 2) return monthStr
+
+      const year = parseInt(parts[0], 10)
+      const monthIndex = parseInt(parts[1], 10) - 1
+      if (isNaN(year) || isNaN(monthIndex) || monthIndex < 0 || monthIndex > 11) return monthStr
+
+      const date = new Date(year, monthIndex, 1)
+      if (isNaN(date.getTime())) return monthStr
+
+      const locale = currentLocale.value === 'ja' ? 'ja-JP' : 'en-US'
+      return date.toLocaleDateString(locale, { year: 'numeric', month: 'short' })
+    }
+
+    const getBarHeight = (revenue) => {
+      if (!maxRevenue.value) return 0
+      return (revenue / maxRevenue.value) * 200
+    }
+
+    const getFulfillmentClass = (rate) => {
+      if (rate >= 90) return 'badge success'
+      if (rate >= 75) return 'badge warning'
+      return 'badge danger'
+    }
+
+    const getChangeValue = (current, previous) => {
+      const change = current - previous
+      // Currency + sign are handled separately: formatCurrencyWithDecimals gives
+      // symbol-correct, JPY-converted magnitude; the +/- prefix mirrors the sign.
+      const formatted = formatCurrencyWithDecimals(Math.abs(change), currentCurrency.value, 2)
+      if (change > 0) return `+${formatted}`
+      if (change < 0) return `-${formatted}`
+      return formatted
+    }
+
+    const getChangeClass = (current, previous) => {
+      const change = current - previous
+      if (change > 0) return 'positive-change'
+      if (change < 0) return 'negative-change'
+      return ''
+    }
+
+    const getGrowthRate = (current, previous) => {
+      if (!previous) return t('reports.notAvailable')
+      const rate = ((current - previous) / previous) * 100
+      const sign = rate > 0 ? '+' : ''
+      return `${sign}${rate.toFixed(1)}%`
+    }
+
+    onMounted(loadData)
+
     return {
+      t,
+      loading,
+      error,
+      chartMonthly,
+      sortedQuarterly,
+      sortedMonthly,
+      summaryStats,
       quarterlySortKey: quarterly.sortKey,
       quarterlySortDir: quarterly.sortDir,
       toggleQuarterlySort: quarterly.toggleSort,
-      applyQuarterlySort: quarterly.applySort,
       monthlySortKey: monthly.sortKey,
       monthlySortDir: monthly.sortDir,
       toggleMonthlySort: monthly.toggleSort,
-      applyMonthlySort: monthly.applySort
-    }
-  },
-  data() {
-    return {
-      loading: true,
-      error: null,
-      quarterlyData: [],
-      monthlyData: [],
-      totalRevenue: 0,
-      avgMonthlyRevenue: 0,
-      totalOrders: 0,
-      bestQuarter: ''
-    }
-  },
-  computed: {
-    sortedQuarterly() {
-      return this.applyQuarterlySort(this.quarterlyData, {
-        quarter: (q) => q.quarter,
-        totalOrders: (q) => q.total_orders,
-        totalRevenue: (q) => q.total_revenue,
-        avgOrderValue: (q) => q.avg_order_value,
-        fulfillmentRate: (q) => q.fulfillment_rate
-      })
-    },
-    // Attach each month's chronologically previous revenue so the Change/Growth
-    // columns stay correct regardless of the table's current sort order.
-    monthlyRows() {
-      return this.monthlyData.map((m, i) => ({
-        ...m,
-        prevRevenue: i > 0 ? this.monthlyData[i - 1].revenue : null
-      }))
-    },
-    sortedMonthly() {
-      return this.applyMonthlySort(this.monthlyRows, {
-        month: (m) => m.month,
-        orders: (m) => m.order_count,
-        revenue: (m) => m.revenue,
-        // Derived: absolute change vs previous month (null for the first month → sorts last)
-        change: (m) => (m.prevRevenue === null ? null : m.revenue - m.prevRevenue),
-        // Derived: growth rate vs previous month
-        growthRate: (m) => (m.prevRevenue === null || m.prevRevenue === 0 ? null : (m.revenue - m.prevRevenue) / m.prevRevenue)
-      })
-    }
-  },
-  mounted() {
-    console.log('Reports component mounted')
-    this.loadData()
-  },
-  methods: {
-    async loadData() {
-      console.log('Loading reports data...')
-      try {
-        this.loading = true
-
-        // Fetch quarterly data
-        console.log('Fetching quarterly data...')
-        const quarterlyResponse = await axios.get('http://localhost:8001/api/reports/quarterly')
-        this.quarterlyData = quarterlyResponse.data
-        console.log('Quarterly data:', this.quarterlyData)
-
-        // Fetch monthly data
-        console.log('Fetching monthly data...')
-        const monthlyResponse = await axios.get('http://localhost:8001/api/reports/monthly-trends')
-        this.monthlyData = monthlyResponse.data
-        console.log('Monthly data:', this.monthlyData)
-
-        // Calculate summary stats
-        console.log('Calculating summary stats...')
-        this.calculateSummaryStats()
-        console.log('Summary stats calculated')
-
-      } catch (err) {
-        console.log('Error loading reports:', err)
-        this.error = 'Failed to load reports: ' + err.message
-      } finally {
-        this.loading = false
-        console.log('Loading complete')
-      }
-    },
-
-    calculateSummaryStats() {
-      // Calculate total revenue
-      var total = 0
-      for (var i = 0; i < this.monthlyData.length; i++) {
-        total = total + this.monthlyData[i].revenue
-      }
-      this.totalRevenue = total
-
-      // Calculate average monthly revenue
-      if (this.monthlyData.length > 0) {
-        this.avgMonthlyRevenue = total / this.monthlyData.length
-      } else {
-        this.avgMonthlyRevenue = 0
-      }
-
-      // Calculate total orders
-      var orders = 0
-      for (var i = 0; i < this.monthlyData.length; i++) {
-        orders = orders + this.monthlyData[i].order_count
-      }
-      this.totalOrders = orders
-
-      // Find best quarter
-      var bestQ = ''
-      var bestRevenue = 0
-      for (var i = 0; i < this.quarterlyData.length; i++) {
-        if (this.quarterlyData[i].total_revenue > bestRevenue) {
-          bestRevenue = this.quarterlyData[i].total_revenue
-          bestQ = this.quarterlyData[i].quarter
-        }
-      }
-      this.bestQuarter = bestQ
-    },
-
-    formatNumber(num) {
-      console.log('Formatting number:', num)
-      // Format number with commas
-      var str = num.toString()
-      var parts = str.split('.')
-      var intPart = parts[0]
-      var decPart = parts.length > 1 ? parts[1] : '00'
-
-      var formatted = ''
-      var count = 0
-      for (var i = intPart.length - 1; i >= 0; i--) {
-        if (count > 0 && count % 3 === 0) {
-          formatted = ',' + formatted
-        }
-        formatted = intPart[i] + formatted
-        count++
-      }
-
-      if (decPart.length === 1) {
-        decPart = decPart + '0'
-      }
-      if (decPart.length > 2) {
-        decPart = decPart.substring(0, 2)
-      }
-
-      return formatted + '.' + decPart
-    },
-
-    formatMonth(monthStr) {
-      console.log('Formatting month:', monthStr)
-      // Convert YYYY-MM to readable format
-      var parts = monthStr.split('-')
-      var year = parts[0]
-      var month = parts[1]
-
-      var monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-      var monthIndex = parseInt(month) - 1
-
-      return monthNames[monthIndex] + ' ' + year
-    },
-
-    getBarHeight(revenue) {
-      console.log('Calculating bar height for revenue:', revenue)
-      // Calculate bar height (max height 200px)
-      var maxRevenue = 0
-      for (var i = 0; i < this.monthlyData.length; i++) {
-        if (this.monthlyData[i].revenue > maxRevenue) {
-          maxRevenue = this.monthlyData[i].revenue
-        }
-      }
-
-      if (maxRevenue === 0) {
-        return 0
-      }
-
-      var height = (revenue / maxRevenue) * 200
-      return height
-    },
-
-    getFulfillmentClass(rate) {
-      if (rate >= 90) {
-        return 'badge success'
-      } else if (rate >= 75) {
-        return 'badge warning'
-      } else {
-        return 'badge danger'
-      }
-    },
-
-    getChangeValue(current, previous) {
-      var change = current - previous
-      if (change > 0) {
-        return '+$' + this.formatNumber(change)
-      } else if (change < 0) {
-        return '-$' + this.formatNumber(Math.abs(change))
-      } else {
-        return '$0.00'
-      }
-    },
-
-    getChangeClass(current, previous) {
-      var change = current - previous
-      if (change > 0) {
-        return 'positive-change'
-      } else if (change < 0) {
-        return 'negative-change'
-      } else {
-        return ''
-      }
-    },
-
-    getGrowthRate(current, previous) {
-      if (previous === 0) {
-        return 'N/A'
-      }
-
-      var rate = ((current - previous) / previous) * 100
-      var sign = rate > 0 ? '+' : ''
-
-      return sign + rate.toFixed(1) + '%'
+      formatCurrency,
+      formatMonth,
+      getBarHeight,
+      getFulfillmentClass,
+      getChangeValue,
+      getChangeClass,
+      getGrowthRate
     }
   }
 }
@@ -457,13 +431,12 @@ export default {
 }
 
 .bar-label {
-  margin-top: 0.5rem;
+  margin-top: 1.5rem;
   font-size: 0.75rem;
   color: #64748b;
   text-align: center;
   transform: rotate(-45deg);
   white-space: nowrap;
-  margin-top: 1.5rem;
 }
 
 .stats-grid {
