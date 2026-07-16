@@ -1,6 +1,6 @@
 # Currency not converted (¥ over raw USD) in detail modals and Orders/Inventory/Restocking views
 
-**Status:** 🟡 partial — modals fixed locally on branch `worktree-agent-a78c3a8a017ee020b` (this pass); Orders/Inventory/Restocking views owned by a sibling agent/PR.
+**Status:** ✅ Fixed by [#36](https://github.com/AldenCraft/inventory-management/pull/36) + [#33](https://github.com/AldenCraft/inventory-management/pull/33) — merged 2026-07-16
 
 Created: 2026-07-16, from a post-merge review of the inventory-management repo. File:line references are from that checkout and may drift — re-locate before acting.
 

@@ -1,6 +1,6 @@
 # Detail modals not internationalized (hardcoded English labels)
 
-**Status:** 🔨 in progress — fixed locally on branch `worktree-agent-a78c3a8a017ee020b` (this pass), no PR yet.
+**Status:** ✅ Fixed by [#36](https://github.com/AldenCraft/inventory-management/pull/36) — merged 2026-07-16
 
 Created: 2026-07-16, from a post-merge review of the inventory-management repo. File:line references are from that checkout and may drift — re-locate before acting.
 

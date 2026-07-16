@@ -1,6 +1,6 @@
 # ProductDetailModal shows blank Current Stock / Reorder Point (+ donut/KPI cleanups)
 
-**Status:** 🔨 in progress — fix implemented locally on branch `fix/dashboard-modal-stock-donut-a11y`, no PR yet.
+**Status:** ✅ Fixed by [#35](https://github.com/AldenCraft/inventory-management/pull/35) — merged 2026-07-16
 
 Created: 2026-07-16, from a post-merge review of `client/src/views/Dashboard.vue`. File:line references are from local `main` at the time of review and may drift — re-locate before acting.
 

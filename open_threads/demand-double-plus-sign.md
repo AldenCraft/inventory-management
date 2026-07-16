@@ -1,6 +1,6 @@
 # Demand view: "Increasing Demand" cards show a double plus ("++50.0%"), and count reads "1 items"
 
-**Status:** 🔨 in progress (local branch, no PR yet)
+**Status:** ✅ Fixed by [#31](https://github.com/AldenCraft/inventory-management/pull/31) — merged 2026-07-16
 
 Created: 2026-07-16, from a post-merge review of the inventory-management repo. File:line references are from the current `main` checkout and may drift — re-locate before acting.
 

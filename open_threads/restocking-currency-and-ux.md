@@ -1,6 +1,6 @@
 # Restocking: ¥ over un-converted USD, plus loading-flicker and duplicate-submit UX
 
-**Status:** 🔨 in progress — fix on branch `worktree-agent-a3885d771d9955111`, not yet in a PR
+**Status:** ✅ Fixed by [#33](https://github.com/AldenCraft/inventory-management/pull/33) — merged 2026-07-16
 
 Created: 2026-07-16, from a post-merge review of the inventory-management repo (the earlier whole-app review landed as PRs #4–#30). File:line references are from that checkout and may drift — re-locate before acting.
 

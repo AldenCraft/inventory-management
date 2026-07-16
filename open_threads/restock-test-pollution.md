@@ -1,6 +1,6 @@
 # Restocking tests pollute global state (suite passes only by run order)
 
-**Status:** ⚪ open
+**Status:** ✅ Fixed by [#32](https://github.com/AldenCraft/inventory-management/pull/32) — merged 2026-07-16
 
 Created: 2026-07-16, from a post-merge sweep of the inventory-management repo (reviewing the merged Restocking feature against local `main`). File:line references are from that checkout and may drift — re-locate before acting.
 

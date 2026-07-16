@@ -1,6 +1,6 @@
 # Spending transaction click shows a misleading fake "Cost Breakdown"
 
-**Status:** 🔨 in progress — fix on branch `worktree-agent-aeefcabea86beb660` (not yet merged)
+**Status:** ✅ Fixed by [#34](https://github.com/AldenCraft/inventory-management/pull/34) — merged 2026-07-16
 
 Created: 2026-07-16, from a post-merge review of the inventory-management repo. File:line references are from the worktree checkout and may drift — re-locate before acting.
 
