@@ -1,30 +1,58 @@
 """
-Script to generate sample data spread across all months of 2025
+Regenerate server/data/orders.json with sample orders spread across 2025.
+
+Scope: this script ONLY regenerates orders.json. The other datasets
+(inventory, demand_forecasts, backlog_items, spending, transactions,
+purchase_orders) are hand-maintained and are treated as the source of truth --
+in particular, the product catalog below is derived from inventory.json so the
+generated orders always reference real SKUs / categories / warehouses and stay
+join-compatible with inventory. Previously this catalog was hard-coded and had
+drifted (Widgets/Components, warehouses A/B/C, SKUs WDG-*/BRG-*), so running the
+script silently overwrote orders.json with data that joined to nothing.
+
+A fixed random seed makes the output reproducible: re-running produces the same
+orders.json byte-for-byte.
 """
 import json
 import random
+from collections import defaultdict
 from datetime import datetime, timedelta
+from pathlib import Path
 
-# Product catalog
+# Deterministic output so a regeneration is reproducible and reviewable.
+random.seed(42)
+
+# Resolve paths relative to this file so the script works regardless of the
+# current working directory.
+DATA_DIR = Path(__file__).resolve().parent / "data"
+INVENTORY_FILE = DATA_DIR / "inventory.json"
+ORDERS_FILE = DATA_DIR / "orders.json"
+
+# Match the committed dataset's scale and numbering (ORD-2025-0001 .. 0250) so
+# any references into the order-number space (e.g. backlog order_id) keep
+# resolving.
+TARGET_ORDERS = 250
+
+# Derive the product catalog from the committed inventory. This is the fix for
+# the schema drift: real SKUs, names, categories, and warehouses all come from
+# the same source the frontend filters and inventory joins use.
+with open(INVENTORY_FILE) as f:
+    inventory = json.load(f)
+
 products = [
-    {"sku": "WDG-001", "name": "Industrial Widget Type A", "category": "Widgets", "price": 24.99},
-    {"sku": "WDG-002", "name": "Industrial Widget Type B", "category": "Widgets", "price": 29.99},
-    {"sku": "WDG-003", "name": "Industrial Widget Type C", "category": "Widgets", "price": 34.50},
-    {"sku": "BRG-102", "name": "Steel Bearing Assembly", "category": "Components", "price": 89.50},
-    {"sku": "BRG-103", "name": "Ceramic Bearing Assembly", "category": "Components", "price": 125.00},
-    {"sku": "GSK-203", "name": "High-Temperature Gasket", "category": "Components", "price": 12.75},
-    {"sku": "GSK-204", "name": "Standard Gasket", "category": "Components", "price": 8.50},
-    {"sku": "GSK-205", "name": "Heavy Duty Gasket", "category": "Components", "price": 15.99},
-    {"sku": "MTR-304", "name": "Electric Motor 5HP", "category": "Equipment", "price": 445.00},
-    {"sku": "MTR-305", "name": "Electric Motor 10HP", "category": "Equipment", "price": 725.00},
-    {"sku": "MTR-306", "name": "Electric Motor 3HP", "category": "Equipment", "price": 325.00},
-    {"sku": "FLT-405", "name": "Oil Filter Cartridge", "category": "Consumables", "price": 8.25},
-    {"sku": "FLT-406", "name": "Air Filter Cartridge", "category": "Consumables", "price": 6.50},
-    {"sku": "FLT-407", "name": "Fuel Filter Cartridge", "category": "Consumables", "price": 7.75},
-    {"sku": "VLV-506", "name": "Pressure Relief Valve", "category": "Components", "price": 156.00},
-    {"sku": "VLV-507", "name": "Ball Valve", "category": "Components", "price": 95.00},
-    {"sku": "VLV-508", "name": "Gate Valve", "category": "Components", "price": 110.50},
+    {
+        "sku": item["sku"],
+        "name": item["name"],
+        "category": item["category"],
+        # Use the inventory unit_cost as the order line price so an order line's
+        # price is consistent with the item it references.
+        "price": item["unit_cost"],
+    }
+    for item in inventory
 ]
+
+# Warehouses come straight from inventory (San Francisco / London / Tokyo).
+warehouses = sorted({item["warehouse"] for item in inventory})
 
 customers = [
     "Acme Manufacturing Corp", "TechBuild Industries", "Global Parts Ltd",
@@ -39,18 +67,20 @@ customers = [
     "Summit Parts Corp", "Velocity Industries"
 ]
 
-warehouses = ["A", "B", "C"]
 statuses = ["Delivered", "Shipped", "Processing", "Backordered"]
 
-# Generate orders for each month of 2025
+# Spread TARGET_ORDERS across the 12 months as evenly as possible, then scatter
+# the remainder into a few random months so counts vary month to month while the
+# total stays exactly TARGET_ORDERS.
+orders_per_month = [TARGET_ORDERS // 12] * 12
+for month_index in random.sample(range(12), TARGET_ORDERS % 12):
+    orders_per_month[month_index] += 1
+
 orders = []
 order_id = 1
 
 for month in range(1, 13):  # Jan to Dec
-    # Generate 8-12 orders per month
-    num_orders = random.randint(8, 12)
-
-    for _ in range(num_orders):
+    for _ in range(orders_per_month[month - 1]):
         # Random day in the month
         day = random.randint(1, 28)  # Using 28 to avoid month-end issues
         hour = random.randint(8, 17)
@@ -117,18 +147,17 @@ for month in range(1, 13):  # Jan to Dec
         order_id += 1
 
 # Save to file
-with open('data/orders.json', 'w') as f:
+with open(ORDERS_FILE, 'w') as f:
     json.dump(orders, f, indent=2)
 
 print(f"Generated {len(orders)} orders across 12 months of 2025")
 
 # Count orders per month
-from collections import defaultdict
-orders_per_month = defaultdict(int)
+month_counts = defaultdict(int)
 for order in orders:
     month = order['order_date'][5:7]
-    orders_per_month[month] += 1
+    month_counts[month] += 1
 
 print("\nOrders per month:")
-for month in sorted(orders_per_month.keys()):
-    print(f"  {month}: {orders_per_month[month]} orders")
+for month in sorted(month_counts.keys()):
+    print(f"  {month}: {month_counts[month]} orders")
