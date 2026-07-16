@@ -38,6 +38,21 @@ class TestDashboardEndpoints:
         assert isinstance(data["total_backlog_items"], int)
         assert isinstance(data["total_orders_value"], (int, float))
 
+    def test_dashboard_summary_money_fields_rounded(self, client):
+        """Both money fields are rounded to 2 decimals for consistent formatting.
+
+        Regression test: total_orders_value used to be a raw float sum that could
+        carry a long fractional tail (e.g. ...0000004) while total_inventory_value
+        was rounded. Both should now be round(..., 2).
+        """
+        # Include a filtered variant so per-line-item revenue summation (which is
+        # more prone to float tails) is also exercised.
+        for url in ("/api/dashboard/summary", "/api/dashboard/summary?category=Sensors"):
+            data = client.get(url).json()
+            for field in ("total_inventory_value", "total_orders_value"):
+                value = data[field]
+                assert round(value, 2) == value, f"{field} not rounded in {url}: {value}"
+
     def test_dashboard_summary_non_negative_values(self, client):
         """Test that dashboard summary values are non-negative."""
         response = client.get("/api/dashboard/summary")
