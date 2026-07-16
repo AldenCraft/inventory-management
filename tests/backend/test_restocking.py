@@ -3,9 +3,32 @@ Tests for restocking API endpoints.
 """
 import pytest
 
+import main
+
 
 class TestRestockingEndpoints:
     """Test suite for restocking recommendations and order submission."""
+
+    @pytest.fixture(autouse=True)
+    def restore_global_state(self):
+        """Snapshot and restore the module-global mutable state around each test.
+
+        Submitting a restock order appends to the process-global `main.orders`
+        list (and bumps `_next_restock_seq`); without teardown those rows leak
+        into every later test, so the suite only passed because it happened to
+        run in alphabetical order. Restoring here makes each test independent of
+        run order. tasks_store / _next_task_id are reset too so this fixture is a
+        general isolation guard, not just an orders one.
+        """
+        orders_snapshot = list(main.orders)
+        tasks_snapshot = list(main.tasks_store)
+        task_id = main._next_task_id
+        restock_seq = main._next_restock_seq
+        yield
+        main.orders[:] = orders_snapshot          # in-place: same list object endpoints read
+        main.tasks_store = tasks_snapshot
+        main._next_task_id = task_id
+        main._next_restock_seq = restock_seq
 
     def test_demand_includes_cost_and_lead_time(self, client):
         """Demand forecast items expose unit_cost and lead_time_days."""
@@ -99,3 +122,55 @@ class TestRestockingEndpoints:
         # ... but the submitted order does show up in the orders list.
         submitted = client.get("/api/orders", params={"status": "Submitted"}).json()
         assert any(o["id"] == order["id"] for o in submitted)
+
+    def test_filter_after_submit_does_not_crash(self, client):
+        """Regression: a submitted restock order carries no warehouse/category,
+        so filtering by them used to hit None.lower() and 500. Every filtered
+        read must stay 200 after a restock is submitted."""
+        payload = {"items": [
+            {"item_sku": "PRS-203", "item_name": "Pressure Sensor Module",
+             "quantity": 150, "unit_cost": 12.5, "lead_time_days": 10},
+        ]}
+        submit = client.post("/api/restocking/orders", json=payload)
+        assert submit.status_code == 200
+        restock_id = submit.json()["id"]
+
+        # Each of these previously 500'd on the restock row.
+        for url in (
+            "/api/orders?warehouse=Tokyo",
+            "/api/orders?category=Sensors",
+            "/api/orders?status=Delivered",
+            "/api/dashboard/summary?warehouse=Tokyo",
+            "/api/dashboard/summary?category=Sensors",
+        ):
+            resp = client.get(url)
+            assert resp.status_code == 200, f"{url} returned {resp.status_code}"
+
+        # The restock order has no warehouse, so a warehouse filter excludes it.
+        tokyo = client.get("/api/orders?warehouse=Tokyo").json()
+        assert all(o["id"] != restock_id for o in tokyo)
+
+        # And it's still reachable when no filter drops it.
+        all_orders = client.get("/api/orders").json()
+        assert any(o["id"] == restock_id for o in all_orders)
+
+    def test_monthly_trends_excludes_submitted_restock(self, client):
+        """Restock orders are procurement, not revenue: submitting one must not
+        change monthly-trends revenue or add a bucket for the restock's month."""
+        before = client.get("/api/reports/monthly-trends").json()
+        before_revenue = sum(row["revenue"] for row in before)
+        before_months = {row["month"] for row in before}
+
+        payload = {"items": [
+            {"item_sku": "PRS-203", "item_name": "Pressure Sensor Module",
+             "quantity": 150, "unit_cost": 12.5, "lead_time_days": 10},
+        ]}
+        assert client.post("/api/restocking/orders", json=payload).status_code == 200
+
+        after = client.get("/api/reports/monthly-trends").json()
+        after_revenue = sum(row["revenue"] for row in after)
+        after_months = {row["month"] for row in after}
+
+        assert after_revenue == pytest.approx(before_revenue)
+        # No new month bucket appears for the just-submitted restock order.
+        assert after_months == before_months
