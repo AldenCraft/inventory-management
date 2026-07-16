@@ -255,6 +255,46 @@ class TestSpendingEndpoints:
             category_data = data[0]
             assert "category" in category_data or "name" in category_data
 
+    def test_category_percentages_reconcile(self, client):
+        """Category percentages must sum to ~100% and track their amounts.
+
+        Guards the drift where stored percentages summed to 123.6% and a larger
+        amount could carry a smaller percentage.
+        """
+        data = client.get("/api/spending/categories").json()
+        assert data, "No category spending returned"
+
+        total_pct = sum(c["percentage"] for c in data)
+        assert abs(total_pct - 100.0) < 0.5, \
+            f"Category percentages sum to {total_pct}, expected ~100"
+
+        total_amount = sum(c["amount"] for c in data)
+        for c in data:
+            expected = round(c["amount"] / total_amount * 100, 1)
+            assert abs(c["percentage"] - expected) < 0.1, \
+                f"{c['category']} percentage {c['percentage']} != {expected} derived from amount"
+
+        # A larger amount must never carry a smaller percentage.
+        ordered = sorted(data, key=lambda c: c["amount"])
+        pcts = [c["percentage"] for c in ordered]
+        assert pcts == sorted(pcts), "Percentages must increase with amount"
+
+    def test_summary_totals_match_monthly_rollup(self, client):
+        """spending_summary totals must equal the sum of monthly_spending."""
+        summary = client.get("/api/spending/summary").json()
+        monthly = client.get("/api/spending/monthly").json()
+
+        mapping = {
+            "total_procurement_cost": "procurement",
+            "total_operational_cost": "operational",
+            "total_labor_cost": "labor",
+            "total_overhead": "overhead",
+        }
+        for summary_key, month_key in mapping.items():
+            expected = sum(m[month_key] for m in monthly)
+            assert abs(summary[summary_key] - expected) < 0.01, \
+                f"{summary_key} {summary[summary_key]} != monthly rollup {expected}"
+
     def test_get_recent_transactions(self, client):
         """Test getting recent transactions."""
         response = client.get("/api/spending/transactions")

@@ -171,3 +171,68 @@ class TestDashboardEndpoints:
 
         # Allow small floating point differences
         assert abs(dashboard_data["total_inventory_value"] - expected_value) < 0.01
+
+
+class TestCategoryRevenueAttribution:
+    """Revenue must be attributed per line item, not entirely to an order's primary category.
+
+    Guards the misattribution where a mixed-category order counted 100% of its
+    value under its first item's category and was dropped from filters for its
+    other categories.
+    """
+
+    def test_category_revenue_is_per_line_item(self, client):
+        """Filtered revenue for a category equals the sum of only that category's line items."""
+        orders = client.get("/api/orders").json()
+        categories = sorted({
+            line["category"] for order in orders for line in order["items"]
+        })
+        assert categories, "No line-item categories found"
+
+        for category in categories:
+            expected = round(sum(
+                line["quantity"] * line["unit_price"]
+                for order in orders
+                for line in order["items"]
+                if line["category"].lower() == category.lower()
+            ), 2)
+            data = client.get(f"/api/dashboard/summary?category={category}").json()
+            assert abs(data["total_orders_value"] - expected) < 0.01, \
+                f"{category}: dashboard {data['total_orders_value']} != per-line-item {expected}"
+
+    def test_category_revenues_partition_total(self, client):
+        """Per-category revenues should sum to the full line-item revenue.
+
+        Each order's value is split across its line categories, so nothing is
+        double-counted (over-count) or lost (under-count).
+        """
+        orders = client.get("/api/orders").json()
+        categories = sorted({line["category"] for o in orders for line in o["items"]})
+
+        per_category_total = sum(
+            client.get(f"/api/dashboard/summary?category={c}").json()["total_orders_value"]
+            for c in categories
+        )
+        raw_line_total = sum(
+            line["quantity"] * line["unit_price"]
+            for o in orders for line in o["items"]
+        )
+        # Tolerance covers per-category rounding to cents.
+        assert abs(per_category_total - raw_line_total) < len(categories) * 0.01 + 0.01
+
+    def test_multi_category_order_not_dropped_by_filter(self, client):
+        """A mixed-category order must appear when filtering by any of its categories."""
+        orders = client.get("/api/orders").json()
+        mixed = next(
+            (o for o in orders if len({line["category"] for line in o["items"]}) >= 2),
+            None,
+        )
+        assert mixed is not None, "Expected at least one multi-category order in sample data"
+
+        primary = mixed["items"][0]["category"]
+        non_primary = next(
+            line["category"] for line in mixed["items"] if line["category"] != primary
+        )
+        filtered = client.get(f"/api/orders?category={non_primary}").json()
+        assert any(o["id"] == mixed["id"] for o in filtered), \
+            "Multi-category order dropped when filtering by a non-primary category"

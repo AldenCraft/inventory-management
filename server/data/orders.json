@@ -7,18 +7,21 @@
       {
         "sku": "PCB-002",
         "name": "Dual Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 275,
         "unit_price": 29.99
       },
       {
         "sku": "MCU-402",
         "name": "32-bit ARM Microcontroller",
+        "category": "Controllers",
         "quantity": 509,
         "unit_price": 6.5
       },
       {
         "sku": "PSU-503",
         "name": "24V 3A Industrial Power Supply",
+        "category": "Power Supplies",
         "quantity": 653,
         "unit_price": 45.75
       }
@@ -39,6 +42,7 @@
       {
         "sku": "DSP-403",
         "name": "Digital Signal Processor",
+        "category": "Controllers",
         "quantity": 831,
         "unit_price": 7.75
       }
@@ -59,6 +63,7 @@
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 599,
         "unit_price": 29.99
       }
@@ -79,18 +84,21 @@
       {
         "sku": "HMD-202",
         "name": "Humidity Sensor Module",
+        "category": "Sensors",
         "quantity": 841,
         "unit_price": 125.0
       },
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 346,
         "unit_price": 34.5
       },
       {
         "sku": "ACC-206",
         "name": "3-Axis Accelerometer",
+        "category": "Sensors",
         "quantity": 131,
         "unit_price": 156.0
       }
@@ -111,12 +119,14 @@
       {
         "sku": "DSP-403",
         "name": "Digital Signal Processor",
+        "category": "Controllers",
         "quantity": 768,
         "unit_price": 7.75
       },
       {
         "sku": "SPR-601",
         "name": "Coil Spring Heavy Duty",
+        "category": "Sensors",
         "quantity": 749,
         "unit_price": 18.75
       }
@@ -137,18 +147,21 @@
       {
         "sku": "ACC-206",
         "name": "3-Axis Accelerometer",
+        "category": "Sensors",
         "quantity": 284,
         "unit_price": 156.0
       },
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 891,
         "unit_price": 22.0
       },
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 82,
         "unit_price": 89.5
       }
@@ -169,12 +182,14 @@
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 196,
         "unit_price": 22.5
       },
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 321,
         "unit_price": 29.99
       }
@@ -195,12 +210,14 @@
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 191,
         "unit_price": 32.75
       },
       {
         "sku": "ACC-206",
         "name": "3-Axis Accelerometer",
+        "category": "Sensors",
         "quantity": 571,
         "unit_price": 156.0
       }
@@ -220,6 +237,7 @@
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 660,
         "unit_price": 38.25
       }
@@ -240,6 +258,7 @@
       {
         "sku": "ULS-205",
         "name": "Ultrasonic Distance Sensor",
+        "category": "Sensors",
         "quantity": 748,
         "unit_price": 15.99
       }
@@ -259,12 +278,14 @@
       {
         "sku": "PCB-001",
         "name": "Single Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 562,
         "unit_price": 24.99
       },
       {
         "sku": "LDR-208",
         "name": "Light Dependent Resistor",
+        "category": "Sensors",
         "quantity": 830,
         "unit_price": 110.5
       }
@@ -285,6 +306,7 @@
       {
         "sku": "PCB-001",
         "name": "Single Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 663,
         "unit_price": 24.99
       }
@@ -305,6 +327,7 @@
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 137,
         "unit_price": 12.75
       }
@@ -325,12 +348,14 @@
       {
         "sku": "STP-303",
         "name": "Stepper Motor NEMA 17",
+        "category": "Actuators",
         "quantity": 590,
         "unit_price": 325.0
       },
       {
         "sku": "LDR-208",
         "name": "Light Dependent Resistor",
+        "category": "Sensors",
         "quantity": 943,
         "unit_price": 110.5
       }
@@ -351,18 +376,21 @@
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 303,
         "unit_price": 32.75
       },
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 280,
         "unit_price": 67.5
       },
       {
         "sku": "ULS-205",
         "name": "Ultrasonic Distance Sensor",
+        "category": "Sensors",
         "quantity": 115,
         "unit_price": 15.99
       }
@@ -383,6 +411,7 @@
       {
         "sku": "ACC-206",
         "name": "3-Axis Accelerometer",
+        "category": "Sensors",
         "quantity": 119,
         "unit_price": 156.0
       }
@@ -402,12 +431,14 @@
       {
         "sku": "DSP-403",
         "name": "Digital Signal Processor",
+        "category": "Controllers",
         "quantity": 790,
         "unit_price": 7.75
       },
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 953,
         "unit_price": 445.0
       }
@@ -428,6 +459,7 @@
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 412,
         "unit_price": 38.25
       }
@@ -448,18 +480,21 @@
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 246,
         "unit_price": 285.0
       },
       {
         "sku": "PRX-204",
         "name": "Proximity Sensor",
+        "category": "Sensors",
         "quantity": 244,
         "unit_price": 8.5
       },
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 599,
         "unit_price": 95.0
       }
@@ -480,6 +515,7 @@
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 877,
         "unit_price": 67.5
       }
@@ -499,6 +535,7 @@
       {
         "sku": "STP-303",
         "name": "Stepper Motor NEMA 17",
+        "category": "Actuators",
         "quantity": 466,
         "unit_price": 325.0
       }
@@ -518,6 +555,7 @@
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 321,
         "unit_price": 18.99
       }
@@ -538,12 +576,14 @@
       {
         "sku": "DSP-403",
         "name": "Digital Signal Processor",
+        "category": "Controllers",
         "quantity": 643,
         "unit_price": 7.75
       },
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 803,
         "unit_price": 89.5
       }
@@ -564,18 +604,21 @@
       {
         "sku": "STP-303",
         "name": "Stepper Motor NEMA 17",
+        "category": "Actuators",
         "quantity": 921,
         "unit_price": 325.0
       },
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 240,
         "unit_price": 89.5
       },
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 120,
         "unit_price": 12.75
       }
@@ -596,18 +639,21 @@
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 479,
         "unit_price": 95.0
       },
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 723,
         "unit_price": 34.5
       },
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 647,
         "unit_price": 12.75
       }
@@ -627,12 +673,14 @@
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 518,
         "unit_price": 445.0
       },
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 373,
         "unit_price": 15.5
       }
@@ -653,18 +701,21 @@
       {
         "sku": "LDR-208",
         "name": "Light Dependent Resistor",
+        "category": "Sensors",
         "quantity": 952,
         "unit_price": 110.5
       },
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 120,
         "unit_price": 445.0
       },
       {
         "sku": "PLY-901",
         "name": "Drive Pulley",
+        "category": "Sensors",
         "quantity": 950,
         "unit_price": 45.5
       }
@@ -685,18 +736,21 @@
       {
         "sku": "PCB-001",
         "name": "Single Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 949,
         "unit_price": 24.99
       },
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 187,
         "unit_price": 15.5
       },
       {
         "sku": "PRX-204",
         "name": "Proximity Sensor",
+        "category": "Sensors",
         "quantity": 320,
         "unit_price": 8.5
       }
@@ -717,6 +771,7 @@
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 258,
         "unit_price": 285.0
       }
@@ -737,12 +792,14 @@
       {
         "sku": "SPR-601",
         "name": "Coil Spring Heavy Duty",
+        "category": "Sensors",
         "quantity": 53,
         "unit_price": 18.75
       },
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 391,
         "unit_price": 34.5
       }
@@ -763,6 +820,7 @@
       {
         "sku": "HMD-202",
         "name": "Humidity Sensor Module",
+        "category": "Sensors",
         "quantity": 954,
         "unit_price": 125.0
       }
@@ -783,6 +841,7 @@
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 180,
         "unit_price": 38.25
       }
@@ -803,6 +862,7 @@
       {
         "sku": "PRX-204",
         "name": "Proximity Sensor",
+        "category": "Sensors",
         "quantity": 412,
         "unit_price": 8.5
       }
@@ -823,6 +883,7 @@
       {
         "sku": "PSU-503",
         "name": "24V 3A Industrial Power Supply",
+        "category": "Power Supplies",
         "quantity": 75,
         "unit_price": 45.75
       }
@@ -842,18 +903,21 @@
       {
         "sku": "PRX-204",
         "name": "Proximity Sensor",
+        "category": "Sensors",
         "quantity": 929,
         "unit_price": 8.5
       },
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 531,
         "unit_price": 18.99
       },
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 277,
         "unit_price": 34.5
       }
@@ -874,18 +938,21 @@
       {
         "sku": "MCU-402",
         "name": "32-bit ARM Microcontroller",
+        "category": "Controllers",
         "quantity": 335,
         "unit_price": 6.5
       },
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 935,
         "unit_price": 22.5
       },
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 121,
         "unit_price": 285.0
       }
@@ -906,6 +973,7 @@
       {
         "sku": "LDR-208",
         "name": "Light Dependent Resistor",
+        "category": "Sensors",
         "quantity": 232,
         "unit_price": 110.5
       }
@@ -925,12 +993,14 @@
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 444,
         "unit_price": 38.25
       },
       {
         "sku": "ULS-205",
         "name": "Ultrasonic Distance Sensor",
+        "category": "Sensors",
         "quantity": 971,
         "unit_price": 15.99
       }
@@ -951,6 +1021,7 @@
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 688,
         "unit_price": 285.0
       }
@@ -971,12 +1042,14 @@
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 617,
         "unit_price": 22.5
       },
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 180,
         "unit_price": 12.25
       }
@@ -997,6 +1070,7 @@
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 343,
         "unit_price": 15.5
       }
@@ -1017,18 +1091,21 @@
       {
         "sku": "STP-303",
         "name": "Stepper Motor NEMA 17",
+        "category": "Actuators",
         "quantity": 577,
         "unit_price": 325.0
       },
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 729,
         "unit_price": 12.75
       },
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 698,
         "unit_price": 12.25
       }
@@ -1049,6 +1126,7 @@
       {
         "sku": "SRV-302",
         "name": "Standard Servo Motor",
+        "category": "Actuators",
         "quantity": 75,
         "unit_price": 725.0
       }
@@ -1069,18 +1147,21 @@
       {
         "sku": "MCU-402",
         "name": "32-bit ARM Microcontroller",
+        "category": "Controllers",
         "quantity": 459,
         "unit_price": 6.5
       },
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 299,
         "unit_price": 18.99
       },
       {
         "sku": "PSU-508",
         "name": "Battery Backup Power Supply",
+        "category": "Power Supplies",
         "quantity": 201,
         "unit_price": 185.5
       }
@@ -1100,18 +1181,21 @@
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 989,
         "unit_price": 29.99
       },
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 918,
         "unit_price": 89.5
       },
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 174,
         "unit_price": 95.0
       }
@@ -1132,12 +1216,14 @@
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 968,
         "unit_price": 38.25
       },
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 212,
         "unit_price": 67.5
       }
@@ -1157,12 +1243,14 @@
       {
         "sku": "PSU-508",
         "name": "Battery Backup Power Supply",
+        "category": "Power Supplies",
         "quantity": 331,
         "unit_price": 185.5
       },
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 500,
         "unit_price": 95.0
       }
@@ -1182,18 +1270,21 @@
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 286,
         "unit_price": 12.75
       },
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 442,
         "unit_price": 445.0
       },
       {
         "sku": "SRV-302",
         "name": "Standard Servo Motor",
+        "category": "Actuators",
         "quantity": 760,
         "unit_price": 725.0
       }
@@ -1214,12 +1305,14 @@
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 902,
         "unit_price": 89.5
       },
       {
         "sku": "DSP-403",
         "name": "Digital Signal Processor",
+        "category": "Controllers",
         "quantity": 480,
         "unit_price": 7.75
       }
@@ -1240,12 +1333,14 @@
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 923,
         "unit_price": 15.5
       },
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 963,
         "unit_price": 18.99
       }
@@ -1266,12 +1361,14 @@
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 79,
         "unit_price": 38.25
       },
       {
         "sku": "PSU-508",
         "name": "Battery Backup Power Supply",
+        "category": "Power Supplies",
         "quantity": 448,
         "unit_price": 185.5
       }
@@ -1292,6 +1389,7 @@
       {
         "sku": "PCB-002",
         "name": "Dual Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 978,
         "unit_price": 29.99
       }
@@ -1311,12 +1409,14 @@
       {
         "sku": "MCU-401",
         "name": "8-bit Microcontroller",
+        "category": "Controllers",
         "quantity": 316,
         "unit_price": 8.25
       },
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 438,
         "unit_price": 89.5
       }
@@ -1337,12 +1437,14 @@
       {
         "sku": "LDR-208",
         "name": "Light Dependent Resistor",
+        "category": "Sensors",
         "quantity": 531,
         "unit_price": 110.5
       },
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 69,
         "unit_price": 12.75
       }
@@ -1363,18 +1465,21 @@
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 254,
         "unit_price": 34.5
       },
       {
         "sku": "PCB-002",
         "name": "Dual Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 909,
         "unit_price": 29.99
       },
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 70,
         "unit_price": 95.0
       }
@@ -1394,6 +1499,7 @@
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 766,
         "unit_price": 29.99
       }
@@ -1414,6 +1520,7 @@
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 160,
         "unit_price": 15.5
       }
@@ -1433,18 +1540,21 @@
       {
         "sku": "MCU-402",
         "name": "32-bit ARM Microcontroller",
+        "category": "Controllers",
         "quantity": 154,
         "unit_price": 6.5
       },
       {
         "sku": "HMD-202",
         "name": "Humidity Sensor Module",
+        "category": "Sensors",
         "quantity": 763,
         "unit_price": 125.0
       },
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 841,
         "unit_price": 95.0
       }
@@ -1465,12 +1575,14 @@
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 568,
         "unit_price": 32.75
       },
       {
         "sku": "HMD-202",
         "name": "Humidity Sensor Module",
+        "category": "Sensors",
         "quantity": 713,
         "unit_price": 125.0
       }
@@ -1491,18 +1603,21 @@
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 230,
         "unit_price": 29.99
       },
       {
         "sku": "SRV-302",
         "name": "Standard Servo Motor",
+        "category": "Actuators",
         "quantity": 801,
         "unit_price": 725.0
       },
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 584,
         "unit_price": 38.25
       }
@@ -1522,18 +1637,21 @@
       {
         "sku": "SPR-601",
         "name": "Coil Spring Heavy Duty",
+        "category": "Sensors",
         "quantity": 900,
         "unit_price": 18.75
       },
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 138,
         "unit_price": 22.0
       },
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 335,
         "unit_price": 95.0
       }
@@ -1554,12 +1672,14 @@
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 549,
         "unit_price": 22.0
       },
       {
         "sku": "MCU-401",
         "name": "8-bit Microcontroller",
+        "category": "Controllers",
         "quantity": 267,
         "unit_price": 8.25
       }
@@ -1580,18 +1700,21 @@
       {
         "sku": "MCU-402",
         "name": "32-bit ARM Microcontroller",
+        "category": "Controllers",
         "quantity": 787,
         "unit_price": 6.5
       },
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 466,
         "unit_price": 12.75
       },
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 550,
         "unit_price": 95.0
       }
@@ -1612,6 +1735,7 @@
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 351,
         "unit_price": 12.75
       }
@@ -1632,12 +1756,14 @@
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 410,
         "unit_price": 38.25
       },
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 769,
         "unit_price": 285.0
       }
@@ -1658,18 +1784,21 @@
       {
         "sku": "MCU-401",
         "name": "8-bit Microcontroller",
+        "category": "Controllers",
         "quantity": 806,
         "unit_price": 8.25
       },
       {
         "sku": "MCU-402",
         "name": "32-bit ARM Microcontroller",
+        "category": "Controllers",
         "quantity": 545,
         "unit_price": 6.5
       },
       {
         "sku": "DSP-403",
         "name": "Digital Signal Processor",
+        "category": "Controllers",
         "quantity": 333,
         "unit_price": 7.75
       }
@@ -1690,12 +1819,14 @@
       {
         "sku": "ACC-206",
         "name": "3-Axis Accelerometer",
+        "category": "Sensors",
         "quantity": 233,
         "unit_price": 156.0
       },
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 359,
         "unit_price": 32.75
       }
@@ -1715,18 +1846,21 @@
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 155,
         "unit_price": 12.25
       },
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 943,
         "unit_price": 445.0
       },
       {
         "sku": "PSU-508",
         "name": "Battery Backup Power Supply",
+        "category": "Power Supplies",
         "quantity": 62,
         "unit_price": 185.5
       }
@@ -1746,6 +1880,7 @@
       {
         "sku": "LDR-208",
         "name": "Light Dependent Resistor",
+        "category": "Sensors",
         "quantity": 932,
         "unit_price": 110.5
       }
@@ -1766,18 +1901,21 @@
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 171,
         "unit_price": 15.5
       },
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 621,
         "unit_price": 12.75
       },
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 832,
         "unit_price": 95.0
       }
@@ -1798,12 +1936,14 @@
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 632,
         "unit_price": 38.25
       },
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 685,
         "unit_price": 15.5
       }
@@ -1823,12 +1963,14 @@
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 295,
         "unit_price": 12.75
       },
       {
         "sku": "STP-303",
         "name": "Stepper Motor NEMA 17",
+        "category": "Actuators",
         "quantity": 227,
         "unit_price": 325.0
       }
@@ -1849,6 +1991,7 @@
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 773,
         "unit_price": 12.25
       }
@@ -1869,18 +2012,21 @@
       {
         "sku": "MCU-402",
         "name": "32-bit ARM Microcontroller",
+        "category": "Controllers",
         "quantity": 607,
         "unit_price": 6.5
       },
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 280,
         "unit_price": 38.25
       },
       {
         "sku": "ULS-205",
         "name": "Ultrasonic Distance Sensor",
+        "category": "Sensors",
         "quantity": 713,
         "unit_price": 15.99
       }
@@ -1900,12 +2046,14 @@
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 177,
         "unit_price": 12.25
       },
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 529,
         "unit_price": 67.5
       }
@@ -1926,18 +2074,21 @@
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 668,
         "unit_price": 34.5
       },
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 306,
         "unit_price": 38.25
       },
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 76,
         "unit_price": 22.0
       }
@@ -1958,18 +2109,21 @@
       {
         "sku": "SPR-601",
         "name": "Coil Spring Heavy Duty",
+        "category": "Sensors",
         "quantity": 531,
         "unit_price": 18.75
       },
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 581,
         "unit_price": 34.5
       },
       {
         "sku": "MCU-401",
         "name": "8-bit Microcontroller",
+        "category": "Controllers",
         "quantity": 717,
         "unit_price": 8.25
       }
@@ -1989,12 +2143,14 @@
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 406,
         "unit_price": 12.75
       },
       {
         "sku": "PSU-507",
         "name": "Adjustable Bench Power Supply",
+        "category": "Power Supplies",
         "quantity": 468,
         "unit_price": 125.0
       }
@@ -2015,12 +2171,14 @@
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 515,
         "unit_price": 22.5
       },
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 140,
         "unit_price": 34.5
       }
@@ -2041,18 +2199,21 @@
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 242,
         "unit_price": 29.99
       },
       {
         "sku": "PSU-503",
         "name": "24V 3A Industrial Power Supply",
+        "category": "Power Supplies",
         "quantity": 580,
         "unit_price": 45.75
       },
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 420,
         "unit_price": 89.5
       }
@@ -2073,18 +2234,21 @@
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 951,
         "unit_price": 445.0
       },
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 765,
         "unit_price": 12.25
       },
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 546,
         "unit_price": 67.5
       }
@@ -2105,6 +2269,7 @@
       {
         "sku": "ACC-206",
         "name": "3-Axis Accelerometer",
+        "category": "Sensors",
         "quantity": 911,
         "unit_price": 156.0
       }
@@ -2125,12 +2290,14 @@
       {
         "sku": "PSU-503",
         "name": "24V 3A Industrial Power Supply",
+        "category": "Power Supplies",
         "quantity": 533,
         "unit_price": 45.75
       },
       {
         "sku": "PSU-507",
         "name": "Adjustable Bench Power Supply",
+        "category": "Power Supplies",
         "quantity": 299,
         "unit_price": 125.0
       }
@@ -2151,12 +2318,14 @@
       {
         "sku": "PSU-503",
         "name": "24V 3A Industrial Power Supply",
+        "category": "Power Supplies",
         "quantity": 856,
         "unit_price": 45.75
       },
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 569,
         "unit_price": 285.0
       }
@@ -2176,18 +2345,21 @@
       {
         "sku": "PSU-508",
         "name": "Battery Backup Power Supply",
+        "category": "Power Supplies",
         "quantity": 601,
         "unit_price": 185.5
       },
       {
         "sku": "SRV-302",
         "name": "Standard Servo Motor",
+        "category": "Actuators",
         "quantity": 545,
         "unit_price": 725.0
       },
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 403,
         "unit_price": 67.5
       }
@@ -2207,6 +2379,7 @@
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 635,
         "unit_price": 95.0
       }
@@ -2226,18 +2399,21 @@
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 87,
         "unit_price": 18.99
       },
       {
         "sku": "SRV-302",
         "name": "Standard Servo Motor",
+        "category": "Actuators",
         "quantity": 179,
         "unit_price": 725.0
       },
       {
         "sku": "PSU-508",
         "name": "Battery Backup Power Supply",
+        "category": "Power Supplies",
         "quantity": 564,
         "unit_price": 185.5
       }
@@ -2257,12 +2433,14 @@
       {
         "sku": "PCB-001",
         "name": "Single Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 469,
         "unit_price": 24.99
       },
       {
         "sku": "SRV-302",
         "name": "Standard Servo Motor",
+        "category": "Actuators",
         "quantity": 941,
         "unit_price": 725.0
       }
@@ -2283,12 +2461,14 @@
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 691,
         "unit_price": 18.99
       },
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 785,
         "unit_price": 22.0
       }
@@ -2309,12 +2489,14 @@
       {
         "sku": "ACC-206",
         "name": "3-Axis Accelerometer",
+        "category": "Sensors",
         "quantity": 494,
         "unit_price": 156.0
       },
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 150,
         "unit_price": 12.75
       }
@@ -2335,6 +2517,7 @@
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 865,
         "unit_price": 22.0
       }
@@ -2354,12 +2537,14 @@
       {
         "sku": "MCU-401",
         "name": "8-bit Microcontroller",
+        "category": "Controllers",
         "quantity": 229,
         "unit_price": 8.25
       },
       {
         "sku": "STP-303",
         "name": "Stepper Motor NEMA 17",
+        "category": "Actuators",
         "quantity": 130,
         "unit_price": 325.0
       }
@@ -2380,18 +2565,21 @@
       {
         "sku": "LDR-208",
         "name": "Light Dependent Resistor",
+        "category": "Sensors",
         "quantity": 970,
         "unit_price": 110.5
       },
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 873,
         "unit_price": 29.99
       },
       {
         "sku": "PCB-001",
         "name": "Single Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 526,
         "unit_price": 24.99
       }
@@ -2412,12 +2600,14 @@
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 517,
         "unit_price": 38.25
       },
       {
         "sku": "LDR-208",
         "name": "Light Dependent Resistor",
+        "category": "Sensors",
         "quantity": 915,
         "unit_price": 110.5
       }
@@ -2437,12 +2627,14 @@
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 899,
         "unit_price": 12.25
       },
       {
         "sku": "PCB-002",
         "name": "Dual Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 724,
         "unit_price": 29.99
       }
@@ -2463,12 +2655,14 @@
       {
         "sku": "ACC-206",
         "name": "3-Axis Accelerometer",
+        "category": "Sensors",
         "quantity": 274,
         "unit_price": 156.0
       },
       {
         "sku": "PLY-901",
         "name": "Drive Pulley",
+        "category": "Sensors",
         "quantity": 701,
         "unit_price": 45.5
       }
@@ -2488,18 +2682,21 @@
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 84,
         "unit_price": 34.5
       },
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 643,
         "unit_price": 15.5
       },
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 423,
         "unit_price": 67.5
       }
@@ -2519,6 +2716,7 @@
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 593,
         "unit_price": 32.75
       }
@@ -2539,12 +2737,14 @@
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 529,
         "unit_price": 285.0
       },
       {
         "sku": "ULS-205",
         "name": "Ultrasonic Distance Sensor",
+        "category": "Sensors",
         "quantity": 127,
         "unit_price": 15.99
       }
@@ -2564,12 +2764,14 @@
       {
         "sku": "PCB-001",
         "name": "Single Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 599,
         "unit_price": 24.99
       },
       {
         "sku": "LDR-208",
         "name": "Light Dependent Resistor",
+        "category": "Sensors",
         "quantity": 176,
         "unit_price": 110.5
       }
@@ -2590,6 +2792,7 @@
       {
         "sku": "PSU-507",
         "name": "Adjustable Bench Power Supply",
+        "category": "Power Supplies",
         "quantity": 75,
         "unit_price": 125.0
       }
@@ -2610,12 +2813,14 @@
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 169,
         "unit_price": 15.5
       },
       {
         "sku": "PSU-503",
         "name": "24V 3A Industrial Power Supply",
+        "category": "Power Supplies",
         "quantity": 193,
         "unit_price": 45.75
       }
@@ -2636,6 +2841,7 @@
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 514,
         "unit_price": 18.99
       }
@@ -2655,18 +2861,21 @@
       {
         "sku": "PRX-204",
         "name": "Proximity Sensor",
+        "category": "Sensors",
         "quantity": 336,
         "unit_price": 8.5
       },
       {
         "sku": "PSU-508",
         "name": "Battery Backup Power Supply",
+        "category": "Power Supplies",
         "quantity": 83,
         "unit_price": 185.5
       },
       {
         "sku": "PSU-503",
         "name": "24V 3A Industrial Power Supply",
+        "category": "Power Supplies",
         "quantity": 756,
         "unit_price": 45.75
       }
@@ -2686,18 +2895,21 @@
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 457,
         "unit_price": 32.75
       },
       {
         "sku": "PLY-901",
         "name": "Drive Pulley",
+        "category": "Sensors",
         "quantity": 332,
         "unit_price": 45.5
       },
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 244,
         "unit_price": 89.5
       }
@@ -2718,12 +2930,14 @@
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 855,
         "unit_price": 95.0
       },
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 628,
         "unit_price": 445.0
       }
@@ -2744,6 +2958,7 @@
       {
         "sku": "PCB-001",
         "name": "Single Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 333,
         "unit_price": 24.99
       }
@@ -2764,12 +2979,14 @@
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 66,
         "unit_price": 95.0
       },
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 228,
         "unit_price": 22.0
       }
@@ -2790,12 +3007,14 @@
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 575,
         "unit_price": 67.5
       },
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 657,
         "unit_price": 32.75
       }
@@ -2815,18 +3034,21 @@
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 112,
         "unit_price": 15.5
       },
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 540,
         "unit_price": 29.99
       },
       {
         "sku": "PCB-002",
         "name": "Dual Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 917,
         "unit_price": 29.99
       }
@@ -2846,6 +3068,7 @@
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 672,
         "unit_price": 22.0
       }
@@ -2866,18 +3089,21 @@
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 151,
         "unit_price": 12.25
       },
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 862,
         "unit_price": 29.99
       },
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 768,
         "unit_price": 38.25
       }
@@ -2898,12 +3124,14 @@
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 458,
         "unit_price": 285.0
       },
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 475,
         "unit_price": 29.99
       }
@@ -2923,6 +3151,7 @@
       {
         "sku": "PSU-507",
         "name": "Adjustable Bench Power Supply",
+        "category": "Power Supplies",
         "quantity": 118,
         "unit_price": 125.0
       }
@@ -2943,18 +3172,21 @@
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 470,
         "unit_price": 89.5
       },
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 412,
         "unit_price": 285.0
       },
       {
         "sku": "ULS-205",
         "name": "Ultrasonic Distance Sensor",
+        "category": "Sensors",
         "quantity": 944,
         "unit_price": 15.99
       }
@@ -2974,18 +3206,21 @@
       {
         "sku": "DSP-403",
         "name": "Digital Signal Processor",
+        "category": "Controllers",
         "quantity": 279,
         "unit_price": 7.75
       },
       {
         "sku": "SRV-302",
         "name": "Standard Servo Motor",
+        "category": "Actuators",
         "quantity": 917,
         "unit_price": 725.0
       },
       {
         "sku": "PSU-507",
         "name": "Adjustable Bench Power Supply",
+        "category": "Power Supplies",
         "quantity": 160,
         "unit_price": 125.0
       }
@@ -3006,18 +3241,21 @@
       {
         "sku": "PCB-002",
         "name": "Dual Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 329,
         "unit_price": 29.99
       },
       {
         "sku": "SPR-601",
         "name": "Coil Spring Heavy Duty",
+        "category": "Sensors",
         "quantity": 769,
         "unit_price": 18.75
       },
       {
         "sku": "MCU-401",
         "name": "8-bit Microcontroller",
+        "category": "Controllers",
         "quantity": 830,
         "unit_price": 8.25
       }
@@ -3037,18 +3275,21 @@
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 808,
         "unit_price": 22.5
       },
       {
         "sku": "HMD-202",
         "name": "Humidity Sensor Module",
+        "category": "Sensors",
         "quantity": 698,
         "unit_price": 125.0
       },
       {
         "sku": "SRV-302",
         "name": "Standard Servo Motor",
+        "category": "Actuators",
         "quantity": 81,
         "unit_price": 725.0
       }
@@ -3068,6 +3309,7 @@
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 369,
         "unit_price": 32.75
       }
@@ -3088,18 +3330,21 @@
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 503,
         "unit_price": 89.5
       },
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 727,
         "unit_price": 12.75
       },
       {
         "sku": "SPR-601",
         "name": "Coil Spring Heavy Duty",
+        "category": "Sensors",
         "quantity": 484,
         "unit_price": 18.75
       }
@@ -3120,6 +3365,7 @@
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 744,
         "unit_price": 12.25
       }
@@ -3140,18 +3386,21 @@
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 358,
         "unit_price": 89.5
       },
       {
         "sku": "PCB-001",
         "name": "Single Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 266,
         "unit_price": 24.99
       },
       {
         "sku": "DSP-403",
         "name": "Digital Signal Processor",
+        "category": "Controllers",
         "quantity": 835,
         "unit_price": 7.75
       }
@@ -3172,12 +3421,14 @@
       {
         "sku": "MCU-401",
         "name": "8-bit Microcontroller",
+        "category": "Controllers",
         "quantity": 439,
         "unit_price": 8.25
       },
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 595,
         "unit_price": 445.0
       }
@@ -3198,12 +3449,14 @@
       {
         "sku": "HMD-202",
         "name": "Humidity Sensor Module",
+        "category": "Sensors",
         "quantity": 639,
         "unit_price": 125.0
       },
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 489,
         "unit_price": 22.0
       }
@@ -3224,6 +3477,7 @@
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 901,
         "unit_price": 29.99
       }
@@ -3243,18 +3497,21 @@
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 813,
         "unit_price": 22.5
       },
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 397,
         "unit_price": 12.75
       },
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 276,
         "unit_price": 15.5
       }
@@ -3275,6 +3532,7 @@
       {
         "sku": "PLY-901",
         "name": "Drive Pulley",
+        "category": "Sensors",
         "quantity": 409,
         "unit_price": 45.5
       }
@@ -3295,18 +3553,21 @@
       {
         "sku": "SRV-302",
         "name": "Standard Servo Motor",
+        "category": "Actuators",
         "quantity": 841,
         "unit_price": 725.0
       },
       {
         "sku": "HMD-202",
         "name": "Humidity Sensor Module",
+        "category": "Sensors",
         "quantity": 693,
         "unit_price": 125.0
       },
       {
         "sku": "MCU-401",
         "name": "8-bit Microcontroller",
+        "category": "Controllers",
         "quantity": 555,
         "unit_price": 8.25
       }
@@ -3327,18 +3588,21 @@
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 119,
         "unit_price": 22.0
       },
       {
         "sku": "SRV-302",
         "name": "Standard Servo Motor",
+        "category": "Actuators",
         "quantity": 530,
         "unit_price": 725.0
       },
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 502,
         "unit_price": 67.5
       }
@@ -3358,6 +3622,7 @@
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 522,
         "unit_price": 15.5
       }
@@ -3378,18 +3643,21 @@
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 510,
         "unit_price": 18.99
       },
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 980,
         "unit_price": 29.99
       },
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 879,
         "unit_price": 34.5
       }
@@ -3410,12 +3678,14 @@
       {
         "sku": "PRX-204",
         "name": "Proximity Sensor",
+        "category": "Sensors",
         "quantity": 781,
         "unit_price": 8.5
       },
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 136,
         "unit_price": 285.0
       }
@@ -3435,18 +3705,21 @@
       {
         "sku": "STP-303",
         "name": "Stepper Motor NEMA 17",
+        "category": "Actuators",
         "quantity": 446,
         "unit_price": 325.0
       },
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 468,
         "unit_price": 32.75
       },
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 843,
         "unit_price": 12.25
       }
@@ -3466,6 +3739,7 @@
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 340,
         "unit_price": 18.99
       }
@@ -3486,12 +3760,14 @@
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 659,
         "unit_price": 22.5
       },
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 775,
         "unit_price": 445.0
       }
@@ -3511,18 +3787,21 @@
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 68,
         "unit_price": 12.75
       },
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 421,
         "unit_price": 38.25
       },
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 366,
         "unit_price": 32.75
       }
@@ -3542,6 +3821,7 @@
       {
         "sku": "HMD-202",
         "name": "Humidity Sensor Module",
+        "category": "Sensors",
         "quantity": 352,
         "unit_price": 125.0
       }
@@ -3561,18 +3841,21 @@
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 216,
         "unit_price": 445.0
       },
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 235,
         "unit_price": 18.99
       },
       {
         "sku": "SRV-302",
         "name": "Standard Servo Motor",
+        "category": "Actuators",
         "quantity": 901,
         "unit_price": 725.0
       }
@@ -3593,18 +3876,21 @@
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 820,
         "unit_price": 95.0
       },
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 816,
         "unit_price": 67.5
       },
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 852,
         "unit_price": 12.25
       }
@@ -3625,6 +3911,7 @@
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 744,
         "unit_price": 32.75
       }
@@ -3644,12 +3931,14 @@
       {
         "sku": "STP-303",
         "name": "Stepper Motor NEMA 17",
+        "category": "Actuators",
         "quantity": 870,
         "unit_price": 325.0
       },
       {
         "sku": "MCU-402",
         "name": "32-bit ARM Microcontroller",
+        "category": "Controllers",
         "quantity": 669,
         "unit_price": 6.5
       }
@@ -3670,6 +3959,7 @@
       {
         "sku": "ULS-205",
         "name": "Ultrasonic Distance Sensor",
+        "category": "Sensors",
         "quantity": 341,
         "unit_price": 15.99
       }
@@ -3690,6 +3980,7 @@
       {
         "sku": "ACC-206",
         "name": "3-Axis Accelerometer",
+        "category": "Sensors",
         "quantity": 886,
         "unit_price": 156.0
       }
@@ -3709,12 +4000,14 @@
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 133,
         "unit_price": 95.0
       },
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 433,
         "unit_price": 18.99
       }
@@ -3735,12 +4028,14 @@
       {
         "sku": "PSU-507",
         "name": "Adjustable Bench Power Supply",
+        "category": "Power Supplies",
         "quantity": 827,
         "unit_price": 125.0
       },
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 772,
         "unit_price": 445.0
       }
@@ -3761,6 +4056,7 @@
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 163,
         "unit_price": 38.25
       }
@@ -3781,18 +4077,21 @@
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 906,
         "unit_price": 29.99
       },
       {
         "sku": "HMD-202",
         "name": "Humidity Sensor Module",
+        "category": "Sensors",
         "quantity": 976,
         "unit_price": 125.0
       },
       {
         "sku": "ULS-205",
         "name": "Ultrasonic Distance Sensor",
+        "category": "Sensors",
         "quantity": 561,
         "unit_price": 15.99
       }
@@ -3813,12 +4112,14 @@
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 679,
         "unit_price": 38.25
       },
       {
         "sku": "PCB-001",
         "name": "Single Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 411,
         "unit_price": 24.99
       }
@@ -3838,12 +4139,14 @@
       {
         "sku": "HMD-202",
         "name": "Humidity Sensor Module",
+        "category": "Sensors",
         "quantity": 449,
         "unit_price": 125.0
       },
       {
         "sku": "PCB-002",
         "name": "Dual Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 944,
         "unit_price": 29.99
       }
@@ -3864,6 +4167,7 @@
       {
         "sku": "PLY-901",
         "name": "Drive Pulley",
+        "category": "Sensors",
         "quantity": 296,
         "unit_price": 45.5
       }
@@ -3884,12 +4188,14 @@
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 900,
         "unit_price": 285.0
       },
       {
         "sku": "MCU-401",
         "name": "8-bit Microcontroller",
+        "category": "Controllers",
         "quantity": 847,
         "unit_price": 8.25
       }
@@ -3910,12 +4216,14 @@
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 256,
         "unit_price": 34.5
       },
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 94,
         "unit_price": 12.25
       }
@@ -3936,18 +4244,21 @@
       {
         "sku": "PSU-507",
         "name": "Adjustable Bench Power Supply",
+        "category": "Power Supplies",
         "quantity": 821,
         "unit_price": 125.0
       },
       {
         "sku": "LDR-208",
         "name": "Light Dependent Resistor",
+        "category": "Sensors",
         "quantity": 712,
         "unit_price": 110.5
       },
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 245,
         "unit_price": 34.5
       }
@@ -3967,12 +4278,14 @@
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 811,
         "unit_price": 38.25
       },
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 500,
         "unit_price": 22.5
       }
@@ -3993,18 +4306,21 @@
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 608,
         "unit_price": 38.25
       },
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 350,
         "unit_price": 12.75
       },
       {
         "sku": "MCU-401",
         "name": "8-bit Microcontroller",
+        "category": "Controllers",
         "quantity": 378,
         "unit_price": 8.25
       }
@@ -4024,12 +4340,14 @@
       {
         "sku": "STP-303",
         "name": "Stepper Motor NEMA 17",
+        "category": "Actuators",
         "quantity": 409,
         "unit_price": 325.0
       },
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 507,
         "unit_price": 67.5
       }
@@ -4050,18 +4368,21 @@
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 81,
         "unit_price": 22.5
       },
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 196,
         "unit_price": 32.75
       },
       {
         "sku": "STP-303",
         "name": "Stepper Motor NEMA 17",
+        "category": "Actuators",
         "quantity": 919,
         "unit_price": 325.0
       }
@@ -4082,12 +4403,14 @@
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 630,
         "unit_price": 32.75
       },
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 83,
         "unit_price": 18.99
       }
@@ -4107,6 +4430,7 @@
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 592,
         "unit_price": 445.0
       }
@@ -4127,6 +4451,7 @@
       {
         "sku": "PSU-508",
         "name": "Battery Backup Power Supply",
+        "category": "Power Supplies",
         "quantity": 580,
         "unit_price": 185.5
       }
@@ -4147,6 +4472,7 @@
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 760,
         "unit_price": 12.25
       }
@@ -4166,18 +4492,21 @@
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 733,
         "unit_price": 67.5
       },
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 405,
         "unit_price": 12.75
       },
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 776,
         "unit_price": 22.0
       }
@@ -4198,18 +4527,21 @@
       {
         "sku": "MCU-401",
         "name": "8-bit Microcontroller",
+        "category": "Controllers",
         "quantity": 174,
         "unit_price": 8.25
       },
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 255,
         "unit_price": 32.75
       },
       {
         "sku": "ACC-206",
         "name": "3-Axis Accelerometer",
+        "category": "Sensors",
         "quantity": 861,
         "unit_price": 156.0
       }
@@ -4229,12 +4561,14 @@
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 676,
         "unit_price": 29.99
       },
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 955,
         "unit_price": 445.0
       }
@@ -4255,18 +4589,21 @@
       {
         "sku": "HMD-202",
         "name": "Humidity Sensor Module",
+        "category": "Sensors",
         "quantity": 707,
         "unit_price": 125.0
       },
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 125,
         "unit_price": 445.0
       },
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 510,
         "unit_price": 22.0
       }
@@ -4286,6 +4623,7 @@
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 564,
         "unit_price": 38.25
       }
@@ -4305,12 +4643,14 @@
       {
         "sku": "ACC-206",
         "name": "3-Axis Accelerometer",
+        "category": "Sensors",
         "quantity": 581,
         "unit_price": 156.0
       },
       {
         "sku": "PLY-901",
         "name": "Drive Pulley",
+        "category": "Sensors",
         "quantity": 966,
         "unit_price": 45.5
       }
@@ -4331,12 +4671,14 @@
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 656,
         "unit_price": 12.75
       },
       {
         "sku": "STP-303",
         "name": "Stepper Motor NEMA 17",
+        "category": "Actuators",
         "quantity": 644,
         "unit_price": 325.0
       }
@@ -4357,18 +4699,21 @@
       {
         "sku": "LDR-208",
         "name": "Light Dependent Resistor",
+        "category": "Sensors",
         "quantity": 682,
         "unit_price": 110.5
       },
       {
         "sku": "DSP-403",
         "name": "Digital Signal Processor",
+        "category": "Controllers",
         "quantity": 704,
         "unit_price": 7.75
       },
       {
         "sku": "PSU-503",
         "name": "24V 3A Industrial Power Supply",
+        "category": "Power Supplies",
         "quantity": 81,
         "unit_price": 45.75
       }
@@ -4389,18 +4734,21 @@
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 124,
         "unit_price": 22.5
       },
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 755,
         "unit_price": 15.5
       },
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 111,
         "unit_price": 29.99
       }
@@ -4420,6 +4768,7 @@
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 932,
         "unit_price": 22.0
       }
@@ -4440,18 +4789,21 @@
       {
         "sku": "PRX-204",
         "name": "Proximity Sensor",
+        "category": "Sensors",
         "quantity": 527,
         "unit_price": 8.5
       },
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 175,
         "unit_price": 22.0
       },
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 323,
         "unit_price": 95.0
       }
@@ -4471,18 +4823,21 @@
       {
         "sku": "PSU-503",
         "name": "24V 3A Industrial Power Supply",
+        "category": "Power Supplies",
         "quantity": 883,
         "unit_price": 45.75
       },
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 385,
         "unit_price": 95.0
       },
       {
         "sku": "STP-303",
         "name": "Stepper Motor NEMA 17",
+        "category": "Actuators",
         "quantity": 641,
         "unit_price": 325.0
       }
@@ -4502,12 +4857,14 @@
       {
         "sku": "PSU-508",
         "name": "Battery Backup Power Supply",
+        "category": "Power Supplies",
         "quantity": 142,
         "unit_price": 185.5
       },
       {
         "sku": "PCB-002",
         "name": "Dual Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 452,
         "unit_price": 29.99
       }
@@ -4527,12 +4884,14 @@
       {
         "sku": "PSU-508",
         "name": "Battery Backup Power Supply",
+        "category": "Power Supplies",
         "quantity": 342,
         "unit_price": 185.5
       },
       {
         "sku": "PSU-507",
         "name": "Adjustable Bench Power Supply",
+        "category": "Power Supplies",
         "quantity": 599,
         "unit_price": 125.0
       }
@@ -4553,12 +4912,14 @@
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 460,
         "unit_price": 32.75
       },
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 102,
         "unit_price": 34.5
       }
@@ -4578,18 +4939,21 @@
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 181,
         "unit_price": 67.5
       },
       {
         "sku": "SPR-601",
         "name": "Coil Spring Heavy Duty",
+        "category": "Sensors",
         "quantity": 149,
         "unit_price": 18.75
       },
       {
         "sku": "ULS-205",
         "name": "Ultrasonic Distance Sensor",
+        "category": "Sensors",
         "quantity": 453,
         "unit_price": 15.99
       }
@@ -4610,18 +4974,21 @@
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 780,
         "unit_price": 22.5
       },
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 391,
         "unit_price": 34.5
       },
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 873,
         "unit_price": 445.0
       }
@@ -4642,18 +5009,21 @@
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 681,
         "unit_price": 22.0
       },
       {
         "sku": "STP-303",
         "name": "Stepper Motor NEMA 17",
+        "category": "Actuators",
         "quantity": 807,
         "unit_price": 325.0
       },
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 912,
         "unit_price": 22.5
       }
@@ -4674,12 +5044,14 @@
       {
         "sku": "PSU-507",
         "name": "Adjustable Bench Power Supply",
+        "category": "Power Supplies",
         "quantity": 427,
         "unit_price": 125.0
       },
       {
         "sku": "PCB-002",
         "name": "Dual Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 389,
         "unit_price": 29.99
       }
@@ -4699,12 +5071,14 @@
       {
         "sku": "ACC-206",
         "name": "3-Axis Accelerometer",
+        "category": "Sensors",
         "quantity": 647,
         "unit_price": 156.0
       },
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 541,
         "unit_price": 89.5
       }
@@ -4724,18 +5098,21 @@
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 245,
         "unit_price": 95.0
       },
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 69,
         "unit_price": 34.5
       },
       {
         "sku": "ULS-205",
         "name": "Ultrasonic Distance Sensor",
+        "category": "Sensors",
         "quantity": 501,
         "unit_price": 15.99
       }
@@ -4756,18 +5133,21 @@
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 624,
         "unit_price": 89.5
       },
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 382,
         "unit_price": 445.0
       },
       {
         "sku": "DSP-403",
         "name": "Digital Signal Processor",
+        "category": "Controllers",
         "quantity": 728,
         "unit_price": 7.75
       }
@@ -4787,12 +5167,14 @@
       {
         "sku": "PLY-901",
         "name": "Drive Pulley",
+        "category": "Sensors",
         "quantity": 674,
         "unit_price": 45.5
       },
       {
         "sku": "LDR-208",
         "name": "Light Dependent Resistor",
+        "category": "Sensors",
         "quantity": 545,
         "unit_price": 110.5
       }
@@ -4812,12 +5194,14 @@
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 756,
         "unit_price": 12.25
       },
       {
         "sku": "DSP-403",
         "name": "Digital Signal Processor",
+        "category": "Controllers",
         "quantity": 771,
         "unit_price": 7.75
       }
@@ -4837,18 +5221,21 @@
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 841,
         "unit_price": 18.99
       },
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 873,
         "unit_price": 22.5
       },
       {
         "sku": "PLY-901",
         "name": "Drive Pulley",
+        "category": "Sensors",
         "quantity": 199,
         "unit_price": 45.5
       }
@@ -4869,18 +5256,21 @@
       {
         "sku": "PSU-507",
         "name": "Adjustable Bench Power Supply",
+        "category": "Power Supplies",
         "quantity": 897,
         "unit_price": 125.0
       },
       {
         "sku": "DSP-403",
         "name": "Digital Signal Processor",
+        "category": "Controllers",
         "quantity": 601,
         "unit_price": 7.75
       },
       {
         "sku": "MCU-402",
         "name": "32-bit ARM Microcontroller",
+        "category": "Controllers",
         "quantity": 327,
         "unit_price": 6.5
       }
@@ -4900,18 +5290,21 @@
       {
         "sku": "ACC-206",
         "name": "3-Axis Accelerometer",
+        "category": "Sensors",
         "quantity": 473,
         "unit_price": 156.0
       },
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 388,
         "unit_price": 89.5
       },
       {
         "sku": "PRX-204",
         "name": "Proximity Sensor",
+        "category": "Sensors",
         "quantity": 784,
         "unit_price": 8.5
       }
@@ -4932,12 +5325,14 @@
       {
         "sku": "PSU-507",
         "name": "Adjustable Bench Power Supply",
+        "category": "Power Supplies",
         "quantity": 824,
         "unit_price": 125.0
       },
       {
         "sku": "MCU-402",
         "name": "32-bit ARM Microcontroller",
+        "category": "Controllers",
         "quantity": 344,
         "unit_price": 6.5
       }
@@ -4957,6 +5352,7 @@
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 985,
         "unit_price": 34.5
       }
@@ -4976,12 +5372,14 @@
       {
         "sku": "PSU-508",
         "name": "Battery Backup Power Supply",
+        "category": "Power Supplies",
         "quantity": 816,
         "unit_price": 185.5
       },
       {
         "sku": "MCU-401",
         "name": "8-bit Microcontroller",
+        "category": "Controllers",
         "quantity": 943,
         "unit_price": 8.25
       }
@@ -5001,12 +5399,14 @@
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 706,
         "unit_price": 12.25
       },
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 606,
         "unit_price": 29.99
       }
@@ -5026,6 +5426,7 @@
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 216,
         "unit_price": 285.0
       }
@@ -5046,18 +5447,21 @@
       {
         "sku": "MCU-402",
         "name": "32-bit ARM Microcontroller",
+        "category": "Controllers",
         "quantity": 896,
         "unit_price": 6.5
       },
       {
         "sku": "MCU-401",
         "name": "8-bit Microcontroller",
+        "category": "Controllers",
         "quantity": 487,
         "unit_price": 8.25
       },
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 577,
         "unit_price": 22.5
       }
@@ -5077,6 +5481,7 @@
       {
         "sku": "PCB-001",
         "name": "Single Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 317,
         "unit_price": 24.99
       }
@@ -5096,18 +5501,21 @@
       {
         "sku": "PCB-001",
         "name": "Single Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 759,
         "unit_price": 24.99
       },
       {
         "sku": "LDR-208",
         "name": "Light Dependent Resistor",
+        "category": "Sensors",
         "quantity": 291,
         "unit_price": 110.5
       },
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 113,
         "unit_price": 32.75
       }
@@ -5127,18 +5535,21 @@
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 426,
         "unit_price": 15.5
       },
       {
         "sku": "ULS-205",
         "name": "Ultrasonic Distance Sensor",
+        "category": "Sensors",
         "quantity": 679,
         "unit_price": 15.99
       },
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 276,
         "unit_price": 12.25
       }
@@ -5158,18 +5569,21 @@
       {
         "sku": "PSU-507",
         "name": "Adjustable Bench Power Supply",
+        "category": "Power Supplies",
         "quantity": 746,
         "unit_price": 125.0
       },
       {
         "sku": "DSP-403",
         "name": "Digital Signal Processor",
+        "category": "Controllers",
         "quantity": 822,
         "unit_price": 7.75
       },
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 660,
         "unit_price": 95.0
       }
@@ -5189,18 +5603,21 @@
       {
         "sku": "ULS-205",
         "name": "Ultrasonic Distance Sensor",
+        "category": "Sensors",
         "quantity": 636,
         "unit_price": 15.99
       },
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 599,
         "unit_price": 89.5
       },
       {
         "sku": "MCU-402",
         "name": "32-bit ARM Microcontroller",
+        "category": "Controllers",
         "quantity": 203,
         "unit_price": 6.5
       }
@@ -5221,12 +5638,14 @@
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 878,
         "unit_price": 12.75
       },
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 106,
         "unit_price": 67.5
       }
@@ -5246,18 +5665,21 @@
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 310,
         "unit_price": 15.5
       },
       {
         "sku": "PCB-002",
         "name": "Dual Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 886,
         "unit_price": 29.99
       },
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 53,
         "unit_price": 22.5
       }
@@ -5277,6 +5699,7 @@
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 965,
         "unit_price": 89.5
       }
@@ -5297,18 +5720,21 @@
       {
         "sku": "PSU-503",
         "name": "24V 3A Industrial Power Supply",
+        "category": "Power Supplies",
         "quantity": 509,
         "unit_price": 45.75
       },
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 940,
         "unit_price": 32.75
       },
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 989,
         "unit_price": 18.99
       }
@@ -5328,18 +5754,21 @@
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 904,
         "unit_price": 22.5
       },
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 53,
         "unit_price": 445.0
       },
       {
         "sku": "ACC-206",
         "name": "3-Axis Accelerometer",
+        "category": "Sensors",
         "quantity": 824,
         "unit_price": 156.0
       }
@@ -5360,6 +5789,7 @@
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 404,
         "unit_price": 29.99
       }
@@ -5379,6 +5809,7 @@
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 261,
         "unit_price": 95.0
       }
@@ -5398,6 +5829,7 @@
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 499,
         "unit_price": 22.5
       }
@@ -5418,18 +5850,21 @@
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 947,
         "unit_price": 22.0
       },
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 196,
         "unit_price": 95.0
       },
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 726,
         "unit_price": 15.5
       }
@@ -5450,12 +5885,14 @@
       {
         "sku": "PSU-508",
         "name": "Battery Backup Power Supply",
+        "category": "Power Supplies",
         "quantity": 402,
         "unit_price": 185.5
       },
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 708,
         "unit_price": 89.5
       }
@@ -5475,12 +5912,14 @@
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 822,
         "unit_price": 18.99
       },
       {
         "sku": "MCU-401",
         "name": "8-bit Microcontroller",
+        "category": "Controllers",
         "quantity": 600,
         "unit_price": 8.25
       }
@@ -5500,6 +5939,7 @@
       {
         "sku": "PSU-503",
         "name": "24V 3A Industrial Power Supply",
+        "category": "Power Supplies",
         "quantity": 476,
         "unit_price": 45.75
       }
@@ -5519,18 +5959,21 @@
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 144,
         "unit_price": 12.75
       },
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 598,
         "unit_price": 67.5
       },
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 791,
         "unit_price": 32.75
       }
@@ -5550,6 +5993,7 @@
       {
         "sku": "DSP-403",
         "name": "Digital Signal Processor",
+        "category": "Controllers",
         "quantity": 540,
         "unit_price": 7.75
       }
@@ -5569,6 +6013,7 @@
       {
         "sku": "ULS-205",
         "name": "Ultrasonic Distance Sensor",
+        "category": "Sensors",
         "quantity": 814,
         "unit_price": 15.99
       }
@@ -5588,6 +6033,7 @@
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 844,
         "unit_price": 22.0
       }
@@ -5607,12 +6053,14 @@
       {
         "sku": "PSU-508",
         "name": "Battery Backup Power Supply",
+        "category": "Power Supplies",
         "quantity": 150,
         "unit_price": 185.5
       },
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 872,
         "unit_price": 29.99
       }
@@ -5632,12 +6080,14 @@
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 809,
         "unit_price": 34.5
       },
       {
         "sku": "ACC-206",
         "name": "3-Axis Accelerometer",
+        "category": "Sensors",
         "quantity": 199,
         "unit_price": 156.0
       }
@@ -5657,6 +6107,7 @@
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 285,
         "unit_price": 285.0
       }
@@ -5676,12 +6127,14 @@
       {
         "sku": "PSU-508",
         "name": "Battery Backup Power Supply",
+        "category": "Power Supplies",
         "quantity": 222,
         "unit_price": 185.5
       },
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 800,
         "unit_price": 29.99
       }
@@ -5701,18 +6154,21 @@
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 887,
         "unit_price": 89.5
       },
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 734,
         "unit_price": 34.5
       },
       {
         "sku": "HMD-202",
         "name": "Humidity Sensor Module",
+        "category": "Sensors",
         "quantity": 99,
         "unit_price": 125.0
       }
@@ -5732,18 +6188,21 @@
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 682,
         "unit_price": 29.99
       },
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 703,
         "unit_price": 32.75
       },
       {
         "sku": "TMP-201",
         "name": "Temperature Sensor Module",
+        "category": "Sensors",
         "quantity": 732,
         "unit_price": 89.5
       }
@@ -5763,12 +6222,14 @@
       {
         "sku": "PCB-001",
         "name": "Single Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 592,
         "unit_price": 24.99
       },
       {
         "sku": "PCB-002",
         "name": "Dual Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 789,
         "unit_price": 29.99
       }
@@ -5788,6 +6249,7 @@
       {
         "sku": "PRX-204",
         "name": "Proximity Sensor",
+        "category": "Sensors",
         "quantity": 990,
         "unit_price": 8.5
       }
@@ -5807,12 +6269,14 @@
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 432,
         "unit_price": 22.5
       },
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 465,
         "unit_price": 12.75
       }
@@ -5832,18 +6296,21 @@
       {
         "sku": "PCB-003",
         "name": "Multi Layer PCB Assembly",
+        "category": "Circuit Boards",
         "quantity": 438,
         "unit_price": 34.5
       },
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 436,
         "unit_price": 12.75
       },
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 615,
         "unit_price": 22.5
       }
@@ -5863,12 +6330,14 @@
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 966,
         "unit_price": 285.0
       },
       {
         "sku": "PRX-204",
         "name": "Proximity Sensor",
+        "category": "Sensors",
         "quantity": 590,
         "unit_price": 8.5
       }
@@ -5888,6 +6357,7 @@
       {
         "sku": "SPR-601",
         "name": "Coil Spring Heavy Duty",
+        "category": "Sensors",
         "quantity": 970,
         "unit_price": 18.75
       }
@@ -5907,6 +6377,7 @@
       {
         "sku": "SRV-302",
         "name": "Standard Servo Motor",
+        "category": "Actuators",
         "quantity": 820,
         "unit_price": 725.0
       }
@@ -5926,18 +6397,21 @@
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 859,
         "unit_price": 18.99
       },
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 755,
         "unit_price": 285.0
       },
       {
         "sku": "SRV-301",
         "name": "Micro Servo Motor",
+        "category": "Actuators",
         "quantity": 791,
         "unit_price": 445.0
       }
@@ -5957,6 +6431,7 @@
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 669,
         "unit_price": 285.0
       }
@@ -5976,12 +6451,14 @@
       {
         "sku": "PSU-508",
         "name": "Battery Backup Power Supply",
+        "category": "Power Supplies",
         "quantity": 414,
         "unit_price": 185.5
       },
       {
         "sku": "ACC-206",
         "name": "3-Axis Accelerometer",
+        "category": "Sensors",
         "quantity": 616,
         "unit_price": 156.0
       }
@@ -6001,18 +6478,21 @@
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 134,
         "unit_price": 12.25
       },
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 324,
         "unit_price": 95.0
       },
       {
         "sku": "HMD-202",
         "name": "Humidity Sensor Module",
+        "category": "Sensors",
         "quantity": 207,
         "unit_price": 125.0
       }
@@ -6032,6 +6512,7 @@
       {
         "sku": "PRS-203",
         "name": "Pressure Sensor Module",
+        "category": "Sensors",
         "quantity": 55,
         "unit_price": 12.75
       }
@@ -6051,12 +6532,14 @@
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 155,
         "unit_price": 67.5
       },
       {
         "sku": "PSU-503",
         "name": "24V 3A Industrial Power Supply",
+        "category": "Power Supplies",
         "quantity": 76,
         "unit_price": 45.75
       }
@@ -6076,6 +6559,7 @@
       {
         "sku": "SPR-602",
         "name": "Compression Spring",
+        "category": "Sensors",
         "quantity": 473,
         "unit_price": 12.25
       }
@@ -6095,6 +6579,7 @@
       {
         "sku": "PSU-501",
         "name": "5V 10A Switching Power Supply",
+        "category": "Power Supplies",
         "quantity": 223,
         "unit_price": 18.99
       }
@@ -6114,12 +6599,14 @@
       {
         "sku": "SPR-601",
         "name": "Coil Spring Heavy Duty",
+        "category": "Sensors",
         "quantity": 356,
         "unit_price": 18.75
       },
       {
         "sku": "PSU-503",
         "name": "24V 3A Industrial Power Supply",
+        "category": "Power Supplies",
         "quantity": 545,
         "unit_price": 45.75
       }
@@ -6139,6 +6626,7 @@
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 159,
         "unit_price": 29.99
       }
@@ -6158,12 +6646,14 @@
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 490,
         "unit_price": 67.5
       },
       {
         "sku": "STP-304",
         "name": "Stepper Motor NEMA 23",
+        "category": "Actuators",
         "quantity": 885,
         "unit_price": 285.0
       }
@@ -6183,6 +6673,7 @@
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 376,
         "unit_price": 22.5
       }
@@ -6202,12 +6693,14 @@
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 166,
         "unit_price": 22.5
       },
       {
         "sku": "LED-406",
         "name": "LED Driver IC",
+        "category": "Controllers",
         "quantity": 627,
         "unit_price": 32.75
       }
@@ -6227,12 +6720,14 @@
       {
         "sku": "DSP-403",
         "name": "Digital Signal Processor",
+        "category": "Controllers",
         "quantity": 866,
         "unit_price": 7.75
       },
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 348,
         "unit_price": 67.5
       }
@@ -6252,12 +6747,14 @@
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 724,
         "unit_price": 95.0
       },
       {
         "sku": "LDR-208",
         "name": "Light Dependent Resistor",
+        "category": "Sensors",
         "quantity": 207,
         "unit_price": 110.5
       }
@@ -6277,12 +6774,14 @@
       {
         "sku": "PSU-502",
         "name": "12V 5A Power Supply Module",
+        "category": "Power Supplies",
         "quantity": 606,
         "unit_price": 22.5
       },
       {
         "sku": "PSU-503",
         "name": "24V 3A Industrial Power Supply",
+        "category": "Power Supplies",
         "quantity": 87,
         "unit_price": 45.75
       }
@@ -6302,6 +6801,7 @@
       {
         "sku": "PLY-901",
         "name": "Drive Pulley",
+        "category": "Sensors",
         "quantity": 220,
         "unit_price": 45.5
       }
@@ -6321,12 +6821,14 @@
       {
         "sku": "PSU-504",
         "name": "Dual Output \u00b115V Power Supply",
+        "category": "Power Supplies",
         "quantity": 60,
         "unit_price": 38.25
       },
       {
         "sku": "PRX-204",
         "name": "Proximity Sensor",
+        "category": "Sensors",
         "quantity": 150,
         "unit_price": 8.5
       }
@@ -6346,12 +6848,14 @@
       {
         "sku": "PSU-506",
         "name": "USB-C PD 100W Power Supply",
+        "category": "Power Supplies",
         "quantity": 403,
         "unit_price": 29.99
       },
       {
         "sku": "SRV-302",
         "name": "Standard Servo Motor",
+        "category": "Actuators",
         "quantity": 75,
         "unit_price": 725.0
       }
@@ -6371,18 +6875,21 @@
       {
         "sku": "SRV-302",
         "name": "Standard Servo Motor",
+        "category": "Actuators",
         "quantity": 401,
         "unit_price": 725.0
       },
       {
         "sku": "PLY-901",
         "name": "Drive Pulley",
+        "category": "Sensors",
         "quantity": 516,
         "unit_price": 45.5
       },
       {
         "sku": "PWM-404",
         "name": "PWM Motor Controller",
+        "category": "Controllers",
         "quantity": 853,
         "unit_price": 15.5
       }
@@ -6402,18 +6909,21 @@
       {
         "sku": "PSU-505",
         "name": "48V DC Power Supply Unit",
+        "category": "Power Supplies",
         "quantity": 357,
         "unit_price": 67.5
       },
       {
         "sku": "DRV-405",
         "name": "H-Bridge Motor Driver",
+        "category": "Controllers",
         "quantity": 95,
         "unit_price": 22.0
       },
       {
         "sku": "HMD-202",
         "name": "Humidity Sensor Module",
+        "category": "Sensors",
         "quantity": 879,
         "unit_price": 125.0
       }
@@ -6433,6 +6943,7 @@
       {
         "sku": "GYR-207",
         "name": "Gyroscope Module",
+        "category": "Sensors",
         "quantity": 578,
         "unit_price": 95.0
       }

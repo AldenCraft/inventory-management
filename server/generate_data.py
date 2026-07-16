@@ -120,6 +120,13 @@ for month in range(1, 13):  # Jan to Dec
             items.append({
                 "sku": product["sku"],
                 "name": product["name"],
+                # Carry each line item's own category so revenue and category
+                # filtering can be attributed per line item. Without this, a
+                # mixed-category order could only be tagged with a single
+                # category (see order["category"] below), which both
+                # over-counted the primary category and dropped the order from
+                # filters for its other categories.
+                "category": product["category"],
                 "quantity": quantity,
                 "unit_price": product["price"]
             })
@@ -133,6 +140,10 @@ for month in range(1, 13):  # Jan to Dec
             "items": items,
             "status": status,
             "warehouse": warehouse,
+            # Display-only label (the first line item's category). Revenue
+            # attribution and category filtering use the per-line-item
+            # categories in "items" above, not this field, so mixed-category
+            # orders are counted correctly.
             "category": primary_category,
             "order_date": order_date,
             "expected_delivery": expected_delivery.strftime("%Y-%m-%dT%H:%M:%S"),
