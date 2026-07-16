@@ -14,13 +14,15 @@
             <div class="trend-icon">↑</div>
             <div>
               <div class="trend-label">{{ t('demand.increasingDemand') }}</div>
-              <div class="trend-count">{{ t('demand.itemsCount', { count: getForecastsByTrend('increasing').length }) }}</div>
+              <div class="trend-count">{{ itemsCountLabel(getForecastsByTrend('increasing').length) }}</div>
             </div>
           </div>
           <div class="trend-items">
             <div v-for="item in getForecastsByTrend('increasing').slice(0, 5)" :key="item.id" class="trend-item">
               <span class="item-name">{{ item.item_name }}</span>
-              <span class="item-change">+{{ getChangePercent(item) }}%</span>
+              <!-- getChangePercent already returns a signed value (e.g. "+50.0"), so the
+                   template must NOT prepend another "+" — that produced "++50.0%". -->
+              <span class="item-change">{{ getChangePercent(item) }}%</span>
             </div>
             <div v-if="getForecastsByTrend('increasing').length > 5" class="more-items">
               +{{ getForecastsByTrend('increasing').length - 5 }} {{ t('demand.more') }}
@@ -33,7 +35,7 @@
             <div class="trend-icon">→</div>
             <div>
               <div class="trend-label">{{ t('demand.stableDemand') }}</div>
-              <div class="trend-count">{{ t('demand.itemsCount', { count: getForecastsByTrend('stable').length }) }}</div>
+              <div class="trend-count">{{ itemsCountLabel(getForecastsByTrend('stable').length) }}</div>
             </div>
           </div>
           <div class="trend-items">
@@ -52,7 +54,7 @@
             <div class="trend-icon">↓</div>
             <div>
               <div class="trend-label">{{ t('demand.decreasingDemand') }}</div>
-              <div class="trend-count">{{ t('demand.itemsCount', { count: getForecastsByTrend('decreasing').length }) }}</div>
+              <div class="trend-count">{{ itemsCountLabel(getForecastsByTrend('decreasing').length) }}</div>
             </div>
           </div>
           <div class="trend-items">
@@ -124,7 +126,7 @@ export default {
     SortableTh
   },
   setup() {
-    const { t } = useI18n()
+    const { t, currentLocale } = useI18n()
     const loading = ref(true)
     const error = ref(null)
     const allForecasts = ref([])
@@ -195,6 +197,18 @@ export default {
       return forecasts.value.filter(f => f.trend === trend)
     }
 
+    // The shared `itemsCount` locale string is always plural ("{count} items"), which
+    // reads wrong for a single item ("1 items"). Without adding a locale key we can only
+    // correct English here: drop the trailing "s" when count === 1. Japanese uses the
+    // counter 件, which has no singular/plural distinction, so it's left untouched.
+    const itemsCountLabel = (count) => {
+      const label = t('demand.itemsCount', { count })
+      if (count === 1 && currentLocale.value === 'en') {
+        return label.replace(/items$/, 'item')
+      }
+      return label
+    }
+
     const getChangePercent = (forecast) => {
       // Guard against divide-by-zero: with no current demand the percent change is
       // undefined (would be Infinity/NaN), so surface "N/A" instead of a bad number.
@@ -247,6 +261,7 @@ export default {
       sortDir,
       toggleSort,
       getForecastsByTrend,
+      itemsCountLabel,
       getChangePercent,
       getChangeColor,
       translatePeriod
