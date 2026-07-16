@@ -15,7 +15,11 @@
             <div class="kpi-header">
               <span class="kpi-label">{{ t('dashboard.kpi.inventoryTurnover') }}</span>
             </div>
-            <div class="kpi-value">4.2</div>
+            <!-- Illustrative/static figure. A true inventory turnover rate needs COGS and
+                 average inventory over a period, neither of which the current data model
+                 exposes, so this is shown as a fixed sample value (flagged with the *
+                 marker + tooltip) rather than a misleading filter-responsive number. -->
+            <div class="kpi-value">4.2<sup class="kpi-illustrative-marker" title="Illustrative sample value — not derived from the current data or filters">*</sup></div>
             <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: 4.5 (-6.67%)</div>
             <div class="kpi-progress-bar">
               <div class="kpi-progress" style="width: 93.33%"></div>
@@ -37,7 +41,7 @@
             <div class="kpi-header">
               <span class="kpi-label">{{ t('dashboard.kpi.orderFillRate') }}</span>
             </div>
-            <div class="kpi-value">{{ fillRate }}%</div>
+            <div class="kpi-value">{{ fillRate.toFixed(1) }}%</div>
             <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: 95% ({{ fillRate - 95 > 0 ? '+' : '' }}{{ (fillRate - 95).toFixed(2) }}%)</div>
             <div class="kpi-progress-bar">
               <div class="kpi-progress success" :style="{ width: (fillRate / 95 * 100) + '%' }"></div>
@@ -59,10 +63,10 @@
             <div class="kpi-header">
               <span class="kpi-label">{{ t('dashboard.kpi.avgProcessingTime') }}</span>
             </div>
-            <div class="kpi-value">2.8</div>
-            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: 3.0 (-6.67%)</div>
+            <div class="kpi-value">{{ avgProcessingTime.toFixed(1) }}</div>
+            <div class="kpi-goal">{{ t('dashboard.kpi.goal') }}: {{ processingTimeGoal.toFixed(1) }} ({{ avgProcessingTime - processingTimeGoal > 0 ? '+' : '' }}{{ (((avgProcessingTime - processingTimeGoal) / processingTimeGoal) * 100).toFixed(2) }}%)</div>
             <div class="kpi-progress-bar">
-              <div class="kpi-progress success" style="width: 93.33%"></div>
+              <div class="kpi-progress success" :style="{ width: Math.min(avgProcessingTime / processingTimeGoal * 100, 100) + '%' }"></div>
             </div>
           </div>
         </div>
@@ -290,7 +294,7 @@ export default {
     SortableTh,
   },
   setup() {
-    const { t, currentCurrency, translateProductName, translateWarehouse } = useI18n()
+    const { t, currentCurrency, currentLocale, translateProductName, translateWarehouse } = useI18n()
     const loading = ref(true)
     const error = ref(null)
     const summary = ref({})
@@ -312,8 +316,9 @@ export default {
       getCurrentFilters
     } = useFilters()
 
-    const ordersData = ref({ fulfilled: 187, goal: 200 })
-    const fillRate = ref(96.8)
+    // Business target for average order-to-delivery time (days). Goals/targets are
+    // legitimate static inputs; the *measured* values below are derived from live data.
+    const processingTimeGoal = 3.0
 
     const revenueGoal = computed(() => {
       // $800K per month, so if looking at all months (12 months), goal is 12 * 800K = 9.6M
@@ -377,6 +382,26 @@ export default {
         avgFulfillmentDays
       }
     })
+
+    // Orders Fulfilled KPI: orders that have shipped or been delivered, out of all
+    // orders in the current filter. Derived from live status counts so it responds to
+    // the filter bar (previously a hardcoded { fulfilled: 187, goal: 200 }).
+    const ordersData = computed(() => ({
+      fulfilled: statusData.value.delivered + statusData.value.shipped,
+      goal: orderHealthMetrics.value.totalOrders
+    }))
+
+    // Order Fill Rate KPI: share of orders that are not backordered (i.e. fillable from
+    // stock). Derived from live status counts (previously a hardcoded 96.8).
+    const fillRate = computed(() => {
+      const total = orderHealthMetrics.value.totalOrders
+      if (total === 0) return 0
+      return ((total - statusData.value.backordered) / total) * 100
+    })
+
+    // Avg Processing Time KPI: mean days from order to delivery for delivered orders,
+    // reused from orderHealthMetrics (previously a hardcoded 2.8).
+    const avgProcessingTime = computed(() => orderHealthMetrics.value.avgFulfillmentDays)
 
     const categoryData = computed(() => {
       // Group inventory by category and calculate values
@@ -604,6 +629,9 @@ export default {
     }
 
     const calculatePercentage = (value, goal) => {
+      // Guard against a zero/empty goal (e.g. no orders in the current filter) so the
+      // KPI shows 0.00 instead of NaN/Infinity.
+      if (!goal) return '0.00'
       return ((value / goal) * 100).toFixed(2)
     }
 
@@ -663,9 +691,11 @@ export default {
 
     const formatDate = (dateString) => {
       if (!dateString) return '-'
-      const { currentLocale } = useI18n()
-      const locale = currentLocale.value === 'ja' ? 'ja-JP' : 'en-US'
       const date = new Date(dateString)
+      // Guard against invalid/malformed dates so the UI shows a placeholder instead of
+      // "Invalid Date" (per the repo date rule).
+      if (isNaN(date.getTime())) return '-'
+      const locale = currentLocale.value === 'ja' ? 'ja-JP' : 'en-US'
       return date.toLocaleDateString(locale, { month: 'short', day: 'numeric', year: 'numeric' })
     }
 
@@ -693,6 +723,8 @@ export default {
       summary,
       ordersData,
       fillRate,
+      avgProcessingTime,
+      processingTimeGoal,
       statusData,
       orderHealthMetrics,
       categoryData,
@@ -793,6 +825,16 @@ export default {
   color: #0f172a;
   margin-bottom: 0.5rem;
   letter-spacing: -0.025em;
+}
+
+/* Subtle cue that a KPI value is an illustrative/static sample rather than a live,
+   filter-responsive figure. Rendered as a small superscript asterisk with a tooltip. */
+.kpi-illustrative-marker {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-left: 0.15rem;
+  cursor: help;
 }
 
 .kpi-goal {
