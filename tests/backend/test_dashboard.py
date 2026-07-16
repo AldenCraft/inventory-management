@@ -188,6 +188,51 @@ class TestDashboardEndpoints:
         assert abs(dashboard_data["total_inventory_value"] - expected_value) < 0.01
 
 
+class TestDashboardFilterReducesResults:
+    """Filtered summary values must move in the right direction, not just exist.
+
+    The existing filter tests only assert a key is present. These assert a
+    filtered aggregate is strictly smaller than the unfiltered one and that the
+    filtered numbers reconcile against the correspondingly filtered raw data, so
+    a filter that quietly no-ops would fail here.
+    """
+
+    def test_warehouse_filter_reduces_inventory_value(self, client):
+        """A single-warehouse summary holds less inventory value than all warehouses."""
+        unfiltered = client.get("/api/dashboard/summary").json()
+        filtered = client.get("/api/dashboard/summary?warehouse=Tokyo").json()
+
+        assert filtered["total_inventory_value"] < unfiltered["total_inventory_value"]
+
+        # And it reconciles with the warehouse-filtered inventory rows.
+        tokyo_inventory = client.get("/api/inventory?warehouse=Tokyo").json()
+        expected = sum(i["quantity_on_hand"] * i["unit_cost"] for i in tokyo_inventory)
+        assert abs(filtered["total_inventory_value"] - expected) < 0.01
+
+    def test_month_filter_reduces_orders_value(self, client):
+        """A single-month summary holds less order revenue than the full year."""
+        unfiltered = client.get("/api/dashboard/summary").json()
+        filtered = client.get("/api/dashboard/summary?month=2025-01").json()
+
+        assert filtered["total_orders_value"] < unfiltered["total_orders_value"]
+
+        # Reconcile against January orders (excluding internal Submitted restocks,
+        # matching the endpoint's revenue rule).
+        jan_orders = client.get("/api/orders?month=2025-01").json()
+        expected = sum(
+            o["total_value"] for o in jan_orders if o["status"] != "Submitted"
+        )
+        assert abs(filtered["total_orders_value"] - expected) < 0.01
+
+    def test_status_filter_reduces_pending_orders(self, client):
+        """Filtering to Delivered drives pending (Processing/Backordered) to zero."""
+        unfiltered = client.get("/api/dashboard/summary").json()
+        filtered = client.get("/api/dashboard/summary?status=Delivered").json()
+
+        assert unfiltered["pending_orders"] > 0  # sanity: there is something to drop
+        assert filtered["pending_orders"] == 0
+
+
 class TestCategoryRevenueAttribution:
     """Revenue must be attributed per line item, not entirely to an order's primary category.
 
