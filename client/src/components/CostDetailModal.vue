@@ -12,7 +12,7 @@
           @click.stop
         >
           <div class="modal-header">
-            <h3 id="cost-modal-title" class="modal-title">{{ costData.month }} Cost Breakdown</h3>
+            <h3 id="cost-modal-title" class="modal-title">{{ t('costDetail.title', { month: displayMonth }) }}</h3>
             <button class="close-button" :aria-label="t('common.close')" @click="close">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -23,8 +23,8 @@
           <div class="modal-body">
             <div class="cost-summary">
               <div class="summary-card total">
-                <div class="summary-label">Total Costs</div>
-                <div class="summary-value">{{ currencySymbol }}{{ totalCosts.toLocaleString() }}</div>
+                <div class="summary-label">{{ t('finance.totalCosts') }}</div>
+                <div class="summary-value">{{ formatCurrency(totalCosts, currentCurrency) }}</div>
               </div>
             </div>
 
@@ -38,11 +38,11 @@
                     </svg>
                   </div>
                   <div class="cost-info">
-                    <div class="cost-name">Procurement</div>
-                    <div class="cost-amount">{{ currencySymbol }}{{ costData.procurement.toLocaleString() }}</div>
+                    <div class="cost-name">{{ t('finance.monthlyCostFlow.procurement') }}</div>
+                    <div class="cost-amount">{{ formatCurrency(costData.procurement, currentCurrency) }}</div>
                   </div>
                 </div>
-                <div class="cost-percentage">{{ getProcurementPercentage() }}% of total</div>
+                <div class="cost-percentage">{{ t('costDetail.percentOfTotal', { percent: getProcurementPercentage() }) }}</div>
               </div>
 
               <div class="cost-item operational">
@@ -54,11 +54,11 @@
                     </svg>
                   </div>
                   <div class="cost-info">
-                    <div class="cost-name">Operational</div>
-                    <div class="cost-amount">{{ currencySymbol }}{{ costData.operational.toLocaleString() }}</div>
+                    <div class="cost-name">{{ t('finance.monthlyCostFlow.operational') }}</div>
+                    <div class="cost-amount">{{ formatCurrency(costData.operational, currentCurrency) }}</div>
                   </div>
                 </div>
-                <div class="cost-percentage">{{ getOperationalPercentage() }}% of total</div>
+                <div class="cost-percentage">{{ t('costDetail.percentOfTotal', { percent: getOperationalPercentage() }) }}</div>
               </div>
 
               <div class="cost-item labor">
@@ -70,11 +70,11 @@
                     </svg>
                   </div>
                   <div class="cost-info">
-                    <div class="cost-name">Labor</div>
-                    <div class="cost-amount">{{ currencySymbol }}{{ costData.labor.toLocaleString() }}</div>
+                    <div class="cost-name">{{ t('finance.monthlyCostFlow.labor') }}</div>
+                    <div class="cost-amount">{{ formatCurrency(costData.labor, currentCurrency) }}</div>
                   </div>
                 </div>
-                <div class="cost-percentage">{{ getLaborPercentage() }}% of total</div>
+                <div class="cost-percentage">{{ t('costDetail.percentOfTotal', { percent: getLaborPercentage() }) }}</div>
               </div>
 
               <div class="cost-item overhead">
@@ -85,17 +85,17 @@
                     </svg>
                   </div>
                   <div class="cost-info">
-                    <div class="cost-name">Overhead</div>
-                    <div class="cost-amount">{{ currencySymbol }}{{ costData.overhead.toLocaleString() }}</div>
+                    <div class="cost-name">{{ t('finance.monthlyCostFlow.overhead') }}</div>
+                    <div class="cost-amount">{{ formatCurrency(costData.overhead, currentCurrency) }}</div>
                   </div>
                 </div>
-                <div class="cost-percentage">{{ getOverheadPercentage() }}% of total</div>
+                <div class="cost-percentage">{{ t('costDetail.percentOfTotal', { percent: getOverheadPercentage() }) }}</div>
               </div>
             </div>
           </div>
 
           <div class="modal-footer">
-            <button class="btn-secondary" @click="close">Close</button>
+            <button class="btn-secondary" @click="close">{{ t('common.close') }}</button>
           </div>
         </div>
       </div>
@@ -107,10 +107,14 @@
 import { computed } from 'vue'
 import { useI18n } from '../composables/useI18n'
 import { useModal } from '../composables/useModal'
-import { useCurrency } from '../composables/useCurrency'
+import { formatCurrency } from '../utils/currency'
 
-const { t } = useI18n()
-const { currencySymbol } = useCurrency()
+const { t, currentCurrency } = useI18n()
+
+// costData.month is either a month abbreviation ("Jan") from the cost-flow chart or a
+// free-text transaction description. Translate it only when it maps to a known month key
+// so month titles localize (Jan -> 1月) while descriptions pass through unchanged.
+const MONTH_KEYS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 
 const props = defineProps({
   isOpen: {
@@ -127,6 +131,13 @@ const emit = defineEmits(['close'])
 
 // Modal shell + accessibility (escape, scroll-lock, focus trap/return).
 const { modalRef, close } = useModal(() => props.isOpen && !!props.costData, emit)
+
+const displayMonth = computed(() => {
+  const month = props.costData?.month
+  if (!month) return ''
+  const key = String(month).toLowerCase()
+  return MONTH_KEYS.includes(key) ? t(`months.${key}`) : month
+})
 
 const totalCosts = computed(() => {
   if (!props.costData) return 0

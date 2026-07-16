@@ -369,7 +369,32 @@ export default {
     search: 'Search',
     filter: 'Filter',
     export: 'Export',
-    items: 'items'
+    items: 'items',
+    units: 'units',
+    days: 'days'
+  },
+
+  // Detail Modals
+  costDetail: {
+    title: '{month} Cost Breakdown',
+    percentOfTotal: '{percent}% of total'
+  },
+  productDetail: {
+    title: 'Product Details',
+    currentStock: 'Current Stock',
+    firstOrderDate: 'First Order Date'
+  },
+  inventoryDetail: {
+    title: 'Inventory Item Details',
+    stockLevel: 'Stock Level',
+    vsReorderPoint: 'vs. reorder point',
+    unitsRemaining: 'Units Remaining'
+  },
+  backlogDetail: {
+    title: 'Inventory Shortage Details',
+    priorityLabel: '{priority} Priority',
+    shortageAmount: 'Shortage Amount',
+    itemSku: 'Item SKU'
   },
 
   // Restocking

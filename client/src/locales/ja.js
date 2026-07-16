@@ -369,7 +369,32 @@ export default {
     search: '検索',
     filter: 'フィルター',
     export: 'エクスポート',
-    items: '件'
+    items: '件',
+    units: '単位',
+    days: '日'
+  },
+
+  // Detail Modals
+  costDetail: {
+    title: '{month}のコスト内訳',
+    percentOfTotal: '全体の{percent}%'
+  },
+  productDetail: {
+    title: '製品詳細',
+    currentStock: '現在の在庫',
+    firstOrderDate: '初回注文日'
+  },
+  inventoryDetail: {
+    title: '在庫品目詳細',
+    stockLevel: '在庫レベル',
+    vsReorderPoint: '再注文点との比較',
+    unitsRemaining: '残り単位数'
+  },
+  backlogDetail: {
+    title: '在庫不足詳細',
+    priorityLabel: '{priority}優先度',
+    shortageAmount: '不足数量',
+    itemSku: '品目SKU'
   },
 
   // Restocking
