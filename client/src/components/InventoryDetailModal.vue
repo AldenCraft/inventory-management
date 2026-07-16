@@ -108,7 +108,7 @@
 import { computed } from 'vue'
 import { useI18n } from '../composables/useI18n'
 
-const { currentCurrency, translateProductName, translateWarehouse } = useI18n()
+const { t, currentCurrency, translateProductName, translateWarehouse } = useI18n()
 
 const currencySymbol = computed(() => {
   return currentCurrency.value === 'JPY' ? '¥' : '$'
@@ -141,35 +141,45 @@ const close = () => {
   emit('close')
 }
 
-const getStockStatus = () => {
-  if (!props.inventoryItem) return 'Unknown'
+// Locale-independent status key ('lowStock' | 'adequate' | 'inStock'), mirroring
+// getStockStatusKey() in Inventory.vue so the table and modal classify stock the same way.
+// Class/icon helpers key off this so styling stays correct regardless of language, and
+// the visible label is translated separately via t('status.*').
+const getStockStatusKey = () => {
+  if (!props.inventoryItem) return null
   if (props.inventoryItem.quantity_on_hand <= props.inventoryItem.reorder_point) {
-    return 'Low Stock'
+    return 'lowStock'
   } else if (props.inventoryItem.quantity_on_hand <= props.inventoryItem.reorder_point * 1.5) {
-    return 'Adequate'
+    return 'adequate'
   } else {
-    return 'In Stock'
+    return 'inStock'
   }
 }
 
+const getStockStatus = () => {
+  const key = getStockStatusKey()
+  // The modal only renders with an item present (v-if guard), so the null case is a safety net.
+  return key ? t(`status.${key}`) : ''
+}
+
 const getStockStatusClass = () => {
-  const status = getStockStatus()
-  if (status === 'Low Stock') return 'danger'
-  if (status === 'Adequate') return 'warning'
+  const key = getStockStatusKey()
+  if (key === 'lowStock') return 'danger'
+  if (key === 'adequate') return 'warning'
   return 'success'
 }
 
 const getStockIconClass = () => {
-  const status = getStockStatus()
-  if (status === 'Low Stock') return 'danger-icon'
-  if (status === 'Adequate') return 'warning-icon'
+  const key = getStockStatusKey()
+  if (key === 'lowStock') return 'danger-icon'
+  if (key === 'adequate') return 'warning-icon'
   return 'success-icon'
 }
 
 const getSummaryCardClass = () => {
-  const status = getStockStatus()
-  if (status === 'Low Stock') return 'danger-card'
-  if (status === 'Adequate') return 'warning-card'
+  const key = getStockStatusKey()
+  if (key === 'lowStock') return 'danger-card'
+  if (key === 'adequate') return 'warning-card'
   return 'success-card'
 }
 </script>
