@@ -120,6 +120,27 @@ class CreatePurchaseOrderRequest(BaseModel):
     expected_delivery_date: str
     notes: Optional[str] = None
 
+class Task(BaseModel):
+    id: int
+    title: str
+    priority: str
+    dueDate: str
+    status: str
+
+class CreateTaskRequest(BaseModel):
+    title: str
+    priority: str = "medium"
+    dueDate: str
+
+# In-memory task store. Starts empty and lives for the life of the process
+# (restart clears it), matching the rest of this demo's mock-data approach.
+# The client seeds its own example tasks (ids 1-4) in useAuth.js and merges them
+# with the tasks returned here, so server-assigned ids start at 1000 to avoid
+# colliding with those client-side mock ids — App.vue distinguishes mock tasks
+# from API tasks by id when deleting/toggling.
+tasks_store: List[dict] = []
+_next_task_id = 1000
+
 # API endpoints
 @app.get("/")
 def root():
@@ -303,6 +324,45 @@ def get_monthly_trends():
     result = list(months.values())
     result.sort(key=lambda x: x['month'])
     return result
+
+@app.get("/api/tasks", response_model=List[Task])
+def get_tasks():
+    """Get all user-created tasks stored on the server for this session."""
+    return tasks_store
+
+@app.post("/api/tasks", response_model=Task, status_code=201)
+def create_task(task: CreateTaskRequest):
+    """Create a task and keep it in the in-memory store for this session."""
+    global _next_task_id
+    new_task = {
+        "id": _next_task_id,
+        "title": task.title,
+        "priority": task.priority,
+        "dueDate": task.dueDate,
+        "status": "pending",
+    }
+    _next_task_id += 1
+    # Newest first, matching how the client prepends and renders tasks.
+    tasks_store.insert(0, new_task)
+    return new_task
+
+@app.delete("/api/tasks/{task_id}")
+def delete_task(task_id: int):
+    """Delete a task by id."""
+    global tasks_store
+    if not any(t["id"] == task_id for t in tasks_store):
+        raise HTTPException(status_code=404, detail="Task not found")
+    tasks_store = [t for t in tasks_store if t["id"] != task_id]
+    return {"success": True, "id": task_id}
+
+@app.patch("/api/tasks/{task_id}", response_model=Task)
+def toggle_task(task_id: int):
+    """Toggle a task between pending and completed."""
+    task = next((t for t in tasks_store if t["id"] == task_id), None)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    task["status"] = "completed" if task["status"] == "pending" else "pending"
+    return task
 
 if __name__ == "__main__":
     import uvicorn
