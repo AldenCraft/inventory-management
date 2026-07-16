@@ -136,16 +136,16 @@
             <table class="transactions-table">
               <thead>
                 <tr>
-                  <th>{{ t('finance.transactions.id') }}</th>
-                  <th>{{ t('finance.transactions.description') }}</th>
-                  <th>{{ t('finance.transactions.vendor') }}</th>
-                  <th>{{ t('finance.transactions.date') }}</th>
-                  <th class="text-right">{{ t('finance.transactions.amount') }}</th>
+                  <SortableTh column-key="id" :label="t('finance.transactions.id')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                  <SortableTh column-key="description" :label="t('finance.transactions.description')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                  <SortableTh column-key="vendor" :label="t('finance.transactions.vendor')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                  <SortableTh column-key="date" :label="t('finance.transactions.date')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                  <SortableTh class="text-right" column-key="amount" :label="t('finance.transactions.amount')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
                 </tr>
               </thead>
               <tbody>
                 <tr
-                  v-for="transaction in recentTransactions"
+                  v-for="transaction in sortedTransactions"
                   :key="transaction.id"
                   class="clickable-row"
                   @click="handleTransactionClick(transaction)"
@@ -177,12 +177,15 @@ import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
 import { formatCurrency as formatCurrencyUtil } from '../utils/currency'
+import { useTableSort } from '../composables/useTableSort'
 import CostDetailModal from '../components/CostDetailModal.vue'
+import SortableTh from '../components/SortableTh.vue'
 
 export default {
   name: 'Spending',
   components: {
-    CostDetailModal
+    CostDetailModal,
+    SortableTh
   },
   setup() {
     const { t, currentCurrency } = useI18n()
@@ -236,6 +239,21 @@ export default {
         return transactionMonth === selectedPeriod.value
       })
     })
+
+    // Click-to-sort layered on top of recentTransactions (which already reflects
+    // the period filter). When sort is "off", applySort returns rows untouched.
+    const { sortKey, sortDir, toggleSort, applySort } = useTableSort()
+
+    const transactionSortAccessors = {
+      id: (tx) => tx.id,
+      description: (tx) => tx.description,
+      vendor: (tx) => tx.vendor,
+      // ISO date strings compare chronologically as strings
+      date: (tx) => tx.date,
+      amount: (tx) => tx.amount
+    }
+
+    const sortedTransactions = computed(() => applySort(recentTransactions.value, transactionSortAccessors))
 
     const summary = computed(() => {
       // Recalculate summary based on filteredMonthlySpending (not the chart data)
@@ -467,6 +485,10 @@ export default {
       monthlySpending,
       categorySpending,
       recentTransactions,
+      sortedTransactions,
+      sortKey,
+      sortDir,
+      toggleSort,
       revenueMetrics,
       totalCosts,
       netProfit,

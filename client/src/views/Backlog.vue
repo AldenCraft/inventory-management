@@ -40,18 +40,18 @@
           <table>
             <thead>
               <tr>
-                <th>Order ID</th>
-                <th>SKU</th>
-                <th>Item Name</th>
-                <th>Quantity Needed</th>
-                <th>Quantity Available</th>
-                <th>Shortage</th>
-                <th>Days Delayed</th>
-                <th>Priority</th>
+                <SortableTh column-key="orderId" label="Order ID" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="sku" label="SKU" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="itemName" label="Item Name" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="quantityNeeded" label="Quantity Needed" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="quantityAvailable" label="Quantity Available" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="shortage" label="Shortage" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="daysDelayed" label="Days Delayed" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="priority" label="Priority" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
               </tr>
             </thead>
             <tbody>
-              <tr v-for="item in backlogItems" :key="item.id">
+              <tr v-for="item in sortedBacklogItems" :key="item.id">
                 <td><strong>{{ item.order_id }}</strong></td>
                 <td><strong>{{ item.item_sku }}</strong></td>
                 <td>{{ item.item_name }}</td>
@@ -85,9 +85,14 @@
 import { ref, onMounted, watch, computed } from 'vue'
 import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
+import { useTableSort } from '../composables/useTableSort'
+import SortableTh from '../components/SortableTh.vue'
 
 export default {
   name: 'Backlog',
+  components: {
+    SortableTh
+  },
   setup() {
     const loading = ref(true)
     const error = ref(null)
@@ -130,6 +135,24 @@ export default {
       }
     }
 
+    // Click-to-sort layered on top of the filtered backlog list.
+    // When sort is "off", applySort returns backlogItems untouched.
+    const { sortKey, sortDir, toggleSort, applySort } = useTableSort()
+
+    const sortAccessors = {
+      orderId: (i) => i.order_id,
+      sku: (i) => i.item_sku,
+      itemName: (i) => i.item_name,
+      quantityNeeded: (i) => i.quantity_needed,
+      quantityAvailable: (i) => i.quantity_available,
+      // Derived: units short = needed - available
+      shortage: (i) => i.quantity_needed - i.quantity_available,
+      daysDelayed: (i) => i.days_delayed,
+      priority: (i) => i.priority
+    }
+
+    const sortedBacklogItems = computed(() => applySort(backlogItems.value, sortAccessors))
+
     const getBacklogByPriority = (priority) => {
       return backlogItems.value.filter(item => item.priority === priority)
     }
@@ -145,6 +168,10 @@ export default {
       loading,
       error,
       backlogItems,
+      sortedBacklogItems,
+      sortKey,
+      sortDir,
+      toggleSort,
       getBacklogByPriority
     }
   }

@@ -35,17 +35,17 @@
           <table class="orders-table">
             <thead>
               <tr>
-                <th class="col-order-number">{{ t('orders.table.orderNumber') }}</th>
-                <th class="col-customer">{{ t('orders.table.customer') }}</th>
-                <th class="col-items">{{ t('orders.table.items') }}</th>
-                <th class="col-status">{{ t('orders.table.status') }}</th>
-                <th class="col-date">{{ t('orders.table.orderDate') }}</th>
-                <th class="col-date">{{ t('orders.table.expectedDelivery') }}</th>
-                <th class="col-value">{{ t('orders.table.totalValue') }}</th>
+                <SortableTh class="col-order-number" column-key="orderNumber" :label="t('orders.table.orderNumber')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh class="col-customer" column-key="customer" :label="t('orders.table.customer')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh class="col-items" column-key="items" :label="t('orders.table.items')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh class="col-status" column-key="status" :label="t('orders.table.status')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh class="col-date" column-key="orderDate" :label="t('orders.table.orderDate')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh class="col-date" column-key="expectedDelivery" :label="t('orders.table.expectedDelivery')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh class="col-value" column-key="totalValue" :label="t('orders.table.totalValue')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
               </tr>
             </thead>
             <tbody>
-              <tr v-for="order in orders" :key="order.id">
+              <tr v-for="order in sortedOrders" :key="order._rowKey">
                 <td class="col-order-number"><strong>{{ order.order_number }}</strong></td>
                 <td class="col-customer">{{ translateCustomerName(order.customer) }}</td>
                 <td class="col-items">
@@ -83,9 +83,14 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
+import { useTableSort } from '../composables/useTableSort'
+import SortableTh from '../components/SortableTh.vue'
 
 export default {
   name: 'Orders',
+  components: {
+    SortableTh
+  },
   setup() {
     const { t, currentCurrency, translateProductName, translateCustomerName } = useI18n()
 
@@ -112,11 +117,16 @@ export default {
         const fetchedOrders = await api.getOrders(filters)
 
         // Sort orders by order_date (earliest first)
-        orders.value = fetchedOrders.sort((a, b) => {
-          const dateA = new Date(a.order_date)
-          const dateB = new Date(b.order_date)
-          return dateA - dateB
-        })
+        // The source data has duplicate `id` values, so we stamp a stable, unique
+        // _rowKey once here. applySort reorders the same object refs, so each row
+        // keeps its key across asc/desc/off and Vue patches rows correctly.
+        orders.value = fetchedOrders
+          .sort((a, b) => {
+            const dateA = new Date(a.order_date)
+            const dateB = new Date(b.order_date)
+            return dateA - dateB
+          })
+          .map((o, i) => ({ ...o, _rowKey: i }))
       } catch (err) {
         error.value = 'Failed to load orders: ' + err.message
       } finally {
@@ -153,6 +163,25 @@ export default {
       })
     }
 
+    // Click-to-sort layered on top of the date-ascending default order.
+    // When sort is "off", applySort returns orders untouched.
+    const { sortKey, sortDir, toggleSort, applySort } = useTableSort()
+
+    const sortAccessors = {
+      orderNumber: (o) => o.order_number,
+      // i18n column: sort on the raw customer name, not the translated label
+      customer: (o) => o.customer,
+      // Derived: sort by number of line items
+      items: (o) => o.items.length,
+      status: (o) => o.status,
+      // ISO date strings compare chronologically as strings
+      orderDate: (o) => o.order_date,
+      expectedDelivery: (o) => o.expected_delivery,
+      totalValue: (o) => o.total_value
+    }
+
+    const sortedOrders = computed(() => applySort(orders.value, sortAccessors))
+
     onMounted(loadOrders)
 
     return {
@@ -160,6 +189,10 @@ export default {
       loading,
       error,
       orders,
+      sortedOrders,
+      sortKey,
+      sortDir,
+      toggleSort,
       getOrdersByStatus,
       getOrderStatusClass,
       formatDate,
