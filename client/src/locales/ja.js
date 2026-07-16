@@ -7,6 +7,7 @@ export default {
     finance: '財務',
     demandForecast: '需要予測',
     restocking: '再入荷',
+    reports: 'レポート',
     companyName: '触媒コンポーネンツ',
     subtitle: '在庫管理システム'
   },
@@ -198,6 +199,37 @@ export default {
       change: '変化',
       trend: 'トレンド',
       period: '期間'
+    }
+  },
+
+  // Reports
+  reports: {
+    title: 'パフォーマンスレポート',
+    description: '四半期パフォーマンス指標と月次トレンドを表示',
+    loading: 'レポートを読み込み中...',
+    error: 'レポートの読み込みに失敗しました',
+    notAvailable: 'N/A',
+    noChange: '-',
+    quarterlyPerformance: '四半期パフォーマンス',
+    monthlyRevenueTrend: '月別収益トレンド',
+    monthOverMonthAnalysis: '月次比較分析',
+    table: {
+      quarter: '四半期',
+      totalOrders: '総注文数',
+      totalRevenue: '総収益',
+      avgOrderValue: '平均注文額',
+      fulfillmentRate: '履行率',
+      month: '月',
+      orders: '注文数',
+      revenue: '収益',
+      change: '変化',
+      growthRate: '成長率'
+    },
+    summary: {
+      totalRevenueYtd: '総収益（年初来）',
+      avgMonthlyRevenue: '月間平均収益',
+      totalOrdersYtd: '総注文数（年初来）',
+      bestQuarter: '最高業績四半期'
     }
   },
 
