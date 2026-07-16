@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 from pydantic import BaseModel
+import math
 from mock_data import inventory_items, orders, demand_forecasts, backlog_items, spending_summary, monthly_spending, category_spending, recent_transactions, purchase_orders
 
 app = FastAPI(title="Factory Inventory Management System")
@@ -92,6 +93,28 @@ class DemandForecast(BaseModel):
     unit_cost: float
     lead_time_days: int
 
+TREND_RANK = {"increasing": 0, "stable": 1, "decreasing": 2}
+
+
+class RestockRecommendation(BaseModel):
+    item_sku: str
+    item_name: str
+    trend: str
+    unit_cost: float
+    lead_time_days: int
+    current_demand: int
+    forecasted_demand: int
+    gap: int
+    recommended_quantity: int
+    line_cost: float
+
+
+class RestockRecommendationsResponse(BaseModel):
+    budget: float
+    total_cost: float
+    remaining_budget: float
+    recommendations: List[RestockRecommendation]
+
 class BacklogItem(BaseModel):
     id: str
     order_id: str
@@ -167,6 +190,64 @@ def get_order(order_id: str):
 def get_demand_forecasts():
     """Get demand forecasts"""
     return demand_forecasts
+
+@app.get("/api/restocking/recommendations", response_model=RestockRecommendationsResponse)
+def get_restocking_recommendations(budget: float = 0):
+    """Recommend restock quantities from the demand forecast within a budget.
+
+    Ranks positive-gap items trend-first (increasing > stable > decreasing), then by
+    largest unit shortfall, then largest full-gap cost. Greedily buys each item's full
+    gap while it fits; partial-fills the first item that doesn't fully fit, then stops
+    (a deliberate demo simplification that can leave some budget unspent).
+    """
+    candidates = []
+    for f in demand_forecasts:
+        gap = max(0, f["forecasted_demand"] - f["current_demand"])
+        if gap == 0:
+            continue
+        candidates.append({"f": f, "gap": gap, "line_cost": round(gap * f["unit_cost"], 2)})
+
+    candidates.sort(key=lambda c: (TREND_RANK.get(c["f"]["trend"], 99), -c["gap"], -c["line_cost"]))
+
+    recommendations = []
+    remaining = budget
+    total_cost = 0.0
+    for c in candidates:
+        f = c["f"]
+        full_cost = c["line_cost"]
+        if full_cost <= remaining:
+            qty = c["gap"]
+            cost = full_cost
+            partial = False
+        else:
+            qty = int(remaining // f["unit_cost"])  # whole units that still fit
+            if qty < 1:
+                break
+            cost = round(qty * f["unit_cost"], 2)
+            partial = True
+        recommendations.append(RestockRecommendation(
+            item_sku=f["item_sku"],
+            item_name=f["item_name"],
+            trend=f["trend"],
+            unit_cost=f["unit_cost"],
+            lead_time_days=f["lead_time_days"],
+            current_demand=f["current_demand"],
+            forecasted_demand=f["forecasted_demand"],
+            gap=c["gap"],
+            recommended_quantity=qty,
+            line_cost=cost,
+        ))
+        total_cost = round(total_cost + cost, 2)
+        remaining = round(remaining - cost, 2)
+        if partial:
+            break
+
+    return RestockRecommendationsResponse(
+        budget=round(budget, 2),
+        total_cost=total_cost,
+        remaining_budget=round(budget - total_cost, 2),
+        recommendations=recommendations,
+    )
 
 @app.get("/api/backlog", response_model=List[BacklogItem])
 def get_backlog():
