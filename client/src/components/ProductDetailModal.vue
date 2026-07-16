@@ -12,7 +12,7 @@
           @click.stop
         >
           <div class="modal-header">
-            <h3 id="product-modal-title" class="modal-title">Product Details</h3>
+            <h3 id="product-modal-title" class="modal-title">{{ t('productDetail.title') }}</h3>
             <button class="close-button" :aria-label="t('common.close')" @click="close">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -33,51 +33,51 @@
                 <div class="product-sku">SKU: {{ product.sku }}</div>
               </div>
               <span class="stock-badge" :class="getStockBadgeClass(product.stockLevel)">
-                {{ product.stockLevel }}
+                {{ translateStockLevel(product.stockLevel) }}
               </span>
             </div>
 
             <div class="info-grid">
               <div class="info-item">
-                <div class="info-label">Category</div>
+                <div class="info-label">{{ t('inventory.table.category') }}</div>
                 <div class="info-value">{{ product.category }}</div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Warehouse</div>
+                <div class="info-label">{{ t('inventory.table.warehouse') }}</div>
                 <div class="info-value">{{ product.warehouse }}</div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Units Ordered</div>
+                <div class="info-label">{{ t('dashboard.topProducts.unitsOrdered') }}</div>
                 <div class="info-value">{{ product.unitsOrdered }}</div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Total Revenue</div>
-                <div class="info-value">{{ currencySymbol }}{{ product.revenue.toLocaleString() }}</div>
+                <div class="info-label">{{ t('orders.totalRevenue') }}</div>
+                <div class="info-value">{{ formatCurrency(product.revenue, currentCurrency) }}</div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Current Stock</div>
-                <div class="info-value">{{ product.quantityOnHand }} units</div>
+                <div class="info-label">{{ t('productDetail.currentStock') }}</div>
+                <div class="info-value">{{ product.quantityOnHand }} {{ t('common.units') }}</div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Reorder Point</div>
-                <div class="info-value">{{ product.reorderPoint }} units</div>
+                <div class="info-label">{{ t('inventory.table.reorderPoint') }}</div>
+                <div class="info-value">{{ product.reorderPoint }} {{ t('common.units') }}</div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">First Order Date</div>
+                <div class="info-label">{{ t('productDetail.firstOrderDate') }}</div>
                 <div class="info-value">{{ formatDate(product.firstOrderDate) }}</div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Stock Status</div>
+                <div class="info-label">{{ t('dashboard.topProducts.stockStatus') }}</div>
                 <div class="info-value">
                   <span :class="['badge', getStockBadgeClass(product.stockLevel)]">
-                    {{ product.stockLevel }}
+                    {{ translateStockLevel(product.stockLevel) }}
                   </span>
                 </div>
               </div>
@@ -85,7 +85,7 @@
           </div>
 
           <div class="modal-footer">
-            <button class="btn-secondary" @click="close">Close</button>
+            <button class="btn-secondary" @click="close">{{ t('common.close') }}</button>
           </div>
         </div>
       </div>
@@ -96,10 +96,9 @@
 <script setup>
 import { useI18n } from '../composables/useI18n'
 import { useModal } from '../composables/useModal'
-import { useCurrency } from '../composables/useCurrency'
+import { formatCurrency } from '../utils/currency'
 
-const { t, currentLocale } = useI18n()
-const { currencySymbol } = useCurrency()
+const { t, currentLocale, currentCurrency } = useI18n()
 
 const props = defineProps({
   isOpen: {
@@ -136,6 +135,17 @@ const getStockBadgeClass = (stockLevel) => {
   if (stockLevel === 'Low Stock') return 'warning'
   if (stockLevel === 'Out of Stock') return 'danger'
   return 'info'
+}
+
+// Product stockLevel arrives as an English data value ("In Stock" / "Low Stock");
+// map it to the shared status.* keys (matching Dashboard's topProducts table) and fall
+// back to the raw value for anything unmapped.
+const translateStockLevel = (stockLevel) => {
+  const map = {
+    'In Stock': 'status.inStock',
+    'Low Stock': 'status.lowStock'
+  }
+  return map[stockLevel] ? t(map[stockLevel]) : stockLevel
 }
 </script>
 

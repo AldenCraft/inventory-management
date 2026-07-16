@@ -12,7 +12,7 @@
           @click.stop
         >
           <div class="modal-header">
-            <h3 id="inventory-modal-title" class="modal-title">Inventory Item Details</h3>
+            <h3 id="inventory-modal-title" class="modal-title">{{ t('inventoryDetail.title') }}</h3>
             <button class="close-button" :aria-label="t('common.close')" @click="close">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -40,60 +40,60 @@
 
             <div class="stock-summary">
               <div class="summary-card primary">
-                <div class="summary-label">Quantity on Hand</div>
-                <div class="summary-value">{{ inventoryItem.quantity_on_hand }} units</div>
+                <div class="summary-label">{{ t('inventory.table.quantityOnHand') }}</div>
+                <div class="summary-value">{{ inventoryItem.quantity_on_hand }} {{ t('common.units') }}</div>
               </div>
               <div class="summary-card" :class="summaryCardClass">
-                <div class="summary-label">Stock Level</div>
+                <div class="summary-label">{{ t('inventoryDetail.stockLevel') }}</div>
                 <div class="summary-value">{{ stockPercentage }}%</div>
-                <div class="summary-subtitle">vs. reorder point</div>
+                <div class="summary-subtitle">{{ t('inventoryDetail.vsReorderPoint') }}</div>
               </div>
             </div>
 
             <div class="info-grid">
               <div class="info-item">
-                <div class="info-label">Category</div>
+                <div class="info-label">{{ t('inventory.table.category') }}</div>
                 <div class="info-value">{{ inventoryItem.category }}</div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Location</div>
+                <div class="info-label">{{ t('inventory.table.location') }}</div>
                 <div class="info-value">{{ inventoryItem.location }}</div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Reorder Point</div>
-                <div class="info-value">{{ inventoryItem.reorder_point }} units</div>
+                <div class="info-label">{{ t('inventory.table.reorderPoint') }}</div>
+                <div class="info-value">{{ inventoryItem.reorder_point }} {{ t('common.units') }}</div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Units Remaining</div>
+                <div class="info-label">{{ t('inventoryDetail.unitsRemaining') }}</div>
                 <div class="info-value">
                   <span :style="{ color: inventoryItem.quantity_on_hand <= inventoryItem.reorder_point ? '#ef4444' : '#10b981' }">
-                    {{ inventoryItem.quantity_on_hand - inventoryItem.reorder_point }} units
+                    {{ inventoryItem.quantity_on_hand - inventoryItem.reorder_point }} {{ t('common.units') }}
                   </span>
                 </div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Unit Cost</div>
-                <div class="info-value">{{ currencySymbol }}{{ inventoryItem.unit_cost.toFixed(2) }}</div>
+                <div class="info-label">{{ t('inventory.table.unitCost') }}</div>
+                <div class="info-value">{{ formatCurrencyWithDecimals(inventoryItem.unit_cost, currentCurrency, 2) }}</div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Total Value</div>
+                <div class="info-label">{{ t('inventory.table.totalValue') }}</div>
                 <div class="info-value total-value">
-                  {{ currencySymbol }}{{ totalValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}
+                  {{ formatCurrencyWithDecimals(totalValue, currentCurrency, 2) }}
                 </div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Warehouse</div>
+                <div class="info-label">{{ t('inventory.table.warehouse') }}</div>
                 <div class="info-value">{{ translateWarehouse(inventoryItem.warehouse) }}</div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Status</div>
+                <div class="info-label">{{ t('inventory.table.status') }}</div>
                 <div class="info-value">
                   <span :class="['badge', statusClass]">
                     {{ statusLabel }}
@@ -104,7 +104,7 @@
           </div>
 
           <div class="modal-footer">
-            <button class="btn-secondary" @click="close">Close</button>
+            <button class="btn-secondary" @click="close">{{ t('common.close') }}</button>
           </div>
         </div>
       </div>
@@ -116,11 +116,10 @@
 import { computed } from 'vue'
 import { useI18n } from '../composables/useI18n'
 import { useModal } from '../composables/useModal'
-import { useCurrency } from '../composables/useCurrency'
+import { formatCurrencyWithDecimals } from '../utils/currency'
 import { useStockStatus } from '../composables/useStockStatus'
 
-const { t, translateProductName, translateWarehouse } = useI18n()
-const { currencySymbol } = useCurrency()
+const { t, currentCurrency, translateProductName, translateWarehouse } = useI18n()
 
 const props = defineProps({
   isOpen: {

@@ -12,7 +12,7 @@
           @click.stop
         >
           <div class="modal-header">
-            <h3 id="backlog-modal-title" class="modal-title">Inventory Shortage Details</h3>
+            <h3 id="backlog-modal-title" class="modal-title">{{ t('backlogDetail.title') }}</h3>
             <button class="close-button" :aria-label="t('common.close')" @click="close">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -33,53 +33,53 @@
                 <div class="item-sku">SKU: {{ backlogItem.item_sku }}</div>
               </div>
               <span class="priority-badge" :class="backlogItem.priority">
-                {{ backlogItem.priority }} Priority
+                {{ t('backlogDetail.priorityLabel', { priority: t('priority.' + backlogItem.priority) }) }}
               </span>
             </div>
 
             <div class="shortage-summary">
               <div class="summary-card danger">
-                <div class="summary-label">Shortage Amount</div>
-                <div class="summary-value">{{ shortage }} units</div>
+                <div class="summary-label">{{ t('backlogDetail.shortageAmount') }}</div>
+                <div class="summary-value">{{ shortage }} {{ t('common.units') }}</div>
               </div>
               <div class="summary-card warning">
-                <div class="summary-label">Days Delayed</div>
-                <div class="summary-value">{{ backlogItem.days_delayed }} days</div>
+                <div class="summary-label">{{ t('dashboard.inventoryShortages.daysDelayed') }}</div>
+                <div class="summary-value">{{ backlogItem.days_delayed }} {{ t('common.days') }}</div>
               </div>
             </div>
 
             <div class="info-grid">
               <div class="info-item">
-                <div class="info-label">Order ID</div>
+                <div class="info-label">{{ t('dashboard.inventoryShortages.orderId') }}</div>
                 <div class="info-value order-id">{{ backlogItem.order_id }}</div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Item SKU</div>
+                <div class="info-label">{{ t('backlogDetail.itemSku') }}</div>
                 <div class="info-value sku">{{ backlogItem.item_sku }}</div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Quantity Needed</div>
-                <div class="info-value">{{ backlogItem.quantity_needed }} units</div>
+                <div class="info-label">{{ t('dashboard.inventoryShortages.quantityNeeded') }}</div>
+                <div class="info-value">{{ backlogItem.quantity_needed }} {{ t('common.units') }}</div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Quantity Available</div>
-                <div class="info-value">{{ backlogItem.quantity_available }} units</div>
+                <div class="info-label">{{ t('dashboard.inventoryShortages.quantityAvailable') }}</div>
+                <div class="info-value">{{ backlogItem.quantity_available }} {{ t('common.units') }}</div>
               </div>
 
               <div class="info-item">
-                <div class="info-label">Status</div>
+                <div class="info-label">{{ t('inventory.table.status') }}</div>
                 <div class="info-value">
-                  <span class="badge danger">Backordered</span>
+                  <span class="badge danger">{{ t('status.backordered') }}</span>
                 </div>
               </div>
             </div>
           </div>
 
           <div class="modal-footer">
-            <button class="btn-secondary" @click="close">Close</button>
+            <button class="btn-secondary" @click="close">{{ t('common.close') }}</button>
           </div>
         </div>
       </div>
