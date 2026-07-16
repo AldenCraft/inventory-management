@@ -442,11 +442,20 @@ export default {
       })
     }
 
-    // Build a YYYY-MM key from local date components. Using
-    // new Date(...).toISOString() would convert to UTC first, so a date late on
-    // the last day of a month in a timezone west of UTC would roll into the next
-    // month and land in the wrong period bucket.
+    // Build a YYYY-MM key straight from the source string's ISO prefix, which is
+    // timezone-independent. The source dates are date-only ISO strings
+    // (YYYY-MM-DD). Going through new Date(...) and reading components shifts the
+    // bucket by the local UTC offset: toISOString() (UTC) rolls a late-in-month
+    // local timestamp forward, while getFullYear()/getMonth() (local) rolls a
+    // date-only value (parsed as midnight UTC) back a day in timezones west of
+    // UTC, misfiling the 1st of each month into the previous month. Slicing the
+    // literal YYYY-MM avoids both. Fall back to local components for any
+    // non-ISO-prefixed string.
     const toMonthKey = (dateString) => {
+      const isoMatch = /^(\d{4})-(\d{2})/.exec(dateString)
+      if (isoMatch) {
+        return `${isoMatch[1]}-${isoMatch[2]}`
+      }
       const date = new Date(dateString)
       const year = date.getFullYear()
       const month = (date.getMonth() + 1).toString().padStart(2, '0')
