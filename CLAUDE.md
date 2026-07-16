@@ -2,7 +2,7 @@
 
 Factory Inventory Management System Demo with GitHub integration - Full-stack application with Vue 3 frontend, Python FastAPI backend, and in-memory mock data (no database).
 
-> ⚠️ **This repository is PRIVATE as of 2026-07-16, but it's a fork of a public upstream (beck-source/inventory-management).** Do not commit credentials, internal hostnames, or private registry URLs — they can still leak upstream. `client/.npmrc` pins the public npm registry and `client/package-lock.json` is gitignored to prevent locally-configured registries from leaking into commits — leave both in place.
+> ⚠️ **This repository is PRIVATE (as of 2026-07-16).** Standard hygiene still applies: don't commit credentials, internal hostnames, or private registry URLs. `client/.npmrc` pins the public npm registry and `client/package-lock.json` is gitignored to prevent locally-configured registries from leaking into commits — leave both in place.
 
 ## Critical Tool Usage Rules
 
