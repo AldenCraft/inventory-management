@@ -385,6 +385,21 @@ const loadItems = async () => {
 }
 ```
 
+**Current `api.js` surface (keep in sync with `server/main.py`):**
+- Inventory: `getInventory(filters)` (warehouse+category only), `getInventoryItem(id)`
+- Orders: `getOrders(filters)` (warehouse, category, status, month), `getOrder(id)`
+- Dashboard: `getDashboardSummary(filters)` (warehouse, category, status, month)
+- Demand & restocking: `getDemandForecasts()`, `getRestockingRecommendations(budget)`, `placeRestockingOrder(items)`
+- Backlog: `getBacklog()`
+- Spending: `getSpendingSummary()`, `getMonthlySpending()`, `getCategorySpending()`, `getTransactions()`
+- Reports: `getQuarterlyReports()`, `getMonthlyTrends()`
+- Tasks (real, backed by `/api/tasks*`): `getTasks()`, `createTask(data)`, `deleteTask(id)`, `toggleTask(id)`
+
+> ⚠️ `createPurchaseOrder()` and `getPurchaseOrderByBacklogItem()` call `/api/purchase-orders*`,
+> which the backend does **not** implement — those calls 404. The only purchase-order signal
+> the backend exposes is the `has_purchase_order` flag on `/api/backlog`. Don't rely on the
+> two purchase-order client methods until the routes exist server-side.
+
 ### Number Formatting
 
 **Currency:**

@@ -44,16 +44,24 @@ npm install && npm run dev
 
 ## Key Patterns
 
-**Filter System**: 4 filters (Time Period, Warehouse, Category, Order Status) apply to all data via query params
+**Filter System**: 4 filter controls (Time Period, Warehouse, Category, Order Status) drive query params, but support is per-endpoint — orders and the dashboard summary honor all four; inventory only warehouse+category; demand, backlog, spending, reports, and tasks take no filters (see API Endpoints)
 **Data Flow**: Vue filters → `client/src/api.js` → FastAPI → In-memory filtering → Pydantic validation → Computed properties
 **Reactivity**: Raw data in refs (`allOrders`, `inventoryItems`), derived data in computed properties
 
 ## API Endpoints
 - `GET /api/inventory` - Filters: warehouse, category
+- `GET /api/inventory/{id}` - Single item (404 if not found), no filters
 - `GET /api/orders` - Filters: warehouse, category, status, month
-- `GET /api/dashboard/summary` - All filters
+- `GET /api/orders/{id}` - Single order (404 if not found), no filters
+- `GET /api/dashboard/summary` - Filters: warehouse, category, status, month
 - `GET /api/demand`, `/api/backlog` - No filters
-- `GET /api/spending/*` - Summary, monthly, categories, transactions
+- `GET /api/restocking/recommendations` - `budget` query param (no warehouse/category/etc. filters)
+- `POST /api/restocking/orders` - Create a restock order from line items
+- `GET /api/spending/*` - summary, monthly, categories, transactions (no filters)
+- `GET /api/reports/quarterly`, `/api/reports/monthly-trends` - No filters
+- `GET|POST /api/tasks`, `DELETE|PATCH /api/tasks/{id}` - In-memory task store (cleared on restart), no filters
+
+No `/api/purchase-orders` endpoint exists; purchase-order data only appears as the `has_purchase_order` flag on `/api/backlog`.
 
 ## Common Issues
 1. Use unique keys in v-for (not `index`) - use `sku`, `month`, etc.
