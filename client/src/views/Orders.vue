@@ -27,9 +27,42 @@
         </div>
       </div>
 
+      <!-- Independent of the global filter (see loadSubmittedOrders): submitted orders
+           carry warehouse=null/category=null and a 2026 order_date, so they must never
+           depend on the warehouse/category/month/status selection to stay visible. -->
+      <div class="card" v-if="submittedOrders.length">
+        <div class="card-header">
+          <h3 class="card-title">{{ t('orders.submittedTitle') }} ({{ submittedOrders.length }})</h3>
+        </div>
+        <div class="table-container">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>{{ t('orders.table.orderNumber') }}</th>
+                <th>{{ t('orders.table.items') }}</th>
+                <th>{{ t('orders.table.orderDate') }}</th>
+                <th>{{ t('orders.table.expectedDelivery') }}</th>
+                <th>{{ t('orders.table.leadTime') }}</th>
+                <th>{{ t('orders.table.totalValue') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="order in submittedOrders" :key="order.id">
+                <td><strong>{{ order.order_number }}</strong></td>
+                <td>{{ t('orders.itemsCount', { count: order.items.length }) }}</td>
+                <td>{{ formatDate(order.order_date) }}</td>
+                <td>{{ formatDate(order.expected_delivery) }}</td>
+                <td>{{ t('restocking.days', { count: submittedLeadTime(order) }) }}</td>
+                <td><strong>{{ currencySymbol }}{{ order.total_value.toLocaleString() }}</strong></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-header">
-          <h3 class="card-title">{{ t('orders.allOrders') }} ({{ orders.length }})</h3>
+          <h3 class="card-title">{{ t('orders.allOrders') }} ({{ otherOrders.length }})</h3>
         </div>
         <div class="table-container">
           <table class="orders-table">
@@ -45,7 +78,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="order in orders" :key="order.id">
+              <tr v-for="order in otherOrders" :key="order.id">
                 <td class="col-order-number"><strong>{{ order.order_number }}</strong></td>
                 <td class="col-customer">{{ translateCustomerName(order.customer) }}</td>
                 <td class="col-items">
@@ -95,6 +128,7 @@ export default {
     const loading = ref(true)
     const error = ref(null)
     const orders = ref([])
+    const submittedOrders = ref([])
 
     // Use shared filters
     const {
@@ -124,6 +158,20 @@ export default {
       }
     }
 
+    // Loads submitted orders on their own, bypassing the shared filter composable.
+    // Submitted orders (from the Restocking flow) have warehouse=null, category=null,
+    // and a 2026 order_date, so filtering by the global warehouse/category/month/status
+    // selection could blank the section even though it has nothing to do with those
+    // filters. Only the status param is sent, and this is never added to the filter watch.
+    const loadSubmittedOrders = async () => {
+      try {
+        submittedOrders.value = await api.getOrders({ status: 'Submitted' })
+      } catch (err) {
+        // non-fatal: the main table still renders
+        console.error('Failed to load submitted orders:', err)
+      }
+    }
+
     // Watch for filter changes and reload data
     watch([selectedPeriod, selectedLocation, selectedCategory, selectedStatus], () => {
       loadOrders()
@@ -133,12 +181,19 @@ export default {
       return orders.value.filter(order => order.status === status)
     }
 
+    // Submitted orders get their own card above, so exclude them here to avoid
+    // double-listing when the status filter is "all".
+    const otherOrders = computed(() =>
+      orders.value.filter(o => o.status !== 'Submitted')
+    )
+
     const getOrderStatusClass = (status) => {
       const statusMap = {
         'Delivered': 'success',
         'Shipped': 'info',
         'Processing': 'warning',
-        'Backordered': 'danger'
+        'Backordered': 'danger',
+        'Submitted': 'info'
       }
       return statusMap[status] || 'info'
     }
@@ -153,16 +208,31 @@ export default {
       })
     }
 
-    onMounted(loadOrders)
+    // Lead time in whole days between order and expected delivery, for the
+    // Submitted Orders table. Dates are validated first per repo convention.
+    const submittedLeadTime = (order) => {
+      const start = new Date(order.order_date)
+      const end = new Date(order.expected_delivery)
+      if (isNaN(start.getTime()) || isNaN(end.getTime())) return '-'
+      return Math.round((end - start) / 86400000) // ms per day
+    }
+
+    onMounted(() => {
+      loadOrders()
+      loadSubmittedOrders()
+    })
 
     return {
       t,
       loading,
       error,
       orders,
+      otherOrders,
+      submittedOrders,
       getOrdersByStatus,
       getOrderStatusClass,
       formatDate,
+      submittedLeadTime,
       currencySymbol,
       translateProductName,
       translateCustomerName
