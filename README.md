@@ -48,14 +48,46 @@ npm run dev
 
 ## API Endpoints
 
-All endpoints support optional filtering via query params: `warehouse`, `category`, `status`, `month`
+Filtering support is **per-endpoint**, not global. Only the endpoints below accept query
+params, and only the ones listed for each:
 
-- `GET /api/inventory` - Inventory items
-- `GET /api/orders` - Orders
-- `GET /api/demand` - Demand forecasts
-- `GET /api/backlog` - Backlog items
-- `GET /api/dashboard/summary` - Summary statistics
-- `GET /api/spending/*` - Spending data
+**Inventory**
+- `GET /api/inventory` - Inventory items. Filters: `warehouse`, `category`
+- `GET /api/inventory/{id}` - Single inventory item (404 if not found)
+
+**Orders**
+- `GET /api/orders` - Orders. Filters: `warehouse`, `category`, `status`, `month`
+- `GET /api/orders/{id}` - Single order (404 if not found)
+
+**Dashboard**
+- `GET /api/dashboard/summary` - Summary statistics. Filters: `warehouse`, `category`, `status`, `month`
+
+**Demand & restocking**
+- `GET /api/demand` - Demand forecasts. No filters
+- `GET /api/restocking/recommendations` - Restock recommendations within a `budget` (query param, defaults to 0). No filters
+- `POST /api/restocking/orders` - Create a restock order from a list of line items
+
+**Backlog**
+- `GET /api/backlog` - Backlog items (each annotated with `has_purchase_order`). No filters
+
+**Spending**
+- `GET /api/spending/summary` - Spending summary. No filters
+- `GET /api/spending/monthly` - Monthly spending breakdown. No filters
+- `GET /api/spending/categories` - Spending by category. No filters
+- `GET /api/spending/transactions` - Recent transactions. No filters
+
+**Reports**
+- `GET /api/reports/quarterly` - Quarterly performance reports. No filters
+- `GET /api/reports/monthly-trends` - Month-over-month trends. No filters
+
+**Tasks** (in-memory, cleared on restart)
+- `GET /api/tasks` - List tasks. No filters
+- `POST /api/tasks` - Create a task
+- `DELETE /api/tasks/{id}` - Delete a task
+- `PATCH /api/tasks/{id}` - Toggle a task between pending and completed
+
+> Note: there is no `/api/purchase-orders` endpoint. Purchase-order data only surfaces as
+> the `has_purchase_order` flag on `/api/backlog`.
 
 ## Demo Data
 
