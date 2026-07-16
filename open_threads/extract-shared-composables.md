@@ -1,6 +1,6 @@
 # Extract shared composables (useModal, useStockStatus, useCurrency)
 
-**Status:** ⚪ open
+**Status:** 🟢 Fixed by [#30](https://github.com/AldenCraft/inventory-management/pull/30) — open, held for review
 
 Created: 2026-07-16, from a whole-app multi-agent review of the inventory-management repo (four parallel review agents), run against local `main` at HEAD `032c157`. File:line references are from that checkout and may drift — re-locate before acting.
 
