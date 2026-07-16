@@ -29,8 +29,10 @@ yarn-error.log*
 .DS_Store
 
 # UV/Python package managers
-uv.lock
+# Ignore lock files by default, but keep uv.lock tracked so backend installs are
+# reproducible instead of floating to the newest compatible versions.
 *.lock
+!uv.lock
 
 # Test coverage
 .coverage
