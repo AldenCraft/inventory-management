@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 from pydantic import BaseModel
@@ -82,9 +82,17 @@ def apply_filters(items: list, warehouse: Optional[str] = None, category: Option
     return filtered
 
 # CORS middleware
+# A wildcard origin ("*") paired with allow_credentials=True is invalid per the CORS
+# spec — browsers reject a credentialed wildcard response — so pin the local dev
+# frontend origins explicitly instead. This is a valid pairing and keeps working if
+# the client ever starts sending credentials. For a real deployment, add the deployed
+# origin here (ideally via an env var).
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -203,6 +211,64 @@ class CreateTaskRequest(BaseModel):
     priority: str = "medium"
     dueDate: str
 
+# Response models for endpoints that previously returned raw dicts/lists. Field
+# types mirror the source data exactly (int vs float) so applying response_model
+# doesn't change the serialized JSON the frontend consumes — only documents it in
+# /docs and drops any stray keys.
+class DashboardSummary(BaseModel):
+    total_inventory_value: float
+    low_stock_items: int
+    pending_orders: int
+    total_backlog_items: int
+    total_orders_value: float
+
+class SpendingSummary(BaseModel):
+    total_procurement_cost: float
+    total_operational_cost: float
+    total_labor_cost: float
+    total_overhead: float
+    procurement_change: float
+    operational_change: float
+    labor_change: float
+    overhead_change: float
+
+class MonthlySpending(BaseModel):
+    month: str
+    procurement: int
+    operational: int
+    labor: int
+    overhead: int
+
+class CategorySpending(BaseModel):
+    category: str
+    amount: int
+    percentage: float
+    change: float
+
+class Transaction(BaseModel):
+    id: str
+    date: str
+    description: str
+    category: str
+    warehouse: str
+    amount: float
+    vendor: str
+    type: str
+
+class QuarterlyReport(BaseModel):
+    quarter: str
+    total_orders: int
+    total_revenue: float
+    delivered_orders: int
+    avg_order_value: float
+    fulfillment_rate: float
+
+class MonthlyTrend(BaseModel):
+    month: str
+    order_count: int
+    revenue: float
+    delivered_count: int
+
 # In-memory task store. Starts empty and lives for the life of the process
 # (restart clears it), matching the rest of this demo's mock-data approach.
 # The client seeds its own example tasks (ids 1-4) in useAuth.js and merges them
@@ -217,10 +283,19 @@ _next_task_id = 1000
 def root():
     return {"message": "Factory Inventory Management System API", "version": "1.0.0"}
 
+# Filter params are bounded with max_length rather than a fixed Enum/Literal: the
+# valid warehouse/category/status values are data-driven (and matched
+# case-insensitively, so canonical-case enums would 422 legitimate callers like
+# ?warehouse=london). The length cap keeps the params documented and guards against
+# absurd input without rejecting any real value. A fresh Query() is used per param
+# so no metadata instance is shared between parameters.
+def _filter_query():
+    return Query(default=None, max_length=100)
+
 @app.get("/api/inventory", response_model=List[InventoryItem])
 def get_inventory(
-    warehouse: Optional[str] = None,
-    category: Optional[str] = None
+    warehouse: Optional[str] = _filter_query(),
+    category: Optional[str] = _filter_query()
 ):
     """Get all inventory items with optional filtering"""
     return apply_filters(inventory_items, warehouse, category)
@@ -235,10 +310,12 @@ def get_inventory_item(item_id: str):
 
 @app.get("/api/orders", response_model=List[Order])
 def get_orders(
-    warehouse: Optional[str] = None,
-    category: Optional[str] = None,
-    status: Optional[str] = None,
-    month: Optional[str] = None
+    warehouse: Optional[str] = _filter_query(),
+    category: Optional[str] = _filter_query(),
+    status: Optional[str] = _filter_query(),
+    # month is length-bounded only, never format-constrained: it accepts YYYY-MM,
+    # Q#-YYYY, and 'all', and unrecognized quarters intentionally return [].
+    month: Optional[str] = _filter_query()
 ):
     """Get all orders with optional filtering"""
     filtered_orders = apply_filters(orders, warehouse, category, status)
@@ -360,12 +437,12 @@ def get_backlog():
         result.append(item_dict)
     return result
 
-@app.get("/api/dashboard/summary")
+@app.get("/api/dashboard/summary", response_model=DashboardSummary)
 def get_dashboard_summary(
-    warehouse: Optional[str] = None,
-    category: Optional[str] = None,
-    status: Optional[str] = None,
-    month: Optional[str] = None
+    warehouse: Optional[str] = _filter_query(),
+    category: Optional[str] = _filter_query(),
+    status: Optional[str] = _filter_query(),
+    month: Optional[str] = _filter_query()
 ):
     """Get summary statistics for dashboard with optional filtering"""
     # Filter inventory
@@ -402,27 +479,27 @@ def get_dashboard_summary(
         "total_orders_value": round(total_orders_value, 2)
     }
 
-@app.get("/api/spending/summary")
+@app.get("/api/spending/summary", response_model=SpendingSummary)
 def get_spending_summary():
     """Get spending summary statistics"""
     return spending_summary
 
-@app.get("/api/spending/monthly")
+@app.get("/api/spending/monthly", response_model=List[MonthlySpending])
 def get_monthly_spending():
     """Get monthly spending breakdown"""
     return monthly_spending
 
-@app.get("/api/spending/categories")
+@app.get("/api/spending/categories", response_model=List[CategorySpending])
 def get_category_spending():
     """Get spending by category"""
     return category_spending
 
-@app.get("/api/spending/transactions")
+@app.get("/api/spending/transactions", response_model=List[Transaction])
 def get_recent_transactions():
     """Get recent transactions"""
     return recent_transactions
 
-@app.get("/api/reports/quarterly")
+@app.get("/api/reports/quarterly", response_model=List[QuarterlyReport])
 def get_quarterly_reports():
     """Get quarterly performance reports"""
     # Calculate quarterly statistics from orders
@@ -468,7 +545,7 @@ def get_quarterly_reports():
     result.sort(key=lambda x: x['quarter'])
     return result
 
-@app.get("/api/reports/monthly-trends")
+@app.get("/api/reports/monthly-trends", response_model=List[MonthlyTrend])
 def get_monthly_trends():
     """Get month-over-month trends"""
     months = {}
