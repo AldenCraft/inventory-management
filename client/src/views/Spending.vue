@@ -171,7 +171,7 @@
 </template>
 
 <script>
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
@@ -401,11 +401,6 @@ export default {
       }
     }
 
-    // Watch for period filter changes
-    watch([selectedPeriod], () => {
-      // Data will automatically update via computed properties
-    })
-
     const formatCurrency = (value) => {
       return formatCurrencyUtil(value, currentCurrency.value)
     }
@@ -433,13 +428,6 @@ export default {
     const getRevenueBarHeight = (value) => {
       const maxValue = maxRevenueValue.value * 1000
       return (value / maxValue) * 100
-    }
-
-    const formatDate = (dateString) => {
-      return new Date(dateString).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric'
-      })
     }
 
     // Build a YYYY-MM key straight from the source string's ISO prefix, which is
@@ -510,8 +498,27 @@ export default {
     }
 
     const handleTransactionClick = (transaction) => {
-      console.log('Transaction clicked:', transaction)
-      alert(`Transaction Details:\n\nID: ${transaction.id}\nDescription: ${transaction.description}\nVendor: ${transaction.vendor}\nDate: ${formatDateShort(transaction.date)}\nAmount: ${formatCurrency(transaction.amount)}`)
+      // Reuse the existing CostDetailModal instead of a native alert(). The modal
+      // renders a fixed four-bucket cost breakdown (procurement/operational/labor/
+      // overhead) and formats amounts with the active currency itself, so shape the
+      // transaction into that contract by dropping its amount into the bucket that
+      // matches its category and zeroing the rest. The description becomes the modal
+      // title. This keeps currency/i18n consistent (no hardcoded $/English here).
+      const categoryToBucket = {
+        Labor: 'labor',
+        Overhead: 'overhead',
+        Operational: 'operational'
+      }
+      const bucket = categoryToBucket[transaction.category] || 'procurement'
+      selectedCostData.value = {
+        month: transaction.description,
+        procurement: 0,
+        operational: 0,
+        labor: 0,
+        overhead: 0,
+        [bucket]: transaction.amount
+      }
+      showCostModal.value = true
     }
 
     const showCostDetail = (monthData) => {
@@ -545,7 +552,6 @@ export default {
       formatAxisLabel,
       getBarHeight,
       getRevenueBarHeight,
-      formatDate,
       formatDateShort,
       translateMonth,
       translateCategory,
