@@ -80,11 +80,10 @@
         <div class="chart-container">
           <div class="bar-chart">
             <div class="y-axis">
-              <span>{{ formatAxisLabel(25) }}</span>
-              <span>{{ formatAxisLabel(20) }}</span>
-              <span>{{ formatAxisLabel(15) }}</span>
-              <span>{{ formatAxisLabel(10) }}</span>
-              <span>{{ formatAxisLabel(5) }}</span>
+              <span>{{ formatAxisLabel(maxSpendingValue) }}</span>
+              <span>{{ formatAxisLabel(Math.round(maxSpendingValue * 0.75)) }}</span>
+              <span>{{ formatAxisLabel(Math.round(maxSpendingValue * 0.5)) }}</span>
+              <span>{{ formatAxisLabel(Math.round(maxSpendingValue * 0.25)) }}</span>
               <span>{{ formatCurrency(0) }}</span>
             </div>
             <div class="chart-area">
@@ -235,7 +234,7 @@ export default {
       }
       // Filter transactions by selected month
       return allTransactions.value.filter(t => {
-        const transactionMonth = new Date(t.date).toISOString().slice(0, 7)
+        const transactionMonth = toMonthKey(t.date)
         return transactionMonth === selectedPeriod.value
       })
     })
@@ -288,7 +287,7 @@ export default {
 
       // Filter orders by selected month
       return allOrders.value.filter(order => {
-        const orderMonth = new Date(order.order_date).toISOString().slice(0, 7)
+        const orderMonth = toMonthKey(order.order_date)
         return orderMonth === selectedPeriod.value
       })
     })
@@ -362,7 +361,21 @@ export default {
       const maxRevenue = Math.max(...monthlyRevenue.value.map(m => m.revenue))
       const maxCost = Math.max(...monthlyRevenue.value.map(m => m.costs))
       const max = Math.max(maxRevenue, maxCost)
-      return Math.ceil(max / 1000) // Return in K
+      // Floor the divisor at 1K so getRevenueBarHeight never divides by zero
+      // (empty/zero-order data would otherwise make max 0 → height: NaN%).
+      return Math.max(1, Math.ceil(max / 1000)) // Return in K
+    })
+
+    // Max value (in K) for the cost-flow chart, derived from the largest monthly
+    // total instead of a hardcoded 25K so months over that threshold no longer
+    // overflow the plot. Seed the spread with 0 to survive an empty array
+    // (Math.max() of nothing is -Infinity) and floor at 1K to avoid divide-by-zero.
+    const maxSpendingValue = computed(() => {
+      const max = Math.max(
+        0,
+        ...monthlySpending.value.map(m => m.procurement + m.operational + m.labor + m.overhead)
+      )
+      return Math.max(1, Math.ceil(max / 1000)) // Return in K
     })
 
     const loadData = async () => {
@@ -411,7 +424,9 @@ export default {
     }
 
     const getBarHeight = (value) => {
-      const maxValue = 25000
+      // Scale against the data-derived max (in K → back to base units) so the
+      // stacked segments match the computed Y-axis and never exceed 100%.
+      const maxValue = maxSpendingValue.value * 1000
       return (value / maxValue) * 100
     }
 
@@ -425,6 +440,17 @@ export default {
         month: 'short',
         day: 'numeric'
       })
+    }
+
+    // Build a YYYY-MM key from local date components. Using
+    // new Date(...).toISOString() would convert to UTC first, so a date late on
+    // the last day of a month in a timezone west of UTC would roll into the next
+    // month and land in the wrong period bucket.
+    const toMonthKey = (dateString) => {
+      const date = new Date(dateString)
+      const year = date.getFullYear()
+      const month = (date.getMonth() + 1).toString().padStart(2, '0')
+      return `${year}-${month}`
     }
 
     const formatDateShort = (dateString) => {
@@ -504,6 +530,7 @@ export default {
       profitMargin,
       monthlyRevenue,
       maxRevenueValue,
+      maxSpendingValue,
       formatCurrency,
       currencySymbol,
       formatAxisLabel,
