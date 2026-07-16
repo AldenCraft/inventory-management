@@ -1,3 +1,14 @@
+// ⚠️ MOCK AUTHENTICATION — FOR THE DEMO ONLY. This composable does NOT implement
+// real authentication and must not be mistaken for it:
+//   - `isAuthenticated` is hardcoded `true` and is never read to protect routes
+//     (there is no navigation guard in `main.js`), so it gates nothing.
+//   - There is no real session, token, cookie or login flow. The "current user"
+//     is static mock data below.
+//   - `logout()` is a stub: it does not clear any real session or redirect. It
+//     only flips the mock `isAuthenticated` flag and shows a demo alert.
+// If real auth is ever needed, this whole file has to be replaced with a real
+// session/token flow and route protection — do not extend the mock into
+// production security.
 import { ref, computed } from 'vue'
 import { useI18n } from './useI18n'
 
@@ -84,17 +95,27 @@ const toggleMockTask = (taskId) => {
 }
 
 export function useAuth() {
+  // Mock flag — always starts true and is not used for route protection.
   const isAuthenticated = ref(true)
 
+  // Demo stub: there is no real session to clear. We flip the mock flag so the
+  // state change is at least honest, then surface a demo notice. A real
+  // implementation would clear tokens/cookies and redirect to a login page.
   const logout = () => {
-    // In a real app, this would clear tokens, etc.
-    console.log('Logout clicked - would redirect to login')
-    alert('Logout functionality - in a real app, this would clear session and redirect to login')
+    isAuthenticated.value = false
+    alert('This is a demo — there is no real session to log out of.')
   }
 
+  // Build initials from a name, e.g. "John Doe" -> "JD". Guarded against
+  // missing, empty, or whitespace-only input (which previously threw on
+  // `n[0]` / `.split` of undefined) — returns a safe fallback instead.
   const getInitials = (name) => {
+    if (typeof name !== 'string' || !name.trim()) {
+      return '?'
+    }
     return name
-      .split(' ')
+      .trim()
+      .split(/\s+/)
       .map(n => n[0])
       .join('')
       .toUpperCase()
