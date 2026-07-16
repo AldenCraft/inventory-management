@@ -37,20 +37,20 @@
           <table>
             <thead>
               <tr>
-                <th>{{ t('inventory.table.sku') }}</th>
-                <th>{{ t('inventory.table.itemName') }}</th>
-                <th>{{ t('inventory.table.category') }}</th>
-                <th>{{ t('inventory.table.quantityOnHand') }}</th>
-                <th>{{ t('inventory.table.reorderPoint') }}</th>
-                <th>{{ t('inventory.table.unitCost') }}</th>
-                <th>{{ t('inventory.table.totalValue') }}</th>
-                <th>{{ t('inventory.table.location') }}</th>
-                <th>{{ t('inventory.table.status') }}</th>
+                <SortableTh column-key="sku" :label="t('inventory.table.sku')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="name" :label="t('inventory.table.itemName')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="category" :label="t('inventory.table.category')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="quantityOnHand" :label="t('inventory.table.quantityOnHand')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="reorderPoint" :label="t('inventory.table.reorderPoint')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="unitCost" :label="t('inventory.table.unitCost')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="totalValue" :label="t('inventory.table.totalValue')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="location" :label="t('inventory.table.location')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="status" :label="t('inventory.table.status')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
               </tr>
             </thead>
             <tbody>
               <tr
-                v-for="item in filteredItems"
+                v-for="item in sortedItems"
                 :key="item.id"
                 class="clickable-row"
                 @click="showItemDetail(item)"
@@ -88,12 +88,15 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
+import { useTableSort } from '../composables/useTableSort'
 import InventoryDetailModal from '../components/InventoryDetailModal.vue'
+import SortableTh from '../components/SortableTh.vue'
 
 export default {
   name: 'Inventory',
   components: {
-    InventoryDetailModal
+    InventoryDetailModal,
+    SortableTh
   },
   setup() {
     const { t, currentCurrency, translateProductName, translateWarehouse } = useI18n()
@@ -148,6 +151,27 @@ export default {
         return STATUS_ORDER[statusA] - STATUS_ORDER[statusB]
       })
     })
+
+    // Click-to-sort layered on top of filteredItems. When sort is "off",
+    // applySort returns filteredItems untouched, preserving the low-stock-first default.
+    const { sortKey, sortDir, toggleSort, applySort } = useTableSort()
+
+    const sortAccessors = {
+      sku: (i) => i.sku,
+      // i18n columns sort on the raw field, not the translated label, for stable ordering
+      name: (i) => i.name,
+      category: (i) => i.category,
+      quantityOnHand: (i) => i.quantity_on_hand,
+      reorderPoint: (i) => i.reorder_point,
+      unitCost: (i) => i.unit_cost,
+      // Derived: total value = quantity on hand * unit cost
+      totalValue: (i) => i.quantity_on_hand * i.unit_cost,
+      location: (i) => i.location,
+      // Derived: rank by stock status so it matches the low-stock-first default ordering
+      status: (i) => STATUS_ORDER[getStockStatusKey(i)]
+    }
+
+    const sortedItems = computed(() => applySort(filteredItems.value, sortAccessors))
 
     const loadInventory = async () => {
       try {
@@ -210,6 +234,10 @@ export default {
       items,
       searchQuery,
       filteredItems,
+      sortedItems,
+      sortKey,
+      sortDir,
+      toggleSort,
       getStockStatus,
       getStockStatusClass,
       translateCategory,

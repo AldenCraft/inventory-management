@@ -66,22 +66,22 @@ class TestDemandEndpoints:
                     f"Item {item['item_name']} has {percent_change:.2f}% change, expected < 2%"
 
     def test_demand_forecast_has_new_items(self, client):
-        """Test that new demand forecast items exist."""
+        """Test that the stable demand forecast items exist."""
         response = client.get("/api/demand")
         data = response.json()
 
-        # Check for the new items we added
+        # Check for the stable items (real inventory SKUs)
         skus = [item["item_sku"] for item in data]
 
-        # Should have Temperature Sensor Module and Logic Controller Board
-        assert "SNR-420" in skus, "Missing Temperature Sensor Module"
-        assert "CTL-330" in skus, "Missing Logic Controller Board"
+        # Should have Temperature Sensor Module and Digital Signal Processor
+        assert "TMP-201" in skus, "Missing Temperature Sensor Module"
+        assert "DSP-403" in skus, "Missing Digital Signal Processor"
 
         # Verify they are marked as stable
         for item in data:
-            if item["item_sku"] in ["SNR-420", "CTL-330"]:
+            if item["item_sku"] in ["TMP-201", "DSP-403"]:
                 assert item["trend"].lower() == "stable", \
-                    f"New item {item['item_name']} should have stable trend"
+                    f"Item {item['item_name']} should have stable trend"
 
 
 class TestBacklogEndpoints:
@@ -134,6 +134,57 @@ class TestBacklogEndpoints:
 
         for item in data:
             assert item["days_delayed"] >= 0
+
+
+class TestReferentialIntegrity:
+    """Test suite verifying backlog and demand rows reference real orders/inventory.
+
+    These guard against the phantom-data regression where backlog/demand rows
+    named orders and SKUs that existed nowhere else in the dataset.
+    """
+
+    def test_backlog_order_ids_exist_in_orders(self, client):
+        """Every backlog order_id must reference a real order."""
+        order_numbers = {
+            order["order_number"] for order in client.get("/api/orders").json()
+        }
+        assert order_numbers, "No orders returned to validate against"
+
+        backlog = client.get("/api/backlog").json()
+        for item in backlog:
+            assert item["order_id"] in order_numbers, \
+                f"Backlog references phantom order {item['order_id']}"
+
+    def test_backlog_skus_exist_in_inventory(self, client):
+        """Every backlog item_sku/item_name must reference a real inventory item."""
+        inventory = client.get("/api/inventory").json()
+        skus = {item["sku"] for item in inventory}
+        names_by_sku = {item["sku"]: item["name"] for item in inventory}
+        assert skus, "No inventory returned to validate against"
+
+        backlog = client.get("/api/backlog").json()
+        for item in backlog:
+            assert item["item_sku"] in skus, \
+                f"Backlog references phantom SKU {item['item_sku']}"
+            # Name should stay consistent with the inventory record it points at
+            assert item["item_name"] == names_by_sku[item["item_sku"]], \
+                f"Backlog name '{item['item_name']}' does not match inventory " \
+                f"for SKU {item['item_sku']}"
+
+    def test_demand_skus_exist_in_inventory(self, client):
+        """Every demand forecast item_sku/item_name must reference a real inventory item."""
+        inventory = client.get("/api/inventory").json()
+        skus = {item["sku"] for item in inventory}
+        names_by_sku = {item["sku"]: item["name"] for item in inventory}
+        assert skus, "No inventory returned to validate against"
+
+        demand = client.get("/api/demand").json()
+        for forecast in demand:
+            assert forecast["item_sku"] in skus, \
+                f"Demand references phantom SKU {forecast['item_sku']}"
+            assert forecast["item_name"] == names_by_sku[forecast["item_sku"]], \
+                f"Demand name '{forecast['item_name']}' does not match inventory " \
+                f"for SKU {forecast['item_sku']}"
 
 
 class TestSpendingEndpoints:
@@ -203,6 +254,46 @@ class TestSpendingEndpoints:
         if len(data) > 0:
             category_data = data[0]
             assert "category" in category_data or "name" in category_data
+
+    def test_category_percentages_reconcile(self, client):
+        """Category percentages must sum to ~100% and track their amounts.
+
+        Guards the drift where stored percentages summed to 123.6% and a larger
+        amount could carry a smaller percentage.
+        """
+        data = client.get("/api/spending/categories").json()
+        assert data, "No category spending returned"
+
+        total_pct = sum(c["percentage"] for c in data)
+        assert abs(total_pct - 100.0) < 0.5, \
+            f"Category percentages sum to {total_pct}, expected ~100"
+
+        total_amount = sum(c["amount"] for c in data)
+        for c in data:
+            expected = round(c["amount"] / total_amount * 100, 1)
+            assert abs(c["percentage"] - expected) < 0.1, \
+                f"{c['category']} percentage {c['percentage']} != {expected} derived from amount"
+
+        # A larger amount must never carry a smaller percentage.
+        ordered = sorted(data, key=lambda c: c["amount"])
+        pcts = [c["percentage"] for c in ordered]
+        assert pcts == sorted(pcts), "Percentages must increase with amount"
+
+    def test_summary_totals_match_monthly_rollup(self, client):
+        """spending_summary totals must equal the sum of monthly_spending."""
+        summary = client.get("/api/spending/summary").json()
+        monthly = client.get("/api/spending/monthly").json()
+
+        mapping = {
+            "total_procurement_cost": "procurement",
+            "total_operational_cost": "operational",
+            "total_labor_cost": "labor",
+            "total_overhead": "overhead",
+        }
+        for summary_key, month_key in mapping.items():
+            expected = sum(m[month_key] for m in monthly)
+            assert abs(summary[summary_key] - expected) < 0.01, \
+                f"{summary_key} {summary[summary_key]} != monthly rollup {expected}"
 
     def test_get_recent_transactions(self, client):
         """Test getting recent transactions."""

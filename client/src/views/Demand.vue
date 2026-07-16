@@ -75,17 +75,17 @@
           <table>
             <thead>
               <tr>
-                <th>{{ t('demand.table.sku') }}</th>
-                <th>{{ t('demand.table.itemName') }}</th>
-                <th>{{ t('demand.table.currentDemand') }}</th>
-                <th>{{ t('demand.table.forecastedDemand') }}</th>
-                <th>{{ t('demand.table.change') }}</th>
-                <th>{{ t('demand.table.trend') }}</th>
-                <th>{{ t('demand.table.period') }}</th>
+                <SortableTh column-key="sku" :label="t('demand.table.sku')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="itemName" :label="t('demand.table.itemName')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="currentDemand" :label="t('demand.table.currentDemand')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="forecastedDemand" :label="t('demand.table.forecastedDemand')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="change" :label="t('demand.table.change')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="trend" :label="t('demand.table.trend')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                <SortableTh column-key="period" :label="t('demand.table.period')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
               </tr>
             </thead>
             <tbody>
-              <tr v-for="forecast in forecasts" :key="forecast.id">
+              <tr v-for="forecast in sortedForecasts" :key="forecast.id">
                 <td><strong>{{ forecast.item_sku }}</strong></td>
                 <td>{{ forecast.item_name }}</td>
                 <td>{{ forecast.current_demand }}</td>
@@ -115,9 +115,14 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
+import { useTableSort } from '../composables/useTableSort'
+import SortableTh from '../components/SortableTh.vue'
 
 export default {
   name: 'Demand',
+  components: {
+    SortableTh
+  },
   setup() {
     const { t } = useI18n()
     const loading = ref(true)
@@ -165,6 +170,26 @@ export default {
     watch([selectedLocation, selectedCategory], () => {
       loadForecasts()
     })
+
+    // Click-to-sort layered on top of the filtered forecasts.
+    // When sort is "off", applySort returns forecasts untouched.
+    const { sortKey, sortDir, toggleSort, applySort } = useTableSort()
+
+    const sortAccessors = {
+      sku: (f) => f.item_sku,
+      // i18n/text column: sort on the raw item name for stable ordering
+      itemName: (f) => f.item_name,
+      currentDemand: (f) => f.current_demand,
+      forecastedDemand: (f) => f.forecasted_demand,
+      // Derived: fractional change between current and forecasted demand
+      change: (f) => (f.forecasted_demand - f.current_demand) / f.current_demand,
+      // Sort on the raw trend key, not the translated label
+      trend: (f) => f.trend,
+      // Sort on the raw period string, not the translated label
+      period: (f) => f.period
+    }
+
+    const sortedForecasts = computed(() => applySort(forecasts.value, sortAccessors))
 
     const getForecastsByTrend = (trend) => {
       return forecasts.value.filter(f => f.trend === trend)
@@ -214,6 +239,10 @@ export default {
       loading,
       error,
       forecasts,
+      sortedForecasts,
+      sortKey,
+      sortDir,
+      toggleSort,
       getForecastsByTrend,
       getChangePercent,
       getChangeColor,

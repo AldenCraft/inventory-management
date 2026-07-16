@@ -58,6 +58,16 @@ export default {
       unitsShort: '単位不足',
       days: '日'
     },
+    backlog: {
+      title: 'バックオーダー管理',
+      description: '在庫不足の追跡と解消',
+      highPriority: '高優先度',
+      mediumPriority: '中優先度',
+      lowPriority: '低優先度',
+      totalBacklogItems: '総バックオーダー件数',
+      backlogItems: 'バックオーダー品目',
+      noBacklogItems: 'バックオーダーなし - すべての注文を履行できます！'
+    },
     topProducts: {
       title: '収益別トップ製品',
       sku: 'SKU',

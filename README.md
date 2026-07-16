@@ -75,6 +75,17 @@ cd client
 npm run build  # Output: client/dist/
 ```
 
+The frontend reads its backend URL from the `VITE_API_BASE_URL` environment variable at
+build time, falling back to `http://localhost:8001/api` when it is unset (local dev
+default). For a production build, point it at the real backend:
+
+```bash
+cd client
+VITE_API_BASE_URL=https://api.example.com/api npm run build
+```
+
+See `client/.env.example` for the full list of client env vars.
+
 ## Platform Notes
 
 **macOS/Linux:** The one-command startup script (`./scripts/start.sh`) and stop script (`./scripts/stop.sh`) work out of the box.

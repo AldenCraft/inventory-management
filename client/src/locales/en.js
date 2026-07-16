@@ -58,6 +58,16 @@ export default {
       unitsShort: 'units short',
       days: 'days'
     },
+    backlog: {
+      title: 'Backlog Management',
+      description: 'Track and resolve inventory shortages',
+      highPriority: 'High Priority',
+      mediumPriority: 'Medium Priority',
+      lowPriority: 'Low Priority',
+      totalBacklogItems: 'Total Backlog Items',
+      backlogItems: 'Backlog Items',
+      noBacklogItems: 'No backlog items - all orders can be fulfilled!'
+    },
     topProducts: {
       title: 'Top Products by Revenue',
       sku: 'SKU',

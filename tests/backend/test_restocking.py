@@ -16,9 +16,9 @@ class TestRestockingEndpoints:
         for item in data:
             assert isinstance(item["unit_cost"], (int, float))
             assert isinstance(item["lead_time_days"], int)
-        wdg = next(i for i in data if i["item_sku"] == "WDG-001")
-        assert wdg["unit_cost"] == 12.5
-        assert wdg["lead_time_days"] == 10
+        prs = next(i for i in data if i["item_sku"] == "PRS-203")
+        assert prs["unit_cost"] == 12.5
+        assert prs["lead_time_days"] == 10
 
     def test_recommendations_zero_budget_is_empty(self, client):
         response = client.get("/api/restocking/recommendations", params={"budget": 0})
@@ -28,11 +28,11 @@ class TestRestockingEndpoints:
         assert data["total_cost"] == 0
 
     def test_recommendations_partial_fill_at_2000(self, client):
-        """Budget 2000 -> WDG-001 x150 full, FLT-405 x20 partial, spends exactly 2000."""
+        """Budget 2000 -> PRS-203 x150 full, PRX-204 x20 partial, spends exactly 2000."""
         response = client.get("/api/restocking/recommendations", params={"budget": 2000})
         data = response.json()
         recs = data["recommendations"]
-        assert [r["item_sku"] for r in recs] == ["WDG-001", "FLT-405"]
+        assert [r["item_sku"] for r in recs] == ["PRS-203", "PRX-204"]
         assert recs[0]["recommended_quantity"] == 150
         assert recs[0]["line_cost"] == pytest.approx(1875.0)
         assert recs[1]["recommended_quantity"] == 20
@@ -46,18 +46,18 @@ class TestRestockingEndpoints:
         recs = data["recommendations"]
         # every positive-gap item (8 of 9; the decreasing Motor has no gap)
         assert len(recs) == 8
-        assert "MTR-304" not in [r["item_sku"] for r in recs]
+        assert "SRV-301" not in [r["item_sku"] for r in recs]
         assert data["total_cost"] == pytest.approx(3979.48)
         # increasing-trend items rank ahead of stable ones
-        assert recs[0]["item_sku"] == "WDG-001"
+        assert recs[0]["item_sku"] == "PRS-203"
         assert [r["trend"] for r in recs[:3]] == ["increasing", "increasing", "increasing"]
 
     def test_submit_restocking_order(self, client):
         from datetime import datetime
         payload = {"items": [
-            {"item_sku": "WDG-001", "item_name": "Industrial Widget Type A",
+            {"item_sku": "PRS-203", "item_name": "Pressure Sensor Module",
              "quantity": 150, "unit_cost": 12.5, "lead_time_days": 10},
-            {"item_sku": "FLT-405", "item_name": "Oil Filter Cartridge",
+            {"item_sku": "PRX-204", "item_name": "Proximity Sensor",
              "quantity": 20, "unit_cost": 6.25, "lead_time_days": 5},
         ]}
         response = client.post("/api/restocking/orders", json=payload)
@@ -86,7 +86,7 @@ class TestRestockingEndpoints:
         before = client.get("/api/dashboard/summary").json()
 
         payload = {"items": [
-            {"item_sku": "WDG-001", "item_name": "Industrial Widget Type A",
+            {"item_sku": "PRS-203", "item_name": "Pressure Sensor Module",
              "quantity": 150, "unit_cost": 12.5, "lead_time_days": 10},
         ]}
         submit_response = client.post("/api/restocking/orders", json=payload)

@@ -1,6 +1,9 @@
 import axios from 'axios'
 
-const API_BASE_URL = 'http://localhost:8001/api'
+// Read the backend URL from the build-time env var so production bundles can point
+// at a real backend. Vite inlines import.meta.env.VITE_API_BASE_URL at build time;
+// when it is unset (the local dev default) we fall back to the localhost backend.
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8001/api'
 
 export const api = {
   async getInventory(filters = {}) {

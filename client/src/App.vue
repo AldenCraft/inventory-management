@@ -78,7 +78,7 @@ export default {
     LanguageSwitcher
   },
   setup() {
-    const { currentUser } = useAuth()
+    const { currentUser, mockTasks, deleteMockTask, toggleMockTask } = useAuth()
     const { t } = useI18n()
     const showProfileDetails = ref(false)
     const showTasks = ref(false)
@@ -109,15 +109,14 @@ export default {
 
     const deleteTask = async (taskId) => {
       try {
-        // Check if it's a mock task (from currentUser)
-        const isMockTask = currentUser.value.tasks.some(t => t.id === taskId)
+        // Mock tasks (ids 1-4) live in the useAuth mockTasks ref; API tasks
+        // are everything else. Route each to its own store.
+        const isMockTask = mockTasks.value.some(t => t.id === taskId)
 
         if (isMockTask) {
-          // Remove from mock tasks
-          const index = currentUser.value.tasks.findIndex(t => t.id === taskId)
-          if (index !== -1) {
-            currentUser.value.tasks.splice(index, 1)
-          }
+          // Mutate the source-of-truth ref so the deletion persists across
+          // locale switches (the old code spliced the currentUser computed).
+          deleteMockTask(taskId)
         } else {
           // Remove from API tasks
           await api.deleteTask(taskId)
@@ -130,12 +129,14 @@ export default {
 
     const toggleTask = async (taskId) => {
       try {
-        // Check if it's a mock task (from currentUser)
-        const mockTask = currentUser.value.tasks.find(t => t.id === taskId)
+        // Mock tasks (ids 1-4) live in the useAuth mockTasks ref; API tasks
+        // are everything else. Route each to its own store.
+        const isMockTask = mockTasks.value.some(t => t.id === taskId)
 
-        if (mockTask) {
-          // Toggle mock task status
-          mockTask.status = mockTask.status === 'pending' ? 'completed' : 'pending'
+        if (isMockTask) {
+          // Toggle status on the source-of-truth ref so it persists across
+          // locale switches.
+          toggleMockTask(taskId)
         } else {
           // Toggle API task
           const updatedTask = await api.toggleTask(taskId)

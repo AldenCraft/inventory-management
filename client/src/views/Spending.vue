@@ -47,17 +47,17 @@
         <div class="chart-container">
           <div class="bar-chart">
             <div class="y-axis">
-              <span>{{ currencySymbol }}{{ maxRevenueValue }}K</span>
-              <span>{{ currencySymbol }}{{ Math.round(maxRevenueValue * 0.75) }}K</span>
-              <span>{{ currencySymbol }}{{ Math.round(maxRevenueValue * 0.5) }}K</span>
-              <span>{{ currencySymbol }}{{ Math.round(maxRevenueValue * 0.25) }}K</span>
-              <span>{{ currencySymbol }}0</span>
+              <span>{{ formatAxisLabel(maxRevenueValue) }}</span>
+              <span>{{ formatAxisLabel(Math.round(maxRevenueValue * 0.75)) }}</span>
+              <span>{{ formatAxisLabel(Math.round(maxRevenueValue * 0.5)) }}</span>
+              <span>{{ formatAxisLabel(Math.round(maxRevenueValue * 0.25)) }}</span>
+              <span>{{ formatCurrency(0) }}</span>
             </div>
             <div class="chart-area">
               <div v-for="month in monthlyRevenue" :key="month.month" class="bar-group-revenue">
                 <div class="revenue-bars">
-                  <div class="revenue-bar" :style="{ height: getRevenueBarHeight(month.revenue) + '%' }" :title="`Revenue: ${currencySymbol}${month.revenue.toLocaleString()}`"></div>
-                  <div class="cost-bar" :style="{ height: getRevenueBarHeight(month.costs) + '%' }" :title="`Costs: ${currencySymbol}${month.costs.toLocaleString()}`"></div>
+                  <div class="revenue-bar" :style="{ height: getRevenueBarHeight(month.revenue) + '%' }" :title="`Revenue: ${formatCurrency(month.revenue)}`"></div>
+                  <div class="cost-bar" :style="{ height: getRevenueBarHeight(month.costs) + '%' }" :title="`Costs: ${formatCurrency(month.costs)}`"></div>
                 </div>
                 <span class="bar-label">{{ translateMonth(month.month) }}</span>
               </div>
@@ -80,20 +80,19 @@
         <div class="chart-container">
           <div class="bar-chart">
             <div class="y-axis">
-              <span>{{ currencySymbol }}25K</span>
-              <span>{{ currencySymbol }}20K</span>
-              <span>{{ currencySymbol }}15K</span>
-              <span>{{ currencySymbol }}10K</span>
-              <span>{{ currencySymbol }}5K</span>
-              <span>{{ currencySymbol }}0</span>
+              <span>{{ formatAxisLabel(maxSpendingValue) }}</span>
+              <span>{{ formatAxisLabel(Math.round(maxSpendingValue * 0.75)) }}</span>
+              <span>{{ formatAxisLabel(Math.round(maxSpendingValue * 0.5)) }}</span>
+              <span>{{ formatAxisLabel(Math.round(maxSpendingValue * 0.25)) }}</span>
+              <span>{{ formatCurrency(0) }}</span>
             </div>
             <div class="chart-area">
               <div v-for="month in monthlySpending" :key="month.month" class="bar-group">
                 <div class="stacked-bar" @click="showCostDetail(month)">
-                  <div class="bar-segment procurement" :style="{ height: getBarHeight(month.procurement) + '%' }" :title="`Procurement: ${currencySymbol}${month.procurement.toLocaleString()}`"></div>
-                  <div class="bar-segment operational" :style="{ height: getBarHeight(month.operational) + '%' }" :title="`Operational: ${currencySymbol}${month.operational.toLocaleString()}`"></div>
-                  <div class="bar-segment labor" :style="{ height: getBarHeight(month.labor) + '%' }" :title="`Labor: ${currencySymbol}${month.labor.toLocaleString()}`"></div>
-                  <div class="bar-segment overhead" :style="{ height: getBarHeight(month.overhead) + '%' }" :title="`Overhead: ${currencySymbol}${month.overhead.toLocaleString()}`"></div>
+                  <div class="bar-segment procurement" :style="{ height: getBarHeight(month.procurement) + '%' }" :title="`Procurement: ${formatCurrency(month.procurement)}`"></div>
+                  <div class="bar-segment operational" :style="{ height: getBarHeight(month.operational) + '%' }" :title="`Operational: ${formatCurrency(month.operational)}`"></div>
+                  <div class="bar-segment labor" :style="{ height: getBarHeight(month.labor) + '%' }" :title="`Labor: ${formatCurrency(month.labor)}`"></div>
+                  <div class="bar-segment overhead" :style="{ height: getBarHeight(month.overhead) + '%' }" :title="`Overhead: ${formatCurrency(month.overhead)}`"></div>
                 </div>
                 <span class="bar-label">{{ translateMonth(month.month) }}</span>
               </div>
@@ -112,7 +111,7 @@
             <div v-for="category in categorySpending" :key="category.category" class="category-item">
               <div class="category-info">
                 <div class="category-name">{{ translateCategory(category.category) }}</div>
-                <div class="category-amount">{{ currencySymbol }}{{ category.amount.toLocaleString() }}</div>
+                <div class="category-amount">{{ formatCurrency(category.amount) }}</div>
               </div>
               <div class="category-bar-container">
                 <div class="category-bar" :style="{ width: category.percentage + '%' }"></div>
@@ -136,16 +135,16 @@
             <table class="transactions-table">
               <thead>
                 <tr>
-                  <th>{{ t('finance.transactions.id') }}</th>
-                  <th>{{ t('finance.transactions.description') }}</th>
-                  <th>{{ t('finance.transactions.vendor') }}</th>
-                  <th>{{ t('finance.transactions.date') }}</th>
-                  <th class="text-right">{{ t('finance.transactions.amount') }}</th>
+                  <SortableTh column-key="id" :label="t('finance.transactions.id')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                  <SortableTh column-key="description" :label="t('finance.transactions.description')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                  <SortableTh column-key="vendor" :label="t('finance.transactions.vendor')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                  <SortableTh column-key="date" :label="t('finance.transactions.date')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
+                  <SortableTh class="text-right" column-key="amount" :label="t('finance.transactions.amount')" :sort-key="sortKey" :sort-dir="sortDir" @sort="toggleSort" />
                 </tr>
               </thead>
               <tbody>
                 <tr
-                  v-for="transaction in recentTransactions"
+                  v-for="transaction in sortedTransactions"
                   :key="transaction.id"
                   class="clickable-row"
                   @click="handleTransactionClick(transaction)"
@@ -154,7 +153,7 @@
                   <td class="transaction-description">{{ transaction.description }}</td>
                   <td class="transaction-vendor">{{ transaction.vendor }}</td>
                   <td class="transaction-date">{{ formatDateShort(transaction.date) }}</td>
-                  <td class="transaction-amount text-right">{{ currencySymbol }}{{ transaction.amount.toLocaleString() }}</td>
+                  <td class="transaction-amount text-right">{{ formatCurrency(transaction.amount) }}</td>
                 </tr>
               </tbody>
             </table>
@@ -176,13 +175,16 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
-import { formatCurrency as formatCurrencyUtil } from '../utils/currency'
+import { formatCurrency as formatCurrencyUtil, convertAmount } from '../utils/currency'
+import { useTableSort } from '../composables/useTableSort'
 import CostDetailModal from '../components/CostDetailModal.vue'
+import SortableTh from '../components/SortableTh.vue'
 
 export default {
   name: 'Spending',
   components: {
-    CostDetailModal
+    CostDetailModal,
+    SortableTh
   },
   setup() {
     const { t, currentCurrency } = useI18n()
@@ -232,10 +234,25 @@ export default {
       }
       // Filter transactions by selected month
       return allTransactions.value.filter(t => {
-        const transactionMonth = new Date(t.date).toISOString().slice(0, 7)
+        const transactionMonth = toMonthKey(t.date)
         return transactionMonth === selectedPeriod.value
       })
     })
+
+    // Click-to-sort layered on top of recentTransactions (which already reflects
+    // the period filter). When sort is "off", applySort returns rows untouched.
+    const { sortKey, sortDir, toggleSort, applySort } = useTableSort()
+
+    const transactionSortAccessors = {
+      id: (tx) => tx.id,
+      description: (tx) => tx.description,
+      vendor: (tx) => tx.vendor,
+      // ISO date strings compare chronologically as strings
+      date: (tx) => tx.date,
+      amount: (tx) => tx.amount
+    }
+
+    const sortedTransactions = computed(() => applySort(recentTransactions.value, transactionSortAccessors))
 
     const summary = computed(() => {
       // Recalculate summary based on filteredMonthlySpending (not the chart data)
@@ -270,7 +287,7 @@ export default {
 
       // Filter orders by selected month
       return allOrders.value.filter(order => {
-        const orderMonth = new Date(order.order_date).toISOString().slice(0, 7)
+        const orderMonth = toMonthKey(order.order_date)
         return orderMonth === selectedPeriod.value
       })
     })
@@ -344,7 +361,21 @@ export default {
       const maxRevenue = Math.max(...monthlyRevenue.value.map(m => m.revenue))
       const maxCost = Math.max(...monthlyRevenue.value.map(m => m.costs))
       const max = Math.max(maxRevenue, maxCost)
-      return Math.ceil(max / 1000) // Return in K
+      // Floor the divisor at 1K so getRevenueBarHeight never divides by zero
+      // (empty/zero-order data would otherwise make max 0 → height: NaN%).
+      return Math.max(1, Math.ceil(max / 1000)) // Return in K
+    })
+
+    // Max value (in K) for the cost-flow chart, derived from the largest monthly
+    // total instead of a hardcoded 25K so months over that threshold no longer
+    // overflow the plot. Seed the spread with 0 to survive an empty array
+    // (Math.max() of nothing is -Infinity) and floor at 1K to avoid divide-by-zero.
+    const maxSpendingValue = computed(() => {
+      const max = Math.max(
+        0,
+        ...monthlySpending.value.map(m => m.procurement + m.operational + m.labor + m.overhead)
+      )
+      return Math.max(1, Math.ceil(max / 1000)) // Return in K
     })
 
     const loadData = async () => {
@@ -383,8 +414,19 @@ export default {
       return currentCurrency.value === 'JPY' ? '¥' : '$'
     })
 
+    // Chart axis ticks are labelled in "K" (thousands of the underlying USD
+    // magnitude). Convert that magnitude to the active currency before rendering
+    // so the axis scale matches the converted figures shown everywhere else;
+    // otherwise JPY mode would print the ¥ symbol over an unconverted USD number.
+    const formatAxisLabel = (usdThousands) => {
+      const converted = convertAmount(usdThousands, currentCurrency.value)
+      return `${currencySymbol.value}${converted.toLocaleString()}K`
+    }
+
     const getBarHeight = (value) => {
-      const maxValue = 25000
+      // Scale against the data-derived max (in K → back to base units) so the
+      // stacked segments match the computed Y-axis and never exceed 100%.
+      const maxValue = maxSpendingValue.value * 1000
       return (value / maxValue) * 100
     }
 
@@ -398,6 +440,26 @@ export default {
         month: 'short',
         day: 'numeric'
       })
+    }
+
+    // Build a YYYY-MM key straight from the source string's ISO prefix, which is
+    // timezone-independent. The source dates are date-only ISO strings
+    // (YYYY-MM-DD). Going through new Date(...) and reading components shifts the
+    // bucket by the local UTC offset: toISOString() (UTC) rolls a late-in-month
+    // local timestamp forward, while getFullYear()/getMonth() (local) rolls a
+    // date-only value (parsed as midnight UTC) back a day in timezones west of
+    // UTC, misfiling the 1st of each month into the previous month. Slicing the
+    // literal YYYY-MM avoids both. Fall back to local components for any
+    // non-ISO-prefixed string.
+    const toMonthKey = (dateString) => {
+      const isoMatch = /^(\d{4})-(\d{2})/.exec(dateString)
+      if (isoMatch) {
+        return `${isoMatch[1]}-${isoMatch[2]}`
+      }
+      const date = new Date(dateString)
+      const year = date.getFullYear()
+      const month = (date.getMonth() + 1).toString().padStart(2, '0')
+      return `${year}-${month}`
     }
 
     const formatDateShort = (dateString) => {
@@ -449,7 +511,7 @@ export default {
 
     const handleTransactionClick = (transaction) => {
       console.log('Transaction clicked:', transaction)
-      alert(`Transaction Details:\n\nID: ${transaction.id}\nDescription: ${transaction.description}\nVendor: ${transaction.vendor}\nDate: ${formatDateShort(transaction.date)}\nAmount: $${transaction.amount.toLocaleString()}`)
+      alert(`Transaction Details:\n\nID: ${transaction.id}\nDescription: ${transaction.description}\nVendor: ${transaction.vendor}\nDate: ${formatDateShort(transaction.date)}\nAmount: ${formatCurrency(transaction.amount)}`)
     }
 
     const showCostDetail = (monthData) => {
@@ -467,14 +529,20 @@ export default {
       monthlySpending,
       categorySpending,
       recentTransactions,
+      sortedTransactions,
+      sortKey,
+      sortDir,
+      toggleSort,
       revenueMetrics,
       totalCosts,
       netProfit,
       profitMargin,
       monthlyRevenue,
       maxRevenueValue,
+      maxSpendingValue,
       formatCurrency,
       currencySymbol,
+      formatAxisLabel,
       getBarHeight,
       getRevenueBarHeight,
       formatDate,

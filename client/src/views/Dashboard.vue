@@ -87,18 +87,18 @@
                 <svg viewBox="0 0 200 200" class="donut-svg-compact">
                   <circle cx="100" cy="100" r="65" fill="none" stroke="#e2e8f0" stroke-width="25"/>
                   <circle cx="100" cy="100" r="65" fill="none" stroke="#10b981" stroke-width="25"
-                    :stroke-dasharray="`${getCircleSegment(statusData.delivered)} 408`"
+                    :stroke-dasharray="`${getCircleSegment(statusData.delivered)} ${donutCircumference}`"
                     stroke-dashoffset="0" transform="rotate(-90 100 100)"/>
                   <circle cx="100" cy="100" r="65" fill="none" stroke="#3b82f6" stroke-width="25"
-                    :stroke-dasharray="`${getCircleSegment(statusData.shipped)} 408`"
+                    :stroke-dasharray="`${getCircleSegment(statusData.shipped)} ${donutCircumference}`"
                     :stroke-dashoffset="`-${getCircleSegment(statusData.delivered)}`"
                     transform="rotate(-90 100 100)"/>
                   <circle cx="100" cy="100" r="65" fill="none" stroke="#f59e0b" stroke-width="25"
-                    :stroke-dasharray="`${getCircleSegment(statusData.processing)} 408`"
+                    :stroke-dasharray="`${getCircleSegment(statusData.processing)} ${donutCircumference}`"
                     :stroke-dashoffset="`-${getCircleSegment(statusData.delivered) + getCircleSegment(statusData.shipped)}`"
                     transform="rotate(-90 100 100)"/>
                   <circle cx="100" cy="100" r="65" fill="none" stroke="#ef4444" stroke-width="25"
-                    :stroke-dasharray="`${getCircleSegment(statusData.backordered)} 408`"
+                    :stroke-dasharray="`${getCircleSegment(statusData.backordered)} ${donutCircumference}`"
                     :stroke-dashoffset="`-${getCircleSegment(statusData.delivered) + getCircleSegment(statusData.shipped) + getCircleSegment(statusData.processing)}`"
                     transform="rotate(-90 100 100)"/>
                   <text x="100" y="90" text-anchor="middle" class="donut-center-label">{{ t('dashboard.orderHealth.total') }}</text>
@@ -172,20 +172,19 @@
             <table>
               <thead>
                 <tr>
-                  <th>{{ t('dashboard.inventoryShortages.orderId') }}</th>
-                  <th>{{ t('dashboard.inventoryShortages.sku') }}</th>
-                  <th>{{ t('dashboard.inventoryShortages.itemName') }}</th>
-                  <th>{{ t('dashboard.inventoryShortages.quantityNeeded') }}</th>
-                  <th>{{ t('dashboard.inventoryShortages.quantityAvailable') }}</th>
-                  <th>{{ t('dashboard.inventoryShortages.shortage') }}</th>
-                  <th>{{ t('dashboard.inventoryShortages.daysDelayed') }}</th>
-                  <th>{{ t('dashboard.inventoryShortages.priority') }}</th>
-                  <th>Actions</th>
+                  <SortableTh column-key="orderId" :label="t('dashboard.inventoryShortages.orderId')" :sort-key="backlogSortKey" :sort-dir="backlogSortDir" @sort="toggleBacklogSort" />
+                  <SortableTh column-key="sku" :label="t('dashboard.inventoryShortages.sku')" :sort-key="backlogSortKey" :sort-dir="backlogSortDir" @sort="toggleBacklogSort" />
+                  <SortableTh column-key="itemName" :label="t('dashboard.inventoryShortages.itemName')" :sort-key="backlogSortKey" :sort-dir="backlogSortDir" @sort="toggleBacklogSort" />
+                  <SortableTh column-key="quantityNeeded" :label="t('dashboard.inventoryShortages.quantityNeeded')" :sort-key="backlogSortKey" :sort-dir="backlogSortDir" @sort="toggleBacklogSort" />
+                  <SortableTh column-key="quantityAvailable" :label="t('dashboard.inventoryShortages.quantityAvailable')" :sort-key="backlogSortKey" :sort-dir="backlogSortDir" @sort="toggleBacklogSort" />
+                  <SortableTh column-key="shortage" :label="t('dashboard.inventoryShortages.shortage')" :sort-key="backlogSortKey" :sort-dir="backlogSortDir" @sort="toggleBacklogSort" />
+                  <SortableTh column-key="daysDelayed" :label="t('dashboard.inventoryShortages.daysDelayed')" :sort-key="backlogSortKey" :sort-dir="backlogSortDir" @sort="toggleBacklogSort" />
+                  <SortableTh column-key="priority" :label="t('dashboard.inventoryShortages.priority')" :sort-key="backlogSortKey" :sort-dir="backlogSortDir" @sort="toggleBacklogSort" />
                 </tr>
               </thead>
               <tbody>
                 <tr
-                  v-for="item in backlogItems"
+                  v-for="item in sortedBacklogItems"
                   :key="item.id"
                 >
                   <td @click="showBacklogDetail(item)" style="cursor: pointer;"><strong>{{ item.order_id }}</strong></td>
@@ -208,22 +207,6 @@
                       {{ translatePriority(item.priority) }}
                     </span>
                   </td>
-                  <td>
-                    <button
-                      v-if="!item.purchase_order_id"
-                      @click.stop="openPOModal(item)"
-                      class="po-button create"
-                    >
-                      Create PO
-                    </button>
-                    <button
-                      v-else
-                      @click.stop="viewPO(item)"
-                      class="po-button view"
-                    >
-                      View PO
-                    </button>
-                  </td>
                 </tr>
               </tbody>
             </table>
@@ -239,18 +222,18 @@
             <table>
               <thead>
                 <tr>
-                  <th>{{ t('dashboard.topProducts.product') }}</th>
-                  <th>{{ t('dashboard.topProducts.sku') }}</th>
-                  <th>{{ t('dashboard.topProducts.category') }}</th>
-                  <th>{{ t('dashboard.topProducts.unitsOrdered') }}</th>
-                  <th>{{ t('dashboard.topProducts.revenue') }}</th>
-                  <th>{{ t('dashboard.topProducts.firstOrder') }}</th>
-                  <th>{{ t('dashboard.topProducts.stockStatus') }}</th>
+                  <SortableTh column-key="name" :label="t('dashboard.topProducts.product')" :sort-key="productSortKey" :sort-dir="productSortDir" @sort="toggleProductSort" />
+                  <SortableTh column-key="sku" :label="t('dashboard.topProducts.sku')" :sort-key="productSortKey" :sort-dir="productSortDir" @sort="toggleProductSort" />
+                  <SortableTh column-key="category" :label="t('dashboard.topProducts.category')" :sort-key="productSortKey" :sort-dir="productSortDir" @sort="toggleProductSort" />
+                  <SortableTh column-key="unitsOrdered" :label="t('dashboard.topProducts.unitsOrdered')" :sort-key="productSortKey" :sort-dir="productSortDir" @sort="toggleProductSort" />
+                  <SortableTh column-key="revenue" :label="t('dashboard.topProducts.revenue')" :sort-key="productSortKey" :sort-dir="productSortDir" @sort="toggleProductSort" />
+                  <SortableTh column-key="firstOrder" :label="t('dashboard.topProducts.firstOrder')" :sort-key="productSortKey" :sort-dir="productSortDir" @sort="toggleProductSort" />
+                  <SortableTh column-key="stockStatus" :label="t('dashboard.topProducts.stockStatus')" :sort-key="productSortKey" :sort-dir="productSortDir" @sort="toggleProductSort" />
                 </tr>
               </thead>
               <tbody>
                 <tr
-                  v-for="item in topProducts"
+                  v-for="item in sortedTopProducts"
                   :key="item.sku"
                   class="clickable-row"
                   @click="showProductDetail(item)"
@@ -285,14 +268,6 @@
       :backlog-item="selectedBacklogItem"
       @close="showBacklogModal = false"
     />
-
-    <PurchaseOrderModal
-      :is-open="showPOModal"
-      :backlog-item="selectedBacklogForPO"
-      :mode="poModalMode"
-      @close="showPOModal = false"
-      @po-created="handlePOCreated"
-    />
   </div>
 </template>
 
@@ -302,14 +277,17 @@ import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
 import { formatCurrency } from '../utils/currency'
+import { useTableSort } from '../composables/useTableSort'
 import ProductDetailModal from '../components/ProductDetailModal.vue'
 import BacklogDetailModal from '../components/BacklogDetailModal.vue'
+import SortableTh from '../components/SortableTh.vue'
 
 export default {
   name: 'Dashboard',
   components: {
     ProductDetailModal,
     BacklogDetailModal,
+    SortableTh,
   },
   setup() {
     const { t, currentCurrency, translateProductName, translateWarehouse } = useI18n()
@@ -324,9 +302,6 @@ export default {
     const selectedProduct = ref(null)
     const showBacklogModal = ref(false)
     const selectedBacklogItem = ref(null)
-    const showPOModal = ref(false)
-    const selectedBacklogForPO = ref(null)
-    const poModalMode = ref('create')
 
     // Use shared filters
     const {
@@ -558,6 +533,53 @@ export default {
       return allBacklogItems.value.filter(b => validSkus.has(b.item_sku))
     })
 
+    // Click-to-sort for the two multi-row data tables. Each table gets its own
+    // sort state. When sort is "off", applySort returns rows untouched, keeping
+    // each table's existing default order.
+    const {
+      sortKey: backlogSortKey,
+      sortDir: backlogSortDir,
+      toggleSort: toggleBacklogSort,
+      applySort: applyBacklogSort
+    } = useTableSort()
+
+    const backlogSortAccessors = {
+      orderId: (i) => i.order_id,
+      sku: (i) => i.item_sku,
+      // i18n column: sort on the raw item name, not the translated label
+      itemName: (i) => i.item_name,
+      quantityNeeded: (i) => i.quantity_needed,
+      quantityAvailable: (i) => i.quantity_available,
+      // Derived: units short, matching the displayed absolute shortage
+      shortage: (i) => Math.abs(i.quantity_needed - i.quantity_available),
+      daysDelayed: (i) => i.days_delayed,
+      priority: (i) => i.priority
+    }
+
+    const sortedBacklogItems = computed(() => applyBacklogSort(backlogItems.value, backlogSortAccessors))
+
+    const {
+      sortKey: productSortKey,
+      sortDir: productSortDir,
+      toggleSort: toggleProductSort,
+      applySort: applyProductSort
+    } = useTableSort()
+
+    const productSortAccessors = {
+      // i18n columns: sort on raw name/category, not the translated label
+      name: (p) => p.name,
+      sku: (p) => p.sku,
+      category: (p) => p.category,
+      unitsOrdered: (p) => p.unitsOrdered,
+      revenue: (p) => p.revenue,
+      // ISO date strings compare chronologically as strings
+      firstOrder: (p) => p.firstOrderDate,
+      // Sort on the raw stock level key, not the translated label
+      stockStatus: (p) => p.stockLevel
+    }
+
+    const sortedTopProducts = computed(() => applyProductSort(topProducts.value, productSortAccessors))
+
     const loadData = async () => {
       try {
         loading.value = true
@@ -591,8 +613,15 @@ export default {
              statusData.value.processing + statusData.value.backordered
     })
 
+    // The donut circles use r="65", so their true rendered circumference is
+    // 2·π·65 (≈408.4). Both the filled arc length and the stroke-dasharray gap
+    // must be scaled to this same value, otherwise arcs and their cumulative
+    // offsets drift (previously the arc used 440, overshooting the ~408 ring by
+    // ~8% and wrapping past 360° when one status held every order).
+    const DONUT_CIRCUMFERENCE = 2 * Math.PI * 65
+
     const getCircleSegment = (value) => {
-      return totalOrders.value > 0 ? (value / totalOrders.value) * 440 : 0
+      return totalOrders.value > 0 ? (value / totalOrders.value) * DONUT_CIRCUMFERENCE : 0
     }
 
     const getStockBadge = (level) => {
@@ -650,28 +679,6 @@ export default {
       showBacklogModal.value = true
     }
 
-    const openPOModal = (item) => {
-      selectedBacklogForPO.value = item
-      poModalMode.value = 'create'
-      showPOModal.value = true
-    }
-
-    const viewPO = (item) => {
-      selectedBacklogForPO.value = item
-      poModalMode.value = 'view'
-      showPOModal.value = true
-    }
-
-    const handlePOCreated = (poData) => {
-      // Update the backlog item with the new PO ID
-      const item = allBacklogItems.value.find(b => b.id === poData.backlog_item_id)
-      if (item) {
-        item.purchase_order_id = poData.id
-        item.purchase_order = poData
-      }
-      showPOModal.value = false
-    }
-
     // Watch for filter changes and reload data
     watch([selectedPeriod, selectedLocation, selectedCategory, selectedStatus], () => {
       loadData()
@@ -693,9 +700,18 @@ export default {
       orderTrendData,
       maxOrderCount,
       topProducts,
+      sortedTopProducts,
+      productSortKey,
+      productSortDir,
+      toggleProductSort,
       backlogItems,
+      sortedBacklogItems,
+      backlogSortKey,
+      backlogSortDir,
+      toggleBacklogSort,
       calculatePercentage,
       getCircleSegment,
+      donutCircumference: DONUT_CIRCUMFERENCE,
       getStockBadge,
       translateCategory,
       translateStockLevel,
@@ -714,13 +730,7 @@ export default {
       formatCurrency,
       Math,
       translateProductName,
-      translateWarehouse,
-      showPOModal,
-      selectedBacklogForPO,
-      poModalMode,
-      openPOModal,
-      viewPO,
-      handlePOCreated
+      translateWarehouse
     }
   }
 }
@@ -1236,36 +1246,4 @@ export default {
   transform: scale(1.1);
 }
 
-.po-button {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 0.813rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.po-button.create {
-  background: #3b82f6;
-  color: white;
-}
-
-.po-button.create:hover {
-  background: #2563eb;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
-}
-
-.po-button.view {
-  background: #64748b;
-  color: white;
-}
-
-.po-button.view:hover {
-  background: #475569;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(100, 116, 139, 0.3);
-}
 </style>

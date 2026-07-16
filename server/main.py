@@ -31,6 +31,36 @@ def filter_by_month(items: list, month: Optional[str]) -> list:
 
     return items
 
+def matches_category(item: dict, category: str) -> bool:
+    """True if `item` belongs to `category`.
+
+    Inventory items carry a single top-level `category`. Orders can mix
+    categories across their line items, so an order matches if its top-level
+    category (the display label) OR any of its line items is in `category`.
+    Matching the line items is what keeps a multi-category order from being
+    dropped by a filter for one of its non-primary categories.
+    """
+    target = category.lower()
+    if item.get('category', '').lower() == target:
+        return True
+    return any(line.get('category', '').lower() == target for line in item.get('items', []))
+
+def order_revenue_for_category(order: dict, category: Optional[str]) -> float:
+    """Revenue from `order` attributable to `category`.
+
+    With no category filter the whole order value counts. With a filter, only
+    the line items in that category count, so a mixed-category order splits its
+    value across categories instead of assigning it all to the primary one.
+    """
+    if not category or category == 'all':
+        return order.get('total_value', 0)
+    target = category.lower()
+    return sum(
+        line.get('quantity', 0) * line.get('unit_price', 0)
+        for line in order.get('items', [])
+        if line.get('category', '').lower() == target
+    )
+
 def apply_filters(items: list, warehouse: Optional[str] = None, category: Optional[str] = None,
                  status: Optional[str] = None) -> list:
     """Apply common filters to a list of items"""
@@ -40,7 +70,7 @@ def apply_filters(items: list, warehouse: Optional[str] = None, category: Option
         filtered = [item for item in filtered if item.get('warehouse') == warehouse]
 
     if category and category != 'all':
-        filtered = [item for item in filtered if item.get('category', '').lower() == category.lower()]
+        filtered = [item for item in filtered if matches_category(item, category)]
 
     if status and status != 'all':
         filtered = [item for item in filtered if item.get('status', '').lower() == status.lower()]
@@ -156,6 +186,27 @@ class CreatePurchaseOrderRequest(BaseModel):
     unit_cost: float
     expected_delivery_date: str
     notes: Optional[str] = None
+
+class Task(BaseModel):
+    id: int
+    title: str
+    priority: str
+    dueDate: str
+    status: str
+
+class CreateTaskRequest(BaseModel):
+    title: str
+    priority: str = "medium"
+    dueDate: str
+
+# In-memory task store. Starts empty and lives for the life of the process
+# (restart clears it), matching the rest of this demo's mock-data approach.
+# The client seeds its own example tasks (ids 1-4) in useAuth.js and merges them
+# with the tasks returned here, so server-assigned ids start at 1000 to avoid
+# colliding with those client-side mock ids — App.vue distinguishes mock tasks
+# from API tasks by id when deleting/toggling.
+tasks_store: List[dict] = []
+_next_task_id = 1000
 
 # API endpoints
 @app.get("/")
@@ -325,16 +376,22 @@ def get_dashboard_summary(
     pending_orders = len([order for order in filtered_orders if order["status"] in ["Processing", "Backordered"]])
     total_backlog_items = len(backlog_items)
 
+    # Attribute revenue per line item so a category filter counts only the
+    # matching lines of each order, not the whole (possibly mixed) order value.
+    # Exclude "Submitted" restock orders: they're internal procurement, not
+    # customer revenue, so they must not inflate the Overview revenue KPI.
+    total_orders_value = sum(
+        order_revenue_for_category(order, category)
+        for order in filtered_orders
+        if order["status"] != "Submitted"
+    )
+
     return {
         "total_inventory_value": round(total_inventory_value, 2),
         "low_stock_items": low_stock_items,
         "pending_orders": pending_orders,
         "total_backlog_items": total_backlog_items,
-        # Restock orders ("Submitted") are internal procurement, not customer revenue -
-        # exclude them so they don't inflate the Overview revenue KPI.
-        "total_orders_value": sum(
-            order["total_value"] for order in filtered_orders if order["status"] != "Submitted"
-        )
+        "total_orders_value": round(total_orders_value, 2)
     }
 
 @app.get("/api/spending/summary")
@@ -433,6 +490,45 @@ def get_monthly_trends():
     result = list(months.values())
     result.sort(key=lambda x: x['month'])
     return result
+
+@app.get("/api/tasks", response_model=List[Task])
+def get_tasks():
+    """Get all user-created tasks stored on the server for this session."""
+    return tasks_store
+
+@app.post("/api/tasks", response_model=Task, status_code=201)
+def create_task(task: CreateTaskRequest):
+    """Create a task and keep it in the in-memory store for this session."""
+    global _next_task_id
+    new_task = {
+        "id": _next_task_id,
+        "title": task.title,
+        "priority": task.priority,
+        "dueDate": task.dueDate,
+        "status": "pending",
+    }
+    _next_task_id += 1
+    # Newest first, matching how the client prepends and renders tasks.
+    tasks_store.insert(0, new_task)
+    return new_task
+
+@app.delete("/api/tasks/{task_id}")
+def delete_task(task_id: int):
+    """Delete a task by id."""
+    global tasks_store
+    if not any(t["id"] == task_id for t in tasks_store):
+        raise HTTPException(status_code=404, detail="Task not found")
+    tasks_store = [t for t in tasks_store if t["id"] != task_id]
+    return {"success": True, "id": task_id}
+
+@app.patch("/api/tasks/{task_id}", response_model=Task)
+def toggle_task(task_id: int):
+    """Toggle a task between pending and completed."""
+    task = next((t for t in tasks_store if t["id"] == task_id), None)
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    task["status"] = "completed" if task["status"] == "pending" else "pending"
+    return task
 
 if __name__ == "__main__":
     import uvicorn

@@ -17,15 +17,15 @@
           <table class="reports-table">
             <thead>
               <tr>
-                <th>Quarter</th>
-                <th>Total Orders</th>
-                <th>Total Revenue</th>
-                <th>Avg Order Value</th>
-                <th>Fulfillment Rate</th>
+                <SortableTh column-key="quarter" label="Quarter" :sort-key="quarterlySortKey" :sort-dir="quarterlySortDir" @sort="toggleQuarterlySort" />
+                <SortableTh column-key="totalOrders" label="Total Orders" :sort-key="quarterlySortKey" :sort-dir="quarterlySortDir" @sort="toggleQuarterlySort" />
+                <SortableTh column-key="totalRevenue" label="Total Revenue" :sort-key="quarterlySortKey" :sort-dir="quarterlySortDir" @sort="toggleQuarterlySort" />
+                <SortableTh column-key="avgOrderValue" label="Avg Order Value" :sort-key="quarterlySortKey" :sort-dir="quarterlySortDir" @sort="toggleQuarterlySort" />
+                <SortableTh column-key="fulfillmentRate" label="Fulfillment Rate" :sort-key="quarterlySortKey" :sort-dir="quarterlySortDir" @sort="toggleQuarterlySort" />
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(q, index) in quarterlyData" :key="index">
+              <tr v-for="q in sortedQuarterly" :key="q.quarter">
                 <td><strong>{{ q.quarter }}</strong></td>
                 <td>{{ q.total_orders }}</td>
                 <td>${{ formatNumber(q.total_revenue) }}</td>
@@ -71,27 +71,29 @@
           <table class="reports-table">
             <thead>
               <tr>
-                <th>Month</th>
-                <th>Orders</th>
-                <th>Revenue</th>
-                <th>Change</th>
-                <th>Growth Rate</th>
+                <SortableTh column-key="month" label="Month" :sort-key="monthlySortKey" :sort-dir="monthlySortDir" @sort="toggleMonthlySort" />
+                <SortableTh column-key="orders" label="Orders" :sort-key="monthlySortKey" :sort-dir="monthlySortDir" @sort="toggleMonthlySort" />
+                <SortableTh column-key="revenue" label="Revenue" :sort-key="monthlySortKey" :sort-dir="monthlySortDir" @sort="toggleMonthlySort" />
+                <SortableTh column-key="change" label="Change" :sort-key="monthlySortKey" :sort-dir="monthlySortDir" @sort="toggleMonthlySort" />
+                <SortableTh column-key="growthRate" label="Growth Rate" :sort-key="monthlySortKey" :sort-dir="monthlySortDir" @sort="toggleMonthlySort" />
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(month, index) in monthlyData" :key="index">
+              <tr v-for="month in sortedMonthly" :key="month.month">
                 <td><strong>{{ formatMonth(month.month) }}</strong></td>
                 <td>{{ month.order_count }}</td>
                 <td>${{ formatNumber(month.revenue) }}</td>
                 <td>
-                  <span v-if="index > 0" :class="getChangeClass(month.revenue, monthlyData[index - 1].revenue)">
-                    {{ getChangeValue(month.revenue, monthlyData[index - 1].revenue) }}
+                  <!-- Change/Growth compare to the chronologically previous month (prevRevenue),
+                       precomputed so sorting the table never distorts the comparison. -->
+                  <span v-if="month.prevRevenue !== null" :class="getChangeClass(month.revenue, month.prevRevenue)">
+                    {{ getChangeValue(month.revenue, month.prevRevenue) }}
                   </span>
                   <span v-else>-</span>
                 </td>
                 <td>
-                  <span v-if="index > 0" :class="getChangeClass(month.revenue, monthlyData[index - 1].revenue)">
-                    {{ getGrowthRate(month.revenue, monthlyData[index - 1].revenue) }}
+                  <span v-if="month.prevRevenue !== null" :class="getChangeClass(month.revenue, month.prevRevenue)">
+                    {{ getGrowthRate(month.revenue, month.prevRevenue) }}
                   </span>
                   <span v-else>-</span>
                 </td>
@@ -126,9 +128,30 @@
 
 <script>
 import axios from 'axios'
+import { useTableSort } from '../composables/useTableSort'
+import SortableTh from '../components/SortableTh.vue'
 
 export default {
   name: 'Reports',
+  components: {
+    SortableTh
+  },
+  // This view uses the Options API. setup() only wires the shared sort composable
+  // (one instance per table); the sorted rows are derived in computed() below.
+  setup() {
+    const quarterly = useTableSort()
+    const monthly = useTableSort()
+    return {
+      quarterlySortKey: quarterly.sortKey,
+      quarterlySortDir: quarterly.sortDir,
+      toggleQuarterlySort: quarterly.toggleSort,
+      applyQuarterlySort: quarterly.applySort,
+      monthlySortKey: monthly.sortKey,
+      monthlySortDir: monthly.sortDir,
+      toggleMonthlySort: monthly.toggleSort,
+      applyMonthlySort: monthly.applySort
+    }
+  },
   data() {
     return {
       loading: true,
@@ -139,6 +162,36 @@ export default {
       avgMonthlyRevenue: 0,
       totalOrders: 0,
       bestQuarter: ''
+    }
+  },
+  computed: {
+    sortedQuarterly() {
+      return this.applyQuarterlySort(this.quarterlyData, {
+        quarter: (q) => q.quarter,
+        totalOrders: (q) => q.total_orders,
+        totalRevenue: (q) => q.total_revenue,
+        avgOrderValue: (q) => q.avg_order_value,
+        fulfillmentRate: (q) => q.fulfillment_rate
+      })
+    },
+    // Attach each month's chronologically previous revenue so the Change/Growth
+    // columns stay correct regardless of the table's current sort order.
+    monthlyRows() {
+      return this.monthlyData.map((m, i) => ({
+        ...m,
+        prevRevenue: i > 0 ? this.monthlyData[i - 1].revenue : null
+      }))
+    },
+    sortedMonthly() {
+      return this.applyMonthlySort(this.monthlyRows, {
+        month: (m) => m.month,
+        orders: (m) => m.order_count,
+        revenue: (m) => m.revenue,
+        // Derived: absolute change vs previous month (null for the first month → sorts last)
+        change: (m) => (m.prevRevenue === null ? null : m.revenue - m.prevRevenue),
+        // Derived: growth rate vs previous month
+        growthRate: (m) => (m.prevRevenue === null || m.prevRevenue === 0 ? null : (m.revenue - m.prevRevenue) / m.prevRevenue)
+      })
     }
   },
   mounted() {
