@@ -2,10 +2,18 @@
   <Teleport to="body">
     <Transition name="modal">
       <div v-if="isOpen" class="modal-overlay" @click="close">
-        <div class="modal-container" @click.stop>
+        <div
+          ref="modalRef"
+          class="modal-container"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="profile-details-modal-title"
+          tabindex="-1"
+          @click.stop
+        >
           <div class="modal-header">
-            <h3 class="modal-title">{{ t('profileDetails.title') }}</h3>
-            <button class="close-button" @click="close">
+            <h3 id="profile-details-modal-title" class="modal-title">{{ t('profileDetails.title') }}</h3>
+            <button class="close-button" :aria-label="t('common.close')" @click="close">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
@@ -68,6 +76,7 @@
 <script setup>
 import { useAuth } from '../composables/useAuth'
 import { useI18n } from '../composables/useI18n'
+import { useModal } from '../composables/useModal'
 
 const { currentUser, getInitials } = useAuth()
 const { t, currentLocale } = useI18n()
@@ -81,9 +90,8 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
-const close = () => {
-  emit('close')
-}
+// Modal shell + accessibility (escape, scroll-lock, focus trap/return).
+const { modalRef, close } = useModal(() => props.isOpen, emit)
 
 const formatDate = (dateString) => {
   const date = new Date(dateString)

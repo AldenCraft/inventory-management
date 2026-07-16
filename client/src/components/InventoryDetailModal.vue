@@ -2,10 +2,18 @@
   <Teleport to="body">
     <Transition name="modal">
       <div v-if="isOpen && inventoryItem" class="modal-overlay" @click="close">
-        <div class="modal-container" @click.stop>
+        <div
+          ref="modalRef"
+          class="modal-container"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="inventory-modal-title"
+          tabindex="-1"
+          @click.stop
+        >
           <div class="modal-header">
-            <h3 class="modal-title">Inventory Item Details</h3>
-            <button class="close-button" @click="close">
+            <h3 id="inventory-modal-title" class="modal-title">Inventory Item Details</h3>
+            <button class="close-button" :aria-label="t('common.close')" @click="close">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
@@ -14,7 +22,7 @@
 
           <div class="modal-body">
             <div class="item-header">
-              <div class="item-icon" :class="getStockIconClass()">
+              <div class="item-icon" :class="iconClass">
                 <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
                   <rect x="8" y="12" width="32" height="28" rx="2" stroke="currentColor" stroke-width="2.5"/>
                   <path d="M16 8V16M32 8V16M8 20H40" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
@@ -25,8 +33,8 @@
                 <h4 class="item-name">{{ translateProductName(inventoryItem.name) }}</h4>
                 <div class="item-sku">SKU: {{ inventoryItem.sku }}</div>
               </div>
-              <span class="stock-badge" :class="getStockStatusClass()">
-                {{ getStockStatus() }}
+              <span class="stock-badge" :class="statusClass">
+                {{ statusLabel }}
               </span>
             </div>
 
@@ -35,7 +43,7 @@
                 <div class="summary-label">Quantity on Hand</div>
                 <div class="summary-value">{{ inventoryItem.quantity_on_hand }} units</div>
               </div>
-              <div class="summary-card" :class="getSummaryCardClass()">
+              <div class="summary-card" :class="summaryCardClass">
                 <div class="summary-label">Stock Level</div>
                 <div class="summary-value">{{ stockPercentage }}%</div>
                 <div class="summary-subtitle">vs. reorder point</div>
@@ -87,8 +95,8 @@
               <div class="info-item">
                 <div class="info-label">Status</div>
                 <div class="info-value">
-                  <span :class="['badge', getStockStatusClass()]">
-                    {{ getStockStatus() }}
+                  <span :class="['badge', statusClass]">
+                    {{ statusLabel }}
                   </span>
                 </div>
               </div>
@@ -107,12 +115,12 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from '../composables/useI18n'
+import { useModal } from '../composables/useModal'
+import { useCurrency } from '../composables/useCurrency'
+import { useStockStatus } from '../composables/useStockStatus'
 
-const { t, currentCurrency, translateProductName, translateWarehouse } = useI18n()
-
-const currencySymbol = computed(() => {
-  return currentCurrency.value === 'JPY' ? '¥' : '$'
-})
+const { t, translateProductName, translateWarehouse } = useI18n()
+const { currencySymbol } = useCurrency()
 
 const props = defineProps({
   isOpen: {
@@ -127,6 +135,25 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
+// Modal shell + accessibility (escape, scroll-lock, focus trap/return); activation is
+// tied to the same condition as the v-if so focus only moves once the dialog is rendered.
+const { modalRef, close } = useModal(() => props.isOpen && !!props.inventoryItem, emit)
+
+// Shared reorder-point classification (single source of truth, locale-aware label).
+const { key: statusKey, label: statusLabel, class: statusClass } = useStockStatus(() => props.inventoryItem)
+
+const iconClass = computed(() => {
+  if (statusKey.value === 'lowStock') return 'danger-icon'
+  if (statusKey.value === 'adequate') return 'warning-icon'
+  return 'success-icon'
+})
+
+const summaryCardClass = computed(() => {
+  if (statusKey.value === 'lowStock') return 'danger-card'
+  if (statusKey.value === 'adequate') return 'warning-card'
+  return 'success-card'
+})
+
 const totalValue = computed(() => {
   if (!props.inventoryItem) return 0
   return props.inventoryItem.quantity_on_hand * props.inventoryItem.unit_cost
@@ -136,52 +163,6 @@ const stockPercentage = computed(() => {
   if (!props.inventoryItem || props.inventoryItem.reorder_point === 0) return 0
   return Math.round((props.inventoryItem.quantity_on_hand / props.inventoryItem.reorder_point) * 100)
 })
-
-const close = () => {
-  emit('close')
-}
-
-// Locale-independent status key ('lowStock' | 'adequate' | 'inStock'), mirroring
-// getStockStatusKey() in Inventory.vue so the table and modal classify stock the same way.
-// Class/icon helpers key off this so styling stays correct regardless of language, and
-// the visible label is translated separately via t('status.*').
-const getStockStatusKey = () => {
-  if (!props.inventoryItem) return null
-  if (props.inventoryItem.quantity_on_hand <= props.inventoryItem.reorder_point) {
-    return 'lowStock'
-  } else if (props.inventoryItem.quantity_on_hand <= props.inventoryItem.reorder_point * 1.5) {
-    return 'adequate'
-  } else {
-    return 'inStock'
-  }
-}
-
-const getStockStatus = () => {
-  const key = getStockStatusKey()
-  // The modal only renders with an item present (v-if guard), so the null case is a safety net.
-  return key ? t(`status.${key}`) : ''
-}
-
-const getStockStatusClass = () => {
-  const key = getStockStatusKey()
-  if (key === 'lowStock') return 'danger'
-  if (key === 'adequate') return 'warning'
-  return 'success'
-}
-
-const getStockIconClass = () => {
-  const key = getStockStatusKey()
-  if (key === 'lowStock') return 'danger-icon'
-  if (key === 'adequate') return 'warning-icon'
-  return 'success-icon'
-}
-
-const getSummaryCardClass = () => {
-  const key = getStockStatusKey()
-  if (key === 'lowStock') return 'danger-card'
-  if (key === 'adequate') return 'warning-card'
-  return 'success-card'
-}
 </script>
 
 <style scoped>

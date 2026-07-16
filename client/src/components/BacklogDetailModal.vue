@@ -2,10 +2,18 @@
   <Teleport to="body">
     <Transition name="modal">
       <div v-if="isOpen && backlogItem" class="modal-overlay" @click="close">
-        <div class="modal-container" @click.stop>
+        <div
+          ref="modalRef"
+          class="modal-container"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="backlog-modal-title"
+          tabindex="-1"
+          @click.stop
+        >
           <div class="modal-header">
-            <h3 class="modal-title">Inventory Shortage Details</h3>
-            <button class="close-button" @click="close">
+            <h3 id="backlog-modal-title" class="modal-title">Inventory Shortage Details</h3>
+            <button class="close-button" :aria-label="t('common.close')" @click="close">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
@@ -82,8 +90,9 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from '../composables/useI18n'
+import { useModal } from '../composables/useModal'
 
-const { translateProductName } = useI18n()
+const { t, translateProductName } = useI18n()
 
 const props = defineProps({
   isOpen: {
@@ -98,14 +107,13 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
+// Modal shell + accessibility (escape, scroll-lock, focus trap/return).
+const { modalRef, close } = useModal(() => props.isOpen && !!props.backlogItem, emit)
+
 const shortage = computed(() => {
   if (!props.backlogItem) return 0
   return props.backlogItem.quantity_needed - props.backlogItem.quantity_available
 })
-
-const close = () => {
-  emit('close')
-}
 </script>
 
 <style scoped>

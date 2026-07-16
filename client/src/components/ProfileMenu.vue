@@ -1,9 +1,11 @@
 <template>
-  <div class="profile-menu">
+  <div ref="rootRef" class="profile-menu">
     <button
+      ref="buttonRef"
       class="profile-button"
+      aria-haspopup="true"
+      :aria-expanded="isDropdownOpen"
       @click="toggleDropdown"
-      @blur="handleBlur"
     >
       <div class="avatar">
         {{ getInitials(currentUser.name) }}
@@ -21,7 +23,7 @@
       </svg>
     </button>
 
-    <div v-if="isDropdownOpen" class="dropdown-menu">
+    <div v-if="isDropdownOpen" class="dropdown-menu" role="menu">
       <div class="dropdown-header">
         <div class="avatar-large">
           {{ getInitials(currentUser.name) }}
@@ -36,7 +38,8 @@
 
       <button
         class="dropdown-item"
-        @mousedown.prevent="showProfileDetails"
+        role="menuitem"
+        @click="showProfileDetails"
       >
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
           <path d="M9 9C10.6569 9 12 7.65685 12 6C12 4.34315 10.6569 3 9 3C7.34315 3 6 4.34315 6 6C6 7.65685 7.34315 9 9 9Z" stroke="currentColor" stroke-width="1.5"/>
@@ -47,7 +50,8 @@
 
       <button
         class="dropdown-item"
-        @mousedown.prevent="showTasks"
+        role="menuitem"
+        @click="showTasks"
       >
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
           <path d="M15 3H3C2.44772 3 2 3.44772 2 4V14C2 14.5523 2.44772 15 3 15H15C15.5523 15 16 14.5523 16 14V4C16 3.44772 15.5523 3 15 3Z" stroke="currentColor" stroke-width="1.5"/>
@@ -61,7 +65,8 @@
 
       <button
         class="dropdown-item logout"
-        @mousedown.prevent="handleLogout"
+        role="menuitem"
+        @click="handleLogout"
       >
         <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
           <path d="M7 15H4C3.44772 15 3 14.5523 3 14V4C3 3.44772 3.44772 3 4 3H7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
@@ -74,7 +79,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { useAuth } from '../composables/useAuth'
 import { useI18n } from '../composables/useI18n'
 
@@ -82,6 +87,8 @@ const { currentUser, logout, getInitials } = useAuth()
 const { t } = useI18n()
 
 const isDropdownOpen = ref(false)
+const rootRef = ref(null)
+const buttonRef = ref(null)
 const emit = defineEmits(['show-profile-details', 'show-tasks'])
 
 const pendingTaskCount = computed(() => {
@@ -92,12 +99,51 @@ const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value
 }
 
-const handleBlur = () => {
-  // Delay to allow mousedown events on dropdown items to fire first
-  setTimeout(() => {
-    isDropdownOpen.value = false
-  }, 200)
+const closeDropdown = () => {
+  isDropdownOpen.value = false
 }
+
+// Close on any click outside the menu root. The toggle button lives inside rootRef, so
+// the opening click is naturally ignored here (contains() is true) and won't re-close it.
+const onClickOutside = (e) => {
+  if (rootRef.value && !rootRef.value.contains(e.target)) {
+    closeDropdown()
+  }
+}
+
+// Escape closes and returns focus to the trigger; Arrow keys move between menu items.
+const onKeydown = (e) => {
+  if (e.key === 'Escape') {
+    closeDropdown()
+    buttonRef.value?.focus()
+  } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault()
+    const items = Array.from(rootRef.value?.querySelectorAll('.dropdown-item') || [])
+    if (items.length === 0) return
+    const currentIndex = items.indexOf(document.activeElement)
+    const nextIndex = e.key === 'ArrowDown'
+      ? (currentIndex + 1) % items.length
+      : (currentIndex - 1 + items.length) % items.length
+    items[nextIndex].focus()
+  }
+}
+
+// Listeners are added only while open and removed on close, so nothing leaks. This
+// replaces the previous racy @blur + setTimeout(...,200) dismissal.
+watch(isDropdownOpen, (open) => {
+  if (open) {
+    document.addEventListener('click', onClickOutside)
+    document.addEventListener('keydown', onKeydown)
+  } else {
+    document.removeEventListener('click', onClickOutside)
+    document.removeEventListener('keydown', onKeydown)
+  }
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', onClickOutside)
+  document.removeEventListener('keydown', onKeydown)
+})
 
 const showProfileDetails = () => {
   isDropdownOpen.value = false

@@ -2,10 +2,18 @@
   <Teleport to="body">
     <Transition name="modal">
       <div v-if="isOpen" class="modal-overlay" @click="close">
-        <div class="modal-container tasks-modal-container" @click.stop>
+        <div
+          ref="modalRef"
+          class="modal-container tasks-modal-container"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="tasks-modal-title"
+          tabindex="-1"
+          @click.stop
+        >
           <div class="modal-header">
-            <h3 class="modal-title">{{ t('tasks.title') }}</h3>
-            <button class="close-button" @click="close">
+            <h3 id="tasks-modal-title" class="modal-title">{{ t('tasks.title') }}</h3>
+            <button class="close-button" :aria-label="t('common.close')" @click="close">
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               </svg>
@@ -121,6 +129,7 @@
 <script>
 import { ref, computed } from 'vue'
 import { useI18n } from '../composables/useI18n'
+import { useModal } from '../composables/useModal'
 
 export default {
   name: 'TasksModal',
@@ -137,6 +146,8 @@ export default {
   emits: ['close', 'add-task', 'delete-task', 'toggle-task'],
   setup(props, { emit }) {
     const { t, currentLocale } = useI18n()
+    // Modal shell + accessibility (escape, scroll-lock, focus trap/return).
+    const { modalRef, close } = useModal(() => props.isOpen, emit)
     const newTask = ref({
       title: '',
       priority: 'medium',
@@ -147,10 +158,6 @@ export default {
       // Don't sort - just return tasks in their current order (newest first)
       return [...props.tasks]
     })
-
-    const close = () => {
-      emit('close')
-    }
 
     const handleAddTask = () => {
       if (newTask.value.title.trim() && newTask.value.dueDate) {
@@ -231,6 +238,7 @@ export default {
 
     return {
       t,
+      modalRef,
       newTask,
       sortedTasks,
       close,
