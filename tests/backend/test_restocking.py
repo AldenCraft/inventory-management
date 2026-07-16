@@ -51,3 +51,31 @@ class TestRestockingEndpoints:
         # increasing-trend items rank ahead of stable ones
         assert recs[0]["item_sku"] == "WDG-001"
         assert [r["trend"] for r in recs[:3]] == ["increasing", "increasing", "increasing"]
+
+    def test_submit_restocking_order(self, client):
+        from datetime import datetime
+        payload = {"items": [
+            {"item_sku": "WDG-001", "item_name": "Industrial Widget Type A",
+             "quantity": 150, "unit_cost": 12.5, "lead_time_days": 10},
+            {"item_sku": "FLT-405", "item_name": "Oil Filter Cartridge",
+             "quantity": 20, "unit_cost": 6.25, "lead_time_days": 5},
+        ]}
+        response = client.post("/api/restocking/orders", json=payload)
+        assert response.status_code == 200
+        order = response.json()
+        assert order["status"] == "Submitted"
+        assert order["customer"] == "Internal Restock"
+        assert order["order_number"].startswith("RST-")
+        assert order["total_value"] == pytest.approx(2000.0)
+        assert order["id"]  # non-empty required id
+        # max lead time = 10 days
+        delta = datetime.fromisoformat(order["expected_delivery"]) - \
+            datetime.fromisoformat(order["order_date"])
+        assert delta.days == 10
+        # it now shows up in the orders list, filterable by status
+        submitted = client.get("/api/orders", params={"status": "Submitted"}).json()
+        assert any(o["id"] == order["id"] for o in submitted)
+
+    def test_submit_empty_order_rejected(self, client):
+        response = client.post("/api/restocking/orders", json={"items": []})
+        assert response.status_code == 400

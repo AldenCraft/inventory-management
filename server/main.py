@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 from pydantic import BaseModel
+from datetime import datetime, timedelta
 import math
 from mock_data import inventory_items, orders, demand_forecasts, backlog_items, spending_summary, monthly_spending, category_spending, recent_transactions, purchase_orders
 
@@ -114,6 +115,18 @@ class RestockRecommendationsResponse(BaseModel):
     total_cost: float
     remaining_budget: float
     recommendations: List[RestockRecommendation]
+
+
+class RestockOrderLine(BaseModel):
+    item_sku: str
+    item_name: str
+    quantity: int
+    unit_cost: float
+    lead_time_days: int
+
+
+class CreateRestockOrderRequest(BaseModel):
+    items: List[RestockOrderLine]
 
 class BacklogItem(BaseModel):
     id: str
@@ -248,6 +261,37 @@ def get_restocking_recommendations(budget: float = 0):
         remaining_budget=round(budget - total_cost, 2),
         recommendations=recommendations,
     )
+
+@app.post("/api/restocking/orders", response_model=Order)
+def create_restocking_order(request: CreateRestockOrderRequest):
+    """Create a restocking order and append it to the in-memory orders list."""
+    if not request.items:
+        raise HTTPException(status_code=400, detail="No items to order")
+
+    now = datetime.now()
+    max_lead = max(line.lead_time_days for line in request.items)
+    submitted_count = sum(1 for o in orders if o.get("status") == "Submitted")
+
+    order = {
+        "id": str(len(orders) + 1),
+        "order_number": f"RST-{now.year}-{submitted_count + 1:04d}",
+        "customer": "Internal Restock",
+        "items": [
+            {"sku": line.item_sku, "name": line.item_name,
+             "quantity": line.quantity, "unit_price": line.unit_cost}
+            for line in request.items
+        ],
+        "status": "Submitted",
+        "order_date": now.isoformat(timespec="seconds"),
+        # compute on the datetime, then format — never string + timedelta
+        "expected_delivery": (now + timedelta(days=max_lead)).isoformat(timespec="seconds"),
+        "total_value": round(sum(line.quantity * line.unit_cost for line in request.items), 2),
+        "actual_delivery": None,
+        "warehouse": None,
+        "category": None,
+    }
+    orders.append(order)
+    return order
 
 @app.get("/api/backlog", response_model=List[BacklogItem])
 def get_backlog():
