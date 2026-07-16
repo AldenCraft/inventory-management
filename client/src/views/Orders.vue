@@ -53,7 +53,7 @@
                 <td>{{ formatDate(order.order_date) }}</td>
                 <td>{{ formatDate(order.expected_delivery) }}</td>
                 <td>{{ t('restocking.days', { count: submittedLeadTime(order) }) }}</td>
-                <td><strong>{{ currencySymbol }}{{ order.total_value.toLocaleString() }}</strong></td>
+                <td><strong>{{ formatCurrency(order.total_value) }}</strong></td>
               </tr>
             </tbody>
           </table>
@@ -89,7 +89,7 @@
                     <div class="items-dropdown">
                       <div v-for="item in order.items" :key="item.sku" class="item-entry">
                         <span class="item-name">{{ translateProductName(item.name) }}</span>
-                        <span class="item-meta">{{ t('orders.quantity') }}: {{ item.quantity }} @ {{ currencySymbol }}{{ item.unit_price }}</span>
+                        <span class="item-meta">{{ t('orders.quantity') }}: {{ item.quantity }} @ {{ formatUnitPrice(item.unit_price) }}</span>
                       </div>
                     </div>
                   </details>
@@ -101,7 +101,7 @@
                 </td>
                 <td class="col-date">{{ formatDate(order.order_date) }}</td>
                 <td class="col-date">{{ formatDate(order.expected_delivery) }}</td>
-                <td class="col-value"><strong>{{ currencySymbol }}{{ order.total_value.toLocaleString() }}</strong></td>
+                <td class="col-value"><strong>{{ formatCurrency(order.total_value) }}</strong></td>
               </tr>
             </tbody>
           </table>
@@ -116,7 +116,7 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
-import { useCurrency } from '../composables/useCurrency'
+import { formatCurrency as formatCurrencyUtil, formatCurrencyWithDecimals } from '../utils/currency'
 import { useTableSort } from '../composables/useTableSort'
 import SortableTh from '../components/SortableTh.vue'
 
@@ -126,8 +126,13 @@ export default {
     SortableTh
   },
   setup() {
-    const { t, currentLocale, translateProductName, translateCustomerName } = useI18n()
-    const { currencySymbol } = useCurrency()
+    const { t, currentLocale, currentCurrency, translateProductName, translateCustomerName } = useI18n()
+
+    // Convert USD figures to the active currency (×150 for JPY) instead of just
+    // prepending a ¥ over a raw USD number. Whole-value totals use formatCurrency;
+    // per-unit prices keep 2 decimals via formatCurrencyWithDecimals.
+    const formatCurrency = (value) => formatCurrencyUtil(value, currentCurrency.value)
+    const formatUnitPrice = (value) => formatCurrencyWithDecimals(value, currentCurrency.value, 2)
 
     const loading = ref(true)
     const error = ref(null)
@@ -275,7 +280,8 @@ export default {
       getOrderStatusClass,
       formatDate,
       submittedLeadTime,
-      currencySymbol,
+      formatCurrency,
+      formatUnitPrice,
       translateProductName,
       translateCustomerName
     }
