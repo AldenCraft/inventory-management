@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from datetime import datetime, timedelta
 from mock_data import inventory_items, orders, demand_forecasts, backlog_items, spending_summary, monthly_spending, category_spending, recent_transactions, purchase_orders
 
@@ -43,9 +43,12 @@ def matches_category(item: dict, category: str) -> bool:
     dropped by a filter for one of its non-primary categories.
     """
     target = category.lower()
-    if item.get('category', '').lower() == target:
+    # Coerce None to '' before .lower(): restock orders carry an explicit
+    # category=None, and item.get('category', '') returns that None (the key
+    # exists), so `(... or '')` is what actually guards against None.lower().
+    if (item.get('category') or '').lower() == target:
         return True
-    return any(line.get('category', '').lower() == target for line in item.get('items', []))
+    return any((line.get('category') or '').lower() == target for line in item.get('items', []))
 
 def order_revenue_for_category(order: dict, category: Optional[str]) -> float:
     """Revenue from `order` attributable to `category`.
@@ -71,13 +74,15 @@ def apply_filters(items: list, warehouse: Optional[str] = None, category: Option
     if warehouse and warehouse != 'all':
         # Case-insensitive to match the category/status filters below, so
         # ?warehouse=london behaves the same as ?warehouse=London.
-        filtered = [item for item in filtered if item.get('warehouse', '').lower() == warehouse.lower()]
+        # (... or '') coerces a present-but-None value (restock orders set
+        # warehouse=None) so we never call .lower() on None.
+        filtered = [item for item in filtered if (item.get('warehouse') or '').lower() == warehouse.lower()]
 
     if category and category != 'all':
         filtered = [item for item in filtered if matches_category(item, category)]
 
     if status and status != 'all':
-        filtered = [item for item in filtered if item.get('status', '').lower() == status.lower()]
+        filtered = [item for item in filtered if (item.get('status') or '').lower() == status.lower()]
 
     return filtered
 
@@ -161,8 +166,10 @@ class RestockRecommendationsResponse(BaseModel):
 class RestockOrderLine(BaseModel):
     item_sku: str
     item_name: str
-    quantity: int
-    unit_cost: float
+    # A restock line must move stock and cost money; reject <= 0 up front (422)
+    # so a zero/negative line can't produce a nonsensical order total.
+    quantity: int = Field(gt=0)
+    unit_cost: float = Field(gt=0)
     lead_time_days: int
 
 
@@ -234,14 +241,19 @@ class SpendingSummary(BaseModel):
 
 class MonthlySpending(BaseModel):
     month: str
-    procurement: int
-    operational: int
-    labor: int
-    overhead: int
+    # Money is modeled as float, not int: the seed JSON happens to hold whole
+    # dollars today, but currency can carry cents and downstream sums/averages
+    # are floats anyway. int here would 422 the first fractional value.
+    procurement: float
+    operational: float
+    labor: float
+    overhead: float
 
 class CategorySpending(BaseModel):
     category: str
-    amount: int
+    # float for the same reason as MonthlySpending: `amount` is money and must
+    # tolerate cents rather than being pinned to whole dollars.
+    amount: float
     percentage: float
     change: float
 
@@ -277,6 +289,13 @@ class MonthlyTrend(BaseModel):
 # from API tasks by id when deleting/toggling.
 tasks_store: List[dict] = []
 _next_task_id = 1000
+
+# Monotonic counter for restock order ids. `str(len(orders) + 1)` collided with
+# existing seed ids (they're "1".."250") and could repeat once orders were added
+# or removed; a dedicated counter guarantees a unique, stable id per restock
+# order. Namespaced with an "RST-" prefix so it never clashes with the numeric
+# seed ids.
+_next_restock_seq = 1
 
 # API endpoints
 @app.get("/")
@@ -399,12 +418,13 @@ def create_restocking_order(request: CreateRestockOrderRequest):
     if not request.items:
         raise HTTPException(status_code=400, detail="No items to order")
 
+    global _next_restock_seq
     now = datetime.now()
     max_lead = max(line.lead_time_days for line in request.items)
     submitted_count = sum(1 for o in orders if o.get("status") == "Submitted")
 
     order = {
-        "id": str(len(orders) + 1),
+        "id": f"RST-{_next_restock_seq}",
         "order_number": f"RST-{now.year}-{submitted_count + 1:04d}",
         "customer": "Internal Restock",
         "items": [
@@ -418,10 +438,14 @@ def create_restocking_order(request: CreateRestockOrderRequest):
         "expected_delivery": (now + timedelta(days=max_lead)).isoformat(timespec="seconds"),
         "total_value": round(sum(line.quantity * line.unit_cost for line in request.items), 2),
         "actual_delivery": None,
-        "warehouse": None,
-        "category": None,
+        # Empty strings, not None: the shared filters do `(value or '').lower()`,
+        # but keeping these as "" (a restock order belongs to no single
+        # warehouse/category) is clearer and keeps every order row the same shape.
+        "warehouse": "",
+        "category": "",
     }
     orders.append(order)
+    _next_restock_seq += 1
     return order
 
 @app.get("/api/backlog", response_model=List[BacklogItem])
@@ -506,6 +530,11 @@ def get_quarterly_reports():
     quarters = {}
 
     for order in orders:
+        # Skip "Submitted" restock orders: they're internal procurement, not
+        # customer revenue, and must not inflate reported quarterly revenue
+        # (mirrors the dashboard summary's exclusion).
+        if order.get('status') == 'Submitted':
+            continue
         order_date = order.get('order_date', '')
         # Determine quarter
         if '2025-01' in order_date or '2025-02' in order_date or '2025-03' in order_date:
@@ -551,6 +580,11 @@ def get_monthly_trends():
     months = {}
 
     for order in orders:
+        # Skip "Submitted" restock orders: internal procurement, not customer
+        # revenue, so they must not inflate month-over-month revenue trends
+        # (mirrors the dashboard summary's exclusion).
+        if order.get('status') == 'Submitted':
+            continue
         order_date = order.get('order_date', '')
         if not order_date:
             continue
