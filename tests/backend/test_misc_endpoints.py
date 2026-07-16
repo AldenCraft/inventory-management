@@ -66,22 +66,22 @@ class TestDemandEndpoints:
                     f"Item {item['item_name']} has {percent_change:.2f}% change, expected < 2%"
 
     def test_demand_forecast_has_new_items(self, client):
-        """Test that new demand forecast items exist."""
+        """Test that the stable demand forecast items exist."""
         response = client.get("/api/demand")
         data = response.json()
 
-        # Check for the new items we added
+        # Check for the stable items (real inventory SKUs)
         skus = [item["item_sku"] for item in data]
 
-        # Should have Temperature Sensor Module and Logic Controller Board
-        assert "SNR-420" in skus, "Missing Temperature Sensor Module"
-        assert "CTL-330" in skus, "Missing Logic Controller Board"
+        # Should have Temperature Sensor Module and Digital Signal Processor
+        assert "TMP-201" in skus, "Missing Temperature Sensor Module"
+        assert "DSP-403" in skus, "Missing Digital Signal Processor"
 
         # Verify they are marked as stable
         for item in data:
-            if item["item_sku"] in ["SNR-420", "CTL-330"]:
+            if item["item_sku"] in ["TMP-201", "DSP-403"]:
                 assert item["trend"].lower() == "stable", \
-                    f"New item {item['item_name']} should have stable trend"
+                    f"Item {item['item_name']} should have stable trend"
 
 
 class TestBacklogEndpoints:
@@ -134,6 +134,57 @@ class TestBacklogEndpoints:
 
         for item in data:
             assert item["days_delayed"] >= 0
+
+
+class TestReferentialIntegrity:
+    """Test suite verifying backlog and demand rows reference real orders/inventory.
+
+    These guard against the phantom-data regression where backlog/demand rows
+    named orders and SKUs that existed nowhere else in the dataset.
+    """
+
+    def test_backlog_order_ids_exist_in_orders(self, client):
+        """Every backlog order_id must reference a real order."""
+        order_numbers = {
+            order["order_number"] for order in client.get("/api/orders").json()
+        }
+        assert order_numbers, "No orders returned to validate against"
+
+        backlog = client.get("/api/backlog").json()
+        for item in backlog:
+            assert item["order_id"] in order_numbers, \
+                f"Backlog references phantom order {item['order_id']}"
+
+    def test_backlog_skus_exist_in_inventory(self, client):
+        """Every backlog item_sku/item_name must reference a real inventory item."""
+        inventory = client.get("/api/inventory").json()
+        skus = {item["sku"] for item in inventory}
+        names_by_sku = {item["sku"]: item["name"] for item in inventory}
+        assert skus, "No inventory returned to validate against"
+
+        backlog = client.get("/api/backlog").json()
+        for item in backlog:
+            assert item["item_sku"] in skus, \
+                f"Backlog references phantom SKU {item['item_sku']}"
+            # Name should stay consistent with the inventory record it points at
+            assert item["item_name"] == names_by_sku[item["item_sku"]], \
+                f"Backlog name '{item['item_name']}' does not match inventory " \
+                f"for SKU {item['item_sku']}"
+
+    def test_demand_skus_exist_in_inventory(self, client):
+        """Every demand forecast item_sku/item_name must reference a real inventory item."""
+        inventory = client.get("/api/inventory").json()
+        skus = {item["sku"] for item in inventory}
+        names_by_sku = {item["sku"]: item["name"] for item in inventory}
+        assert skus, "No inventory returned to validate against"
+
+        demand = client.get("/api/demand").json()
+        for forecast in demand:
+            assert forecast["item_sku"] in skus, \
+                f"Demand references phantom SKU {forecast['item_sku']}"
+            assert forecast["item_name"] == names_by_sku[forecast["item_sku"]], \
+                f"Demand name '{forecast['item_name']}' does not match inventory " \
+                f"for SKU {forecast['item_sku']}"
 
 
 class TestSpendingEndpoints:
