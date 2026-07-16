@@ -53,15 +53,20 @@
                 v-for="item in sortedItems"
                 :key="item.id"
                 class="clickable-row"
+                role="button"
+                tabindex="0"
+                :aria-label="t('common.viewDetails')"
                 @click="showItemDetail(item)"
+                @keydown.enter="showItemDetail(item)"
+                @keydown.space.prevent="showItemDetail(item)"
               >
                 <td><strong>{{ item.sku }}</strong></td>
                 <td>{{ translateProductName(item.name) }}</td>
                 <td>{{ translateCategory(item.category) }}</td>
                 <td><strong>{{ item.quantity_on_hand }}</strong></td>
                 <td>{{ item.reorder_point }}</td>
-                <td>{{ currencySymbol }}{{ item.unit_cost.toFixed(2) }}</td>
-                <td><strong>{{ currencySymbol }}{{ (item.quantity_on_hand * item.unit_cost).toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2}) }}</strong></td>
+                <td>{{ formatCurrency(item.unit_cost) }}</td>
+                <td><strong>{{ formatCurrency(item.quantity_on_hand * item.unit_cost) }}</strong></td>
                 <td>{{ translateWarehouse(item.location) }}</td>
                 <td>
                   <span :class="['badge', getStockStatusClass(item)]">
@@ -88,7 +93,7 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
-import { useCurrency } from '../composables/useCurrency'
+import { formatCurrencyWithDecimals } from '../utils/currency'
 import { useStockStatus } from '../composables/useStockStatus'
 import { useTableSort } from '../composables/useTableSort'
 import InventoryDetailModal from '../components/InventoryDetailModal.vue'
@@ -101,8 +106,11 @@ export default {
     SortableTh
   },
   setup() {
-    const { t, translateProductName, translateWarehouse } = useI18n()
-    const { currencySymbol } = useCurrency()
+    const { t, currentCurrency, translateProductName, translateWarehouse } = useI18n()
+
+    // Convert USD unit cost / total value to the active currency (×150 for JPY)
+    // rather than prepending ¥ to a raw USD figure. Both columns keep 2 decimals.
+    const formatCurrency = (value) => formatCurrencyWithDecimals(value, currentCurrency.value, 2)
 
     // Shared reorder-point classification (single source of truth). The per-item helper
     // forms are used for the table rows and for sort accessors below.
@@ -225,7 +233,7 @@ export default {
       showItemModal,
       selectedItem,
       showItemDetail,
-      currencySymbol,
+      formatCurrency,
       translateProductName,
       translateWarehouse
     }
@@ -343,6 +351,13 @@ export default {
 }
 
 .clickable-row:hover {
+  background: #eff6ff !important;
+}
+
+/* Keyboard focus indicator so the now-focusable rows show where focus is. */
+.clickable-row:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: -2px;
   background: #eff6ff !important;
 }
 </style>
