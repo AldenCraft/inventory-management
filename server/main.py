@@ -21,15 +21,17 @@ def filter_by_month(items: list, month: Optional[str]) -> list:
         return items
 
     if month.startswith('Q'):
-        # Handle quarters
-        if month in QUARTER_MAP:
-            months = QUARTER_MAP[month]
-            return [item for item in items if any(m in item.get('order_date', '') for m in months)]
-    else:
-        # Direct month match
-        return [item for item in items if month in item.get('order_date', '')]
+        # Handle quarters. An unrecognized quarter (e.g. "Q1-2024", "Q5-2025")
+        # matches this branch but isn't in QUARTER_MAP; return an empty list
+        # rather than falling through to the full unfiltered list, so an invalid
+        # filter never silently reads as "no filter".
+        if month not in QUARTER_MAP:
+            return []
+        months = QUARTER_MAP[month]
+        return [item for item in items if any(m in item.get('order_date', '') for m in months)]
 
-    return items
+    # Direct month match
+    return [item for item in items if month in item.get('order_date', '')]
 
 def matches_category(item: dict, category: str) -> bool:
     """True if `item` belongs to `category`.
@@ -67,7 +69,9 @@ def apply_filters(items: list, warehouse: Optional[str] = None, category: Option
     filtered = items
 
     if warehouse and warehouse != 'all':
-        filtered = [item for item in filtered if item.get('warehouse') == warehouse]
+        # Case-insensitive to match the category/status filters below, so
+        # ?warehouse=london behaves the same as ?warehouse=London.
+        filtered = [item for item in filtered if item.get('warehouse', '').lower() == warehouse.lower()]
 
     if category and category != 'all':
         filtered = [item for item in filtered if matches_category(item, category)]
@@ -374,6 +378,10 @@ def get_dashboard_summary(
     total_inventory_value = sum(item["quantity_on_hand"] * item["unit_cost"] for item in filtered_inventory)
     low_stock_items = len([item for item in filtered_inventory if item["quantity_on_hand"] <= item["reorder_point"]])
     pending_orders = len([order for order in filtered_orders if order["status"] in ["Processing", "Backordered"]])
+    # Unfiltered by design: backlog rows carry no warehouse/category/order_date,
+    # so they can't respond to the filter bar with the current data model. This is
+    # a global count regardless of the active filters; filtering it would require
+    # adding those fields to the backlog data.
     total_backlog_items = len(backlog_items)
 
     # Attribute revenue per line item so a category filter counts only the

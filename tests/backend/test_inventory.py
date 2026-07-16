@@ -39,6 +39,26 @@ class TestInventoryEndpoints:
         for item in data:
             assert item["warehouse"] == "San Francisco"
 
+    def test_get_inventory_by_warehouse_case_insensitive(self, client):
+        """Warehouse filter is case-insensitive, matching category/status.
+
+        Regression test: `?warehouse=london` (lowercase) used to return an empty
+        list because the filter used an exact `==` comparison. It should now
+        return the same items as the canonical-cased `?warehouse=London`.
+        """
+        lower = client.get("/api/inventory?warehouse=london")
+        canonical = client.get("/api/inventory?warehouse=London")
+
+        assert lower.status_code == 200
+        assert canonical.status_code == 200
+
+        lower_data = lower.json()
+        assert len(lower_data) > 0
+        # Lowercase query returns the same set as the canonical-cased query.
+        assert len(lower_data) == len(canonical.json())
+        for item in lower_data:
+            assert item["warehouse"] == "London"
+
     def test_get_inventory_by_category(self, client):
         """Test filtering inventory by category."""
         response = client.get("/api/inventory?category=Circuit Boards")
