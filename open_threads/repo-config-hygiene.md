@@ -1,6 +1,6 @@
 # Repo and config hygiene (uv.lock, .env.example, vite)
 
-**Status:** 🟢 Fixed by [#26](https://github.com/AldenCraft/inventory-management/pull/26) — open, held for review
+**Status:** ✅ Fixed by [#26](https://github.com/AldenCraft/inventory-management/pull/26) — merged 2026-07-16
 
 Created: 2026-07-16, from a whole-app multi-agent review of the inventory-management repo (four parallel review agents), run against local `main` at HEAD `032c157`. File:line references are from that checkout and may drift — re-locate before acting.
 
