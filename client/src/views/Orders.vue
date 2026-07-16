@@ -87,7 +87,7 @@
                       {{ t('orders.itemsCount', { count: order.items.length }) }}
                     </summary>
                     <div class="items-dropdown">
-                      <div v-for="(item, idx) in order.items" :key="idx" class="item-entry">
+                      <div v-for="item in order.items" :key="item.sku" class="item-entry">
                         <span class="item-name">{{ translateProductName(item.name) }}</span>
                         <span class="item-meta">{{ t('orders.quantity') }}: {{ item.quantity }} @ {{ currencySymbol }}{{ item.unit_price }}</span>
                       </div>
@@ -125,7 +125,7 @@ export default {
     SortableTh
   },
   setup() {
-    const { t, currentCurrency, translateProductName, translateCustomerName } = useI18n()
+    const { t, currentCurrency, currentLocale, translateProductName, translateCustomerName } = useI18n()
 
     const currencySymbol = computed(() => {
       return currentCurrency.value === 'JPY' ? '¥' : '$'
@@ -156,9 +156,13 @@ export default {
         // keeps its key across asc/desc/off and Vue patches rows correctly.
         orders.value = fetchedOrders
           .sort((a, b) => {
-            const dateA = new Date(a.order_date)
-            const dateB = new Date(b.order_date)
-            return dateA - dateB
+            // Validate before comparing so a missing/malformed order_date can't produce a
+            // NaN comparison and an unstable sort; invalid dates sort to the start.
+            const timeA = new Date(a.order_date).getTime()
+            const timeB = new Date(b.order_date).getTime()
+            const safeA = isNaN(timeA) ? 0 : timeA
+            const safeB = isNaN(timeB) ? 0 : timeB
+            return safeA - safeB
           })
           .map((o, i) => ({ ...o, _rowKey: i }))
       } catch (err) {
@@ -209,9 +213,13 @@ export default {
     }
 
     const formatDate = (dateString) => {
-      const { currentLocale } = useI18n()
+      if (!dateString) return '-'
+      const date = new Date(dateString)
+      // Guard against invalid/malformed dates so the UI shows a placeholder instead of
+      // "Invalid Date" (per the repo date rule).
+      if (isNaN(date.getTime())) return '-'
       const locale = currentLocale.value === 'ja' ? 'ja-JP' : 'en-US'
-      return new Date(dateString).toLocaleDateString(locale, {
+      return date.toLocaleDateString(locale, {
         year: 'numeric',
         month: 'short',
         day: 'numeric'

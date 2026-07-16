@@ -89,7 +89,7 @@
 import { computed } from 'vue'
 import { useI18n } from '../composables/useI18n'
 
-const { currentCurrency } = useI18n()
+const { currentCurrency, currentLocale } = useI18n()
 
 const currencySymbol = computed(() => {
   return currentCurrency.value === 'JPY' ? '¥' : '$'
@@ -115,7 +115,11 @@ const close = () => {
 const formatDate = (dateString) => {
   if (!dateString) return 'N/A'
   const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', {
+  // Guard against invalid/malformed dates so the UI shows a placeholder instead of
+  // "Invalid Date" (per the repo date rule).
+  if (isNaN(date.getTime())) return 'N/A'
+  const locale = currentLocale.value === 'ja' ? 'ja-JP' : 'en-US'
+  return date.toLocaleDateString(locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric'
