@@ -172,20 +172,20 @@
             <table>
               <thead>
                 <tr>
-                  <th>{{ t('dashboard.inventoryShortages.orderId') }}</th>
-                  <th>{{ t('dashboard.inventoryShortages.sku') }}</th>
-                  <th>{{ t('dashboard.inventoryShortages.itemName') }}</th>
-                  <th>{{ t('dashboard.inventoryShortages.quantityNeeded') }}</th>
-                  <th>{{ t('dashboard.inventoryShortages.quantityAvailable') }}</th>
-                  <th>{{ t('dashboard.inventoryShortages.shortage') }}</th>
-                  <th>{{ t('dashboard.inventoryShortages.daysDelayed') }}</th>
-                  <th>{{ t('dashboard.inventoryShortages.priority') }}</th>
+                  <SortableTh column-key="orderId" :label="t('dashboard.inventoryShortages.orderId')" :sort-key="backlogSortKey" :sort-dir="backlogSortDir" @sort="toggleBacklogSort" />
+                  <SortableTh column-key="sku" :label="t('dashboard.inventoryShortages.sku')" :sort-key="backlogSortKey" :sort-dir="backlogSortDir" @sort="toggleBacklogSort" />
+                  <SortableTh column-key="itemName" :label="t('dashboard.inventoryShortages.itemName')" :sort-key="backlogSortKey" :sort-dir="backlogSortDir" @sort="toggleBacklogSort" />
+                  <SortableTh column-key="quantityNeeded" :label="t('dashboard.inventoryShortages.quantityNeeded')" :sort-key="backlogSortKey" :sort-dir="backlogSortDir" @sort="toggleBacklogSort" />
+                  <SortableTh column-key="quantityAvailable" :label="t('dashboard.inventoryShortages.quantityAvailable')" :sort-key="backlogSortKey" :sort-dir="backlogSortDir" @sort="toggleBacklogSort" />
+                  <SortableTh column-key="shortage" :label="t('dashboard.inventoryShortages.shortage')" :sort-key="backlogSortKey" :sort-dir="backlogSortDir" @sort="toggleBacklogSort" />
+                  <SortableTh column-key="daysDelayed" :label="t('dashboard.inventoryShortages.daysDelayed')" :sort-key="backlogSortKey" :sort-dir="backlogSortDir" @sort="toggleBacklogSort" />
+                  <SortableTh column-key="priority" :label="t('dashboard.inventoryShortages.priority')" :sort-key="backlogSortKey" :sort-dir="backlogSortDir" @sort="toggleBacklogSort" />
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 <tr
-                  v-for="item in backlogItems"
+                  v-for="item in sortedBacklogItems"
                   :key="item.id"
                 >
                   <td @click="showBacklogDetail(item)" style="cursor: pointer;"><strong>{{ item.order_id }}</strong></td>
@@ -239,18 +239,18 @@
             <table>
               <thead>
                 <tr>
-                  <th>{{ t('dashboard.topProducts.product') }}</th>
-                  <th>{{ t('dashboard.topProducts.sku') }}</th>
-                  <th>{{ t('dashboard.topProducts.category') }}</th>
-                  <th>{{ t('dashboard.topProducts.unitsOrdered') }}</th>
-                  <th>{{ t('dashboard.topProducts.revenue') }}</th>
-                  <th>{{ t('dashboard.topProducts.firstOrder') }}</th>
-                  <th>{{ t('dashboard.topProducts.stockStatus') }}</th>
+                  <SortableTh column-key="name" :label="t('dashboard.topProducts.product')" :sort-key="productSortKey" :sort-dir="productSortDir" @sort="toggleProductSort" />
+                  <SortableTh column-key="sku" :label="t('dashboard.topProducts.sku')" :sort-key="productSortKey" :sort-dir="productSortDir" @sort="toggleProductSort" />
+                  <SortableTh column-key="category" :label="t('dashboard.topProducts.category')" :sort-key="productSortKey" :sort-dir="productSortDir" @sort="toggleProductSort" />
+                  <SortableTh column-key="unitsOrdered" :label="t('dashboard.topProducts.unitsOrdered')" :sort-key="productSortKey" :sort-dir="productSortDir" @sort="toggleProductSort" />
+                  <SortableTh column-key="revenue" :label="t('dashboard.topProducts.revenue')" :sort-key="productSortKey" :sort-dir="productSortDir" @sort="toggleProductSort" />
+                  <SortableTh column-key="firstOrder" :label="t('dashboard.topProducts.firstOrder')" :sort-key="productSortKey" :sort-dir="productSortDir" @sort="toggleProductSort" />
+                  <SortableTh column-key="stockStatus" :label="t('dashboard.topProducts.stockStatus')" :sort-key="productSortKey" :sort-dir="productSortDir" @sort="toggleProductSort" />
                 </tr>
               </thead>
               <tbody>
                 <tr
-                  v-for="item in topProducts"
+                  v-for="item in sortedTopProducts"
                   :key="item.sku"
                   class="clickable-row"
                   @click="showProductDetail(item)"
@@ -302,14 +302,17 @@ import { api } from '../api'
 import { useFilters } from '../composables/useFilters'
 import { useI18n } from '../composables/useI18n'
 import { formatCurrency } from '../utils/currency'
+import { useTableSort } from '../composables/useTableSort'
 import ProductDetailModal from '../components/ProductDetailModal.vue'
 import BacklogDetailModal from '../components/BacklogDetailModal.vue'
+import SortableTh from '../components/SortableTh.vue'
 
 export default {
   name: 'Dashboard',
   components: {
     ProductDetailModal,
     BacklogDetailModal,
+    SortableTh,
   },
   setup() {
     const { t, currentCurrency, translateProductName, translateWarehouse } = useI18n()
@@ -558,6 +561,53 @@ export default {
       return allBacklogItems.value.filter(b => validSkus.has(b.item_sku))
     })
 
+    // Click-to-sort for the two multi-row data tables. Each table gets its own
+    // sort state. When sort is "off", applySort returns rows untouched, keeping
+    // each table's existing default order.
+    const {
+      sortKey: backlogSortKey,
+      sortDir: backlogSortDir,
+      toggleSort: toggleBacklogSort,
+      applySort: applyBacklogSort
+    } = useTableSort()
+
+    const backlogSortAccessors = {
+      orderId: (i) => i.order_id,
+      sku: (i) => i.item_sku,
+      // i18n column: sort on the raw item name, not the translated label
+      itemName: (i) => i.item_name,
+      quantityNeeded: (i) => i.quantity_needed,
+      quantityAvailable: (i) => i.quantity_available,
+      // Derived: units short, matching the displayed absolute shortage
+      shortage: (i) => Math.abs(i.quantity_needed - i.quantity_available),
+      daysDelayed: (i) => i.days_delayed,
+      priority: (i) => i.priority
+    }
+
+    const sortedBacklogItems = computed(() => applyBacklogSort(backlogItems.value, backlogSortAccessors))
+
+    const {
+      sortKey: productSortKey,
+      sortDir: productSortDir,
+      toggleSort: toggleProductSort,
+      applySort: applyProductSort
+    } = useTableSort()
+
+    const productSortAccessors = {
+      // i18n columns: sort on raw name/category, not the translated label
+      name: (p) => p.name,
+      sku: (p) => p.sku,
+      category: (p) => p.category,
+      unitsOrdered: (p) => p.unitsOrdered,
+      revenue: (p) => p.revenue,
+      // ISO date strings compare chronologically as strings
+      firstOrder: (p) => p.firstOrderDate,
+      // Sort on the raw stock level key, not the translated label
+      stockStatus: (p) => p.stockLevel
+    }
+
+    const sortedTopProducts = computed(() => applyProductSort(topProducts.value, productSortAccessors))
+
     const loadData = async () => {
       try {
         loading.value = true
@@ -693,7 +743,15 @@ export default {
       orderTrendData,
       maxOrderCount,
       topProducts,
+      sortedTopProducts,
+      productSortKey,
+      productSortDir,
+      toggleProductSort,
       backlogItems,
+      sortedBacklogItems,
+      backlogSortKey,
+      backlogSortDir,
+      toggleBacklogSort,
       calculatePercentage,
       getCircleSegment,
       getStockBadge,
