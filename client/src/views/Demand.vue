@@ -196,22 +196,25 @@ export default {
     }
 
     const getChangePercent = (forecast) => {
+      // Guard against divide-by-zero: with no current demand the percent change is
+      // undefined (would be Infinity/NaN), so surface "N/A" instead of a bad number.
+      if (!forecast.current_demand) {
+        return 'N/A'
+      }
       const change = ((forecast.forecasted_demand - forecast.current_demand) / forecast.current_demand * 100).toFixed(1)
       return change > 0 ? `+${change}` : change
     }
 
+    // Trend badge and change color both read from forecast.trend (the same source the
+    // trend cards group by), so the label and the color can never contradict each other.
+    const trendColors = {
+      increasing: '#10b981', // Green
+      stable: '#3b82f6',     // Blue
+      decreasing: '#ef4444'  // Red
+    }
+
     const getChangeColor = (forecast) => {
-      const change = forecast.forecasted_demand - forecast.current_demand
-      const changePercent = Math.abs((change / forecast.current_demand) * 100)
-
-      // If change is within ±2%, consider it stable and show blue
-      if (changePercent <= 2) {
-        return '#3b82f6' // Blue for stable
-      }
-
-      if (change > 0) return '#10b981' // Green for increasing
-      if (change < 0) return '#ef4444' // Red for decreasing
-      return '#3b82f6' // Blue for no change
+      return trendColors[forecast.trend] || '#3b82f6'
     }
 
     const translatePeriod = (period) => {
