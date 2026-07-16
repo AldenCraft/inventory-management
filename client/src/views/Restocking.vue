@@ -35,6 +35,7 @@
             <thead>
               <tr>
                 <th>{{ t('restocking.table.item') }}</th>
+                <th>{{ t('restocking.table.sku') }}</th>
                 <th>{{ t('restocking.table.trend') }}</th>
                 <th>{{ t('restocking.table.unitCost') }}</th>
                 <th>{{ t('restocking.table.quantity') }}</th>
@@ -45,7 +46,8 @@
             <tbody>
               <tr v-for="rec in recommendations" :key="rec.item_sku">
                 <td>{{ rec.item_name }}</td>
-                <td><span :class="['badge', rec.trend]">{{ rec.trend }}</span></td>
+                <td>{{ rec.item_sku }}</td>
+                <td><span :class="['badge', rec.trend]">{{ t(`trends.${rec.trend}`) }}</span></td>
                 <td>{{ currencySymbol }}{{ rec.unit_cost.toFixed(2) }}</td>
                 <td>{{ rec.recommended_quantity }}</td>
                 <td>{{ currencySymbol }}{{ rec.line_cost.toLocaleString() }}</td>
@@ -71,6 +73,7 @@
           {{ successMessage }}
           <router-link to="/orders">{{ t('restocking.viewInOrders') }}</router-link>
         </p>
+        <p v-if="placeError" class="error place-error">{{ placeError }}</p>
       </div>
     </div>
   </div>
@@ -99,6 +102,9 @@ export default {
     const error = ref(null)
     const placing = ref(false)
     const successMessage = ref('')
+    // Separate from `error`: a failed order submission must not flip the
+    // v-if/v-else-if/v-else below and wipe out the recommendations table.
+    const placeError = ref(null)
 
     let debounceTimer = null
 
@@ -127,7 +133,7 @@ export default {
     const placeOrder = async () => {
       try {
         placing.value = true
-        error.value = null
+        placeError.value = null
         const items = recommendations.value.map(rec => ({
           item_sku: rec.item_sku,
           item_name: rec.item_name,
@@ -137,8 +143,9 @@ export default {
         }))
         const order = await api.placeRestockingOrder(items)
         successMessage.value = t('restocking.success', { orderNumber: order.order_number })
+        placeError.value = null
       } catch (err) {
-        error.value = 'Failed to place order: ' + err.message
+        placeError.value = 'Failed to place order: ' + err.message
       } finally {
         placing.value = false
       }
@@ -157,6 +164,7 @@ export default {
       error,
       placing,
       successMessage,
+      placeError,
       placeOrder
     }
   }
@@ -226,5 +234,9 @@ export default {
   color: #64748b;
   padding: 1.5rem 0;
   text-align: center;
+}
+
+.place-error {
+  margin-top: 0.75rem;
 }
 </style>

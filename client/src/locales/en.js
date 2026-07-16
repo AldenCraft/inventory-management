@@ -346,6 +346,7 @@ export default {
     days: '{count} days',
     table: {
       item: 'Item',
+      sku: 'SKU',
       trend: 'Trend',
       unitCost: 'Unit Cost',
       quantity: 'Quantity',

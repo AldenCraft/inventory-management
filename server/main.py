@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime, timedelta
-import math
 from mock_data import inventory_items, orders, demand_forecasts, backlog_items, spending_summary, monthly_spending, category_spending, recent_transactions, purchase_orders
 
 app = FastAPI(title="Factory Inventory Management System")
@@ -331,7 +330,11 @@ def get_dashboard_summary(
         "low_stock_items": low_stock_items,
         "pending_orders": pending_orders,
         "total_backlog_items": total_backlog_items,
-        "total_orders_value": sum(order["total_value"] for order in filtered_orders)
+        # Restock orders ("Submitted") are internal procurement, not customer revenue -
+        # exclude them so they don't inflate the Overview revenue KPI.
+        "total_orders_value": sum(
+            order["total_value"] for order in filtered_orders if order["status"] != "Submitted"
+        )
     }
 
 @app.get("/api/spending/summary")

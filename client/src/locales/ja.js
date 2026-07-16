@@ -346,6 +346,7 @@ export default {
     days: '{count}日',
     table: {
       item: '品目',
+      sku: 'SKU',
       trend: '傾向',
       unitCost: '単価',
       quantity: '数量',

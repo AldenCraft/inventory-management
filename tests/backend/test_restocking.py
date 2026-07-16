@@ -79,3 +79,23 @@ class TestRestockingEndpoints:
     def test_submit_empty_order_rejected(self, client):
         response = client.post("/api/restocking/orders", json={"items": []})
         assert response.status_code == 400
+
+    def test_dashboard_kpi_excludes_submitted_restock_order(self, client):
+        """Restock orders are internal procurement, not customer revenue - the
+        Overview total_orders_value KPI must not move when one is submitted."""
+        before = client.get("/api/dashboard/summary").json()
+
+        payload = {"items": [
+            {"item_sku": "WDG-001", "item_name": "Industrial Widget Type A",
+             "quantity": 150, "unit_cost": 12.5, "lead_time_days": 10},
+        ]}
+        submit_response = client.post("/api/restocking/orders", json=payload)
+        assert submit_response.status_code == 200
+        order = submit_response.json()
+
+        after = client.get("/api/dashboard/summary").json()
+        assert after["total_orders_value"] == before["total_orders_value"]
+
+        # ... but the submitted order does show up in the orders list.
+        submitted = client.get("/api/orders", params={"status": "Submitted"}).json()
+        assert any(o["id"] == order["id"] for o in submitted)
